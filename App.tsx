@@ -321,6 +321,13 @@ const App: React.FC = () => {
 
     const fullMaintainedList = [...dynamicMaintained, ...baseMaintained].join(", ");
 
+    // Calculate parameter values for consistency
+    const studioModeVal = isStudioMode ? "ACTIVE" : "Inactive";
+    const bgVal = isStudioMode ? `${studioBgColor} (${studioBgTexture})` : "Reference Default";
+    const floorVal = isStudioMode ? `${studioFloorColor} (${studioFloorTexture})` : "Reference Default";
+    const orbitalVal = `${angleDegree}° (${directionLabel})`;
+    const dutchVal = `${cameraSlant || '0'}°`;
+
     const finalPromptArr = [
       "{{best quality, amazing aesthetics}}",
       isStudioMode ? `{{professional photography studio, seamless ${studioBgColor} ${bgTextureEng} background}}` : null,
@@ -332,6 +339,15 @@ const App: React.FC = () => {
       angle !== 'Maintain Original' ? `{${angle}}` : null,
       scale !== 'Maintain Original' ? `{${scaleProtocol[scale] || safeString(scale)}}` : null,
       pose !== 'Maintain Original' ? `{${pose.toLowerCase()} pose}` : null,
+
+      // Integrated Selected Parameters
+      `{studio_mode: ${studioModeVal}}`,
+      `{background: ${bgVal}}`,
+      `{floor: ${floorVal}}`,
+      `{orbital_degree: ${orbitalVal}}`,
+      `{{camera positioned at ${angleDegree}° (${directionLabel}) relative to the subject}}`,
+      `{dutch_roll: ${dutchVal}}`,
+      `{aspect_ratio: ${ratio}}`,
 
       // Ensure lighting, style, etc. are correctly included in final technical string
       lighting !== 'Maintain Original' ? `{lighting: ${lighting}}` : null,
@@ -348,13 +364,13 @@ const App: React.FC = () => {
       camera_override_protocol: `MANDATORY: shot on {${camera}}. ${isStudioMode ? `FORCE BACKGROUND: ${studioBgColor} ${bgTextureEng}. FORCE FLOOR: ${studioFloorColor} ${floorTextureEng}.` : ''} Execute narrative {${narrativeText}}. Technical parameters locked.`,
       volumetric_reconstruction: "Maintain realism and standard proportions. Identity mapping active.",
       selected_parameters: {
-        studio_mode: isStudioMode ? "ACTIVE" : "Inactive",
-        background: isStudioMode ? `${studioBgColor} (${studioBgTexture})` : "Reference Default",
-        floor: isStudioMode ? `${studioFloorColor} (${studioFloorTexture})` : "Reference Default",
+        studio_mode: studioModeVal,
+        background: bgVal,
+        floor: floorVal,
         camera, lens, aperture,
         angle, scale, pose,
-        orbital_degree: `${angleDegree}° (${directionLabel})`,
-        dutch_roll: `${cameraSlant || '0'}°`,
+        orbital_degree: orbitalVal,
+        dutch_roll: dutchVal,
         aspect_ratio: ratio,
         lighting, style, grading, texture, filmStock
       },
