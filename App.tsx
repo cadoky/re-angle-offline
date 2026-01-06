@@ -152,7 +152,7 @@ const SelectorComponent: React.FC<SelectorProps> = ({ label, icon, value, option
   }, []);
 
   return (
-    <div className="dropdown-container w-full relative" ref={selRef}>
+    <div className="dropdown-container w-full relative" ref={selRef} style={{ zIndex: isOpen ? 50 : undefined }}>
       {label && <label className={`text-[8px] font-black uppercase tracking-widest px-1 flex items-center gap-2 mb-1.5 font-bold ${disabled ? 'text-zinc-700' : 'text-white'}`}>{label}</label>}
       <div className={`w-full flex items-center gap-2 text-[10px] font-black glass-input px-3 py-2.5 rounded-xl border border-white/10 hover:border-pink-500/40 shadow-sm transition-all ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
         <span className={`opacity-50 ${disabled ? 'text-zinc-700' : 'text-pink-500'}`}>{icon}</span>
@@ -183,7 +183,7 @@ const SelectorComponent: React.FC<SelectorProps> = ({ label, icon, value, option
 // --- COMPONENT: DropdownComponent ---
 const DropdownComponent: React.FC<DropdownProps> = ({ label, icon, value, options: menuOptions, translations: menuTranslations, isOpen, setOpen, onChange, menuRef }) => {
   return (
-    <div className="dropdown-container w-full relative" ref={menuRef}>
+    <div className="dropdown-container w-full relative" ref={menuRef} style={{ zIndex: isOpen ? 50 : undefined }}>
       <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block tracking-widest px-1 text-white font-bold">{label}</span>
       <button onClick={(e) => { e.stopPropagation(); setOpen(!isOpen); }} className="w-full flex items-center gap-3 text-[11px] font-black border border-white/10 px-4 py-3 rounded-xl bg-black/40 hover:border-pink-500/40 shadow-lg justify-between transition-all cursor-pointer">
         <div className="flex items-center gap-2 text-pink-500">{icon} <span className="text-white truncate max-w-[120px] uppercase font-bold">{safeString(value)}</span></div>
@@ -309,12 +309,12 @@ const App: React.FC = () => {
         scale !== 'Maintain Original' ? `{${scaleProtocol[scale] || safeString(scale)}}` : null,
         pose !== 'Maintain Original' ? `{${pose.toLowerCase()} pose}` : null,
         
-        // Injected parameters that were previously missing from output
-        lighting !== 'Maintain Original' ? `{${lighting}}` : null,
-        style !== 'Maintain Original' ? `{${style}}` : null,
-        grading !== 'Maintain Original' ? `{${grading}}` : null,
-        texture !== 'Maintain Original' ? `{${texture}}` : null,
-        filmStock !== 'Maintain Original' ? `{${filmStock}}` : null,
+        // Ensure lighting, style, etc. are correctly included in final technical string
+        lighting !== 'Maintain Original' ? `{lighting: ${lighting}}` : null,
+        style !== 'Maintain Original' ? `{style: ${style}}` : null,
+        grading !== 'Maintain Original' ? `{grading: ${grading}}` : null,
+        texture !== 'Maintain Original' ? `{texture: ${texture}}` : null,
+        filmStock !== 'Maintain Original' ? `{film stock: ${filmStock}}` : null,
 
         `{match ref: ${fullMaintainedList}}`,
         `Aspect Ratio ${ratio}`
@@ -580,7 +580,7 @@ const App: React.FC = () => {
           aperture: 'f/2.8',
           texture: 'Matte Finish',
           scale: 'Extreme Wide Shot',
-          pose: 'Back View', // Custom mapped to Back
+          pose: 'Three-Quarter Turn',
           angle: 'Low Angle',
           ratio: '2.39:1'
         }
@@ -686,7 +686,7 @@ const App: React.FC = () => {
           aperture: 'f/1.4',
           texture: 'Soft Skin Gloss',
           scale: 'Wide Shot (General)',
-          pose: 'Back View',
+          pose: 'Three-Quarter Turn',
           angle: 'Low Angle',
           ratio: '16:9'
         }
@@ -771,18 +771,7 @@ const App: React.FC = () => {
     setAperture(randomScenario.settings.aperture);
     setTexture(randomScenario.settings.texture);
     setScale(randomScenario.settings.scale);
-    
-    // Handle special pose cases if needed, otherwise direct map
-    if (randomScenario.settings.pose === 'Back View') {
-       setPose('Back View'); // Ensure this exists in options if used, or map to 'Rear' equivalent if needed. 
-       // Actually 'Back View' isn't in original options, mapping to 'Rear' equivalent in angle, but 'Back' pose isn't standard.
-       // Let's map to 'Maintain Original' or a safe default if not in list.
-       // Checking original options: 'Frontal Standing', '90 Profile View', 'Three-Quarter Turn', 'Sitting / Crouching', 'Dynamic Movement', 'Over the Shoulder'
-       setPose('Three-Quarter Turn'); // Fallback for safety or add to options.
-    } else {
-       setPose(randomScenario.settings.pose);
-    }
-    
+    setPose(randomScenario.settings.pose);
     setAngle(randomScenario.settings.angle);
     setRatio(randomScenario.settings.ratio);
 
@@ -828,11 +817,12 @@ const App: React.FC = () => {
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .glass-panel { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(40px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); isolation: isolate; }
+        /* Removed isolation: isolate to allow z-index to work globally across panels on mobile */
+        .glass-panel { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(40px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
         .glass-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s; height: 44px; }
         .glass-input:focus { border-color: rgba(236, 72, 153, 0.4); outline: none; }
         .glass-input:disabled { opacity: 0.2; cursor: not-allowed; }
-        .dropdown-menu { background: #000000 !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; z-index: 999999 !important; position: absolute; left: 0; right: 0; max-height: 300px; overflow-y: auto; border-radius: 1rem; margin-top: 0.25rem; width: 100%; }
+        .dropdown-menu { background: #000000 !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; z-index: 1000 !important; position: absolute; left: 0; right: 0; max-height: 300px; overflow-y: auto; border-radius: 1rem; margin-top: 0.25rem; width: 100%; }
         .dropdown-item { background: #000000 !important; color: #ffffff !important; transition: all 0.2s; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: bold; padding: 0.75rem 1rem; font-size: 10px; text-transform: uppercase; text-align: left; }
         .dropdown-item:hover { background: #111111 !important; color: #db2777 !important; }
         .angle-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
@@ -853,34 +843,35 @@ const App: React.FC = () => {
           <div className="flex items-center gap-4">
             <div className="p-2 bg-white/5 border border-white/10 rounded-2xl shadow-xl"><MinimalistLogo /></div>
             <div className="flex flex-col items-start gap-0 md:flex-row md:items-center md:gap-3 shrink-0">
-  <h1 className="text-3xl font-black tracking-tighter uppercase italic text-white drop-shadow-md">
-    Re-angle!
-  </h1>
-  <div className="relative shrink-0">
-    <span className="bg-pink-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(219,39,119,0.3)] whitespace-nowrap">
-      V1-OFFLINE
-    </span>
-  </div>
-</div>
+              <h1 className="text-3xl font-black tracking-tighter uppercase italic text-white drop-shadow-md">
+                Re-angle!
+              </h1>
+              <div className="relative shrink-0">
+                <span className="bg-pink-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(219,39,119,0.3)] whitespace-nowrap">
+                  V1-OFFLINE
+                </span>
+              </div>
+            </div>
           </div>
           <div className="flex flex-col items-end gap-1 shrink-0 ml-auto">
-  <p className="text-zinc-500 text-[7px] md:text-[10px] font-bold uppercase tracking-[0.1em] md:tracking-[0.2em] mb-0.5 whitespace-nowrap">
-    Created by Ulaş Çolaker
-  </p>
-  <a 
-    href="https://www.instagram.com/ulas.cr2/" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="flex items-center justify-center p-2 md:px-4 md:py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
-  >
-    <Instagram size={14} className="md:w-[18px] md:h-[18px]" />
-  </a>
+            <p className="text-zinc-500 text-[7px] md:text-[10px] font-bold uppercase tracking-[0.1em] md:tracking-[0.2em] mb-0.5 whitespace-nowrap">
+              Created by Ulaş Çolaker
+            </p>
+            <a 
+              href="https://www.instagram.com/ulas.cr2/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center justify-center p-2 md:px-4 md:py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+            >
+              <Instagram size={14} className="md:w-[18px] md:h-[18px]" />
+            </a>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
-          <div className="lg:col-span-8 flex flex-col gap-6">
-            <div className="glass-panel p-8 rounded-[2.5rem] shadow-2xl flex flex-col gap-8">
+        {/* Added relative z-index to children containers to ensure they stack correctly on mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8 relative">
+          <div className="lg:col-span-8 flex flex-col gap-6 relative z-20">
+            <div className="glass-panel p-8 rounded-[2.5rem] shadow-2xl flex flex-col gap-8 relative">
               <div className="flex flex-col md:flex-row gap-10 items-center">
                 <div className="flex flex-col items-center gap-4 shrink-0">
                   <div className="relative w-40 h-40 flex items-center justify-center">
@@ -917,7 +908,7 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              <div className="border-y border-white/10 py-6 bg-white/[0.01] -mx-8 px-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="border-y border-white/10 py-6 bg-white/[0.01] -mx-8 px-8 grid grid-cols-1 md:grid-cols-3 gap-4 relative z-50">
                   <DropdownComponent label="Teknik Açı" icon={<Move size={18} />} value={((translations.angles as Record<string, string>)[angle])} options={options.angles} translations={translations.angles as Record<string, string>} isOpen={isAngleMenuOpen} setOpen={setIsAngleMenuOpen} onChange={setAngle} menuRef={angleMenuRef} />
                   <DropdownComponent label="Plan Ayarları" icon={<Maximize2 size={18} />} value={((translations.scales as Record<string, string>)[scale])} options={options.scales} translations={translations.scales as Record<string, string>} isOpen={isScaleMenuOpen} setOpen={setIsScaleMenuOpen} onChange={setScale} menuRef={scaleMenuRef} />
                   <DropdownComponent label="Model Pozu" icon={<PersonStanding size={20} />} value={((translations.poses as Record<string, string>)[pose])} options={options.poses} translations={translations.poses as Record<string, string>} isOpen={isPoseMenuOpen} setOpen={setIsPoseMenuOpen} onChange={setPose} menuRef={poseMenuRef} />
@@ -927,12 +918,12 @@ const App: React.FC = () => {
                   <section className="space-y-4">
                     <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><Palette size={14} className="text-pink-500" /> Art Direction</h3>
                     <div className="grid grid-cols-2 gap-4">
-                        <SelectorComponent label="Aydınlatma" icon={<Sun size={12} />} value={lighting} options={options.lights} onChange={setLighting} translations={translations.lights as Record<string, string>} disabled={false} />
-                        <SelectorComponent label="Renk Grading" icon={<Palette size={12} />} value={grading} options={options.grading} onChange={setGrading} translations={translations.grading as Record<string, string>} disabled={false} />
+                        <SelectorComponent label="Aydınlatma" icon={<Sun size={12} />} value={lighting} options={options.lights} onChange={setLighting} translations={translations.lights as Record<string, string>} />
+                        <SelectorComponent label="Renk Grading" icon={<Palette size={12} />} value={grading} options={options.grading} onChange={setGrading} translations={translations.grading as Record<string, string>} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <SelectorComponent label="Cilt Dokusu" icon={<Fingerprint size={12} />} value={texture} options={options.texture} onChange={setTexture} translations={translations.texture as Record<string, string>} disabled={false} />
-                        <SelectorComponent label="Görsel Stil" icon={<Sparkles size={12} />} value={style} options={options.styles} onChange={setStyle} translations={translations.styles as Record<string, string>} disabled={false} />
+                        <SelectorComponent label="Cilt Dokusu" icon={<Fingerprint size={12} />} value={texture} options={options.texture} onChange={setTexture} translations={translations.texture as Record<string, string>} />
+                        <SelectorComponent label="Görsel Stil" icon={<Sparkles size={12} />} value={style} options={options.styles} onChange={setStyle} translations={translations.styles as Record<string, string>} />
                     </div>
                   </section>
                   <section className="space-y-4">
@@ -943,12 +934,12 @@ const App: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <SelectorComponent label="Diyafram" icon={<Gauge size={12} />} value={aperture} options={options.apertures} onChange={setAperture} />
-                        <SelectorComponent label="Film Stock" icon={<Film size={12} />} value={filmStock} options={options.films} onChange={setFilmStock} translations={translations.films as Record<string, string>} disabled={false} />
+                        <SelectorComponent label="Film Stock" icon={<Film size={12} />} value={filmStock} options={options.films} onChange={setFilmStock} translations={translations.films as Record<string, string>} />
                     </div>
                   </section>
               </div>
               
-              <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row gap-6 items-end">
+              <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row gap-6 items-end relative z-0">
                   <div className="grid grid-cols-3 gap-4 flex-1 w-full">
                     <div className="flex flex-col">
                         <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1">Yön (° Orbital)</span>
@@ -964,15 +955,16 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   
-                  <button onClick={() => setIsStudioMode(!isStudioMode)} className={`studio-btn px-8 rounded-2xl flex items-center gap-3 font-black text-[12px] uppercase tracking-widest border border-white/10 shadow-xl ${isStudioMode ? 'active' : 'bg-white/5 text-white hover:bg-white/10'}`}>
+                  <button onClick={() => setIsStudioMode(!isStudioMode)} className={`studio-btn px-8 rounded-2xl flex items-center gap-3 font-black text-[12px] uppercase tracking-widest border border-white/10 shadow-xl shrink-0 ${isStudioMode ? 'active' : 'bg-white/5 text-white hover:bg-white/10'}`}>
                     <Box size={18} className={isStudioMode ? 'text-black' : 'text-pink-500'} /> Studio Mode
                   </button>
               </div>
 
               {/* STUDIO ENVIRONMENT SUB-CONTROLS */}
-              <div className={`grid grid-cols-1 md:grid-cols-4 gap-4 pt-6 border-t border-white/5 transition-all duration-700 ${isStudioMode ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-4 invisible h-0 overflow-hidden'}`}>
+              {/* Added relative z-index to dropdowns within this expanded section to avoid clipping */}
+              <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-white/5 transition-all duration-700 relative z-30 ${isStudioMode ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-4 invisible h-0 overflow-hidden'}`}>
                   <SelectorComponent 
-                    label="Arka Plan Materyali" 
+                    label="Arka Plan" 
                     icon={<Layers size={14} />} 
                     value={studioBgTexture} 
                     options={translations.studioTextures as string[]} 
@@ -980,11 +972,11 @@ const App: React.FC = () => {
                     colorPicker={{ val: studioBgColor, set: setStudioBgColor }}
                   />
                   <div className="flex flex-col">
-                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1 text-white font-bold">Bg Rengi (HEX)</span>
+                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1 text-white font-bold">Bg HEX</span>
                     <div className="relative flex items-center"><Pipette className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="text" value={studioBgColor} onChange={(e) => setStudioBgColor(e.target.value)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-[10px] font-bold uppercase" /></div>
                   </div>
                   <SelectorComponent 
-                    label="Zemin Materyali" 
+                    label="Zemin Mat." 
                     icon={<Mountain size={14} />} 
                     value={studioFloorTexture} 
                     options={translations.floorTextures as string[]} 
@@ -992,20 +984,20 @@ const App: React.FC = () => {
                     colorPicker={{ val: studioFloorColor, set: setStudioFloorColor }}
                   />
                   <div className="flex flex-col">
-                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1 text-white font-bold">Zemin Rengi (HEX)</span>
+                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1 text-white font-bold">Zemin HEX</span>
                     <div className="relative flex items-center"><Pipette className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="text" value={studioFloorColor} onChange={(e) => setStudioFloorColor(e.target.value)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-[10px] font-bold uppercase" /></div>
                   </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            <div className="glass-panel p-4 rounded-[1.5rem] space-y-2">
+          <div className="lg:col-span-4 flex flex-col gap-6 relative z-10">
+            <div className="glass-panel p-4 rounded-[1.5rem] space-y-2 relative">
                 <div className="flex items-center gap-2 px-1"><EyeOff size={14} className="text-red-500" /><span className="text-[10px] font-black uppercase text-zinc-400 font-bold">Negative Prompt</span></div>
                 <textarea value={negativePrompt} onChange={(e) => setNegativePrompt(e.target.value)} rows={2} className="w-full glass-input !h-16 rounded-xl px-3 py-2 text-[10px] text-zinc-400 select-all leading-relaxed" />
             </div>
 
-            <div className="glass-panel p-6 rounded-[2.5rem] flex-1 flex flex-col min-h-[450px]">
+            <div className="glass-panel p-6 rounded-[2.5rem] flex-1 flex flex-col min-h-[450px] relative">
                 <div className="flex items-center justify-between mb-4 px-2">
                     <div className="flex items-center gap-2"><Code size={16} className="text-pink-500" /><span className="text-[11px] font-black uppercase tracking-widest text-white font-bold">JSON Prompt</span></div>
                     {copied && <span className="text-[10px] font-black text-green-500 uppercase animate-pulse font-bold">Kopyalandı!</span>}
