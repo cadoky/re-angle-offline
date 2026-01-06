@@ -914,7 +914,7 @@ const App: React.FC = () => {
                   <DropdownComponent label="Model Pozu" icon={<PersonStanding size={20} />} value={((translations.poses as Record<string, string>)[pose])} options={options.poses} translations={translations.poses as Record<string, string>} isOpen={isPoseMenuOpen} setOpen={setIsPoseMenuOpen} onChange={setPose} menuRef={poseMenuRef} />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2 relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2 relative z-40">
                   <section className="space-y-4">
                     <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><Palette size={14} className="text-pink-500" /> Art Direction</h3>
                     <div className="grid grid-cols-2 gap-4">
@@ -939,7 +939,7 @@ const App: React.FC = () => {
                   </section>
               </div>
               
-              <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row gap-6 items-end relative z-0">
+              <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row gap-6 items-end relative z-20">
                   <div className="grid grid-cols-3 gap-4 flex-1 w-full">
                     <div className="flex flex-col">
                         <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1">Yön (° Orbital)</span>
@@ -962,7 +962,7 @@ const App: React.FC = () => {
 
               {/* STUDIO ENVIRONMENT SUB-CONTROLS */}
               {/* Added relative z-index to dropdowns within this expanded section to avoid clipping */}
-              <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-white/5 transition-all duration-700 relative z-30 ${isStudioMode ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-4 invisible h-0 overflow-hidden'}`}>
+              <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-white/5 transition-all duration-700 relative z-10 ${isStudioMode ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-4 invisible h-0 overflow-hidden'}`}>
                   <SelectorComponent 
                     label="Arka Plan" 
                     icon={<Layers size={14} />} 
