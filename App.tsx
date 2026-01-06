@@ -1,28 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Camera, 
-  Layout, 
-  Maximize2, 
-  Move, 
-  Zap, 
-  Film, 
-  Sun, 
-  HardDrive, 
-  Check, 
-  Sparkles, 
-  Play, 
-  User, 
+import {
+  Camera,
+  Layout,
+  Maximize2,
+  Move,
+  Zap,
+  Film,
+  Sun,
+  HardDrive,
+  Check,
+  Sparkles,
+  Play,
+  User,
   ChevronDown,
-  Gauge, 
-  PersonStanding, 
-  Compass, 
-  Telescope, 
-  RotateCw, 
-  Code, 
-  Instagram, 
-  EyeOff, 
-  Palette, 
-  Fingerprint, 
+  Gauge,
+  PersonStanding,
+  Compass,
+  Telescope,
+  RotateCw,
+  Code,
+  Instagram,
+  EyeOff,
+  Palette,
+  Fingerprint,
   ClipboardCopy,
   Box,
   Pipette,
@@ -67,14 +67,14 @@ interface SelectorProps {
 
 // --- GLOBAL METADATA ---
 const angleDirections: AngleDirection[] = [
-  { id: 'front', label: 'Front', degree: 0, iconPos: 90 },   
-  { id: 'front-right', label: 'Front-Right', degree: 45, iconPos: 45 },  
-  { id: 'right', label: 'Right Side', degree: 90, iconPos: 0 }, 
-  { id: 'back-right', label: 'Back-Right', degree: 135, iconPos: 315 }, 
-  { id: 'back', label: 'Rear', degree: 180, iconPos: 270 }, 
-  { id: 'back-left', label: 'Back-Left', degree: 225, iconPos: 225 }, 
-  { id: 'left', label: 'Left Side', degree: 270, iconPos: 180 }, 
-  { id: 'front-left', label: 'Front-Left', degree: 315, iconPos: 135 }, 
+  { id: 'front', label: 'Front', degree: 0, iconPos: 90 },
+  { id: 'front-right', label: 'Front-Right', degree: 45, iconPos: 45 },
+  { id: 'right', label: 'Right Side', degree: 90, iconPos: 0 },
+  { id: 'back-right', label: 'Back-Right', degree: 135, iconPos: 315 },
+  { id: 'back', label: 'Rear', degree: 180, iconPos: 270 },
+  { id: 'back-left', label: 'Back-Left', degree: 225, iconPos: 225 },
+  { id: 'left', label: 'Left Side', degree: 270, iconPos: 180 },
+  { id: 'front-left', label: 'Front-Left', degree: 315, iconPos: 135 },
 ];
 
 const translations: Record<string, Record<string, string> | string[]> = {
@@ -139,12 +139,23 @@ const MinimalistLogo: React.FC = () => (
 // --- COMPONENT: SelectorComponent ---
 const SelectorComponent: React.FC<SelectorProps> = ({ label, icon, value, options: menuOptions, onChange, translations: menuTranslations, disabled = false, colorPicker = null }) => {
   const [isOpen, setOpen] = useState(false);
+  const [openUpwards, setOpenUpwards] = useState(false);
   const selRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
-    const out = (e: MouseEvent) => { 
+    if (isOpen && selRef.current) {
+      const rect = selRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setOpenUpwards(spaceBelow < 320); // 320px threshold for menu
+    } else {
+      setOpenUpwards(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const out = (e: MouseEvent) => {
       if (selRef.current && !selRef.current.contains(e.target as Node)) {
-        setOpen(false); 
+        setOpen(false);
       }
     };
     document.addEventListener('mousedown', out);
@@ -156,21 +167,21 @@ const SelectorComponent: React.FC<SelectorProps> = ({ label, icon, value, option
       {label && <label className={`text-[8px] font-black uppercase tracking-widest px-1 flex items-center gap-2 mb-1.5 font-bold ${disabled ? 'text-zinc-700' : 'text-white'}`}>{label}</label>}
       <div className={`w-full flex items-center gap-2 text-[10px] font-black glass-input px-3 py-2.5 rounded-xl border border-white/10 hover:border-pink-500/40 shadow-sm transition-all ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
         <span className={`opacity-50 ${disabled ? 'text-zinc-700' : 'text-pink-500'}`}>{icon}</span>
-        
+
         <button disabled={disabled} onClick={(e) => { e.stopPropagation(); setOpen(!isOpen); }} className="flex-1 text-left truncate uppercase text-white font-bold outline-none flex items-center justify-between">
-           <span className="ml-1">{menuTranslations ? menuTranslations[safeString(value)] : safeString(value)}</span>
-           {!disabled && <ChevronDown size={10} className={`text-pink-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />}
+          <span className="ml-1">{menuTranslations ? menuTranslations[safeString(value)] : safeString(value)}</span>
+          {!disabled && <ChevronDown size={10} className={`text-pink-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />}
         </button>
 
         {colorPicker && !disabled && (
-            <div className="color-dot ml-2 shadow-lg" style={{ backgroundColor: colorPicker.val }}>
-                <input type="color" value={colorPicker.val} onChange={(e) => colorPicker.set(e.target.value)} />
-            </div>
+          <div className="color-dot ml-2 shadow-lg" style={{ backgroundColor: colorPicker.val }}>
+            <input type="color" value={colorPicker.val} onChange={(e) => colorPicker.set(e.target.value)} />
+          </div>
         )}
       </div>
 
       {isOpen && !disabled && (
-        <div className="dropdown-menu rounded-2xl overflow-hidden animate-in fade-in top-full duration-300 shadow-[0_20px_50px_rgba(0,0,0,1)] w-full">
+        <div className={`dropdown-menu rounded-2xl overflow-hidden animate-in fade-in duration-300 shadow-[0_20px_50px_rgba(0,0,0,1)] w-full ${openUpwards ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
           {menuOptions?.map((opt) => (
             <button key={opt} onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }} className="dropdown-item w-full text-left font-bold">{menuTranslations ? menuTranslations[opt] : opt}</button>
           ))}
@@ -182,6 +193,18 @@ const SelectorComponent: React.FC<SelectorProps> = ({ label, icon, value, option
 
 // --- COMPONENT: DropdownComponent ---
 const DropdownComponent: React.FC<DropdownProps> = ({ label, icon, value, options: menuOptions, translations: menuTranslations, isOpen, setOpen, onChange, menuRef }) => {
+  const [openUpwards, setOpenUpwards] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && menuRef.current) {
+      const rect = menuRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setOpenUpwards(spaceBelow < 320);
+    } else {
+      setOpenUpwards(false);
+    }
+  }, [isOpen]);
+
   return (
     <div className="dropdown-container w-full relative" ref={menuRef} style={{ zIndex: isOpen ? 50 : undefined }}>
       <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block tracking-widest px-1 text-white font-bold">{label}</span>
@@ -190,7 +213,7 @@ const DropdownComponent: React.FC<DropdownProps> = ({ label, icon, value, option
         <ChevronDown size={14} className={`text-pink-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="dropdown-menu rounded-2xl overflow-hidden animate-in fade-in top-full duration-300 shadow-[0_20px_50px_rgba(0,0,0,1)] w-full">
+        <div className={`dropdown-menu rounded-2xl overflow-hidden animate-in fade-in duration-300 shadow-[0_20px_50px_rgba(0,0,0,1)] w-full ${openUpwards ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
           {menuOptions?.map((opt) => (
             <button key={opt} onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }} className="dropdown-item w-full text-left">{menuTranslations ? menuTranslations[opt] : opt}</button>
           ))}
@@ -225,7 +248,7 @@ const App: React.FC = () => {
   const [grading, setGrading] = useState('Maintain Original');
   const [texture, setTexture] = useState('Maintain Original');
   const [negativePrompt, setNegativePrompt] = useState('low quality, blurry, distorted, plastic skin, bad anatomy, deformed feet');
-  
+
   // --- STUDIO MODE STATE (Infinity defaults applied here) ---
   const [isStudioMode, setIsStudioMode] = useState(false);
   const [studioBgColor, setStudioBgColor] = useState('#ffffff');
@@ -235,7 +258,7 @@ const App: React.FC = () => {
 
   // UI States
   const [isAngleMenuOpen, setIsAngleMenuOpen] = useState(false);
-  const [isScaleMenuOpen, setIsScaleMenuOpen] = useState(false); 
+  const [isScaleMenuOpen, setIsScaleMenuOpen] = useState(false);
   const [isPoseMenuOpen, setIsPoseMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState('');
@@ -285,39 +308,39 @@ const App: React.FC = () => {
     const narrativeText = isStudioMode ? "" : manualDirectives.trim();
     const bgTextureEng = materialEngMapping[studioBgTexture] || 'seamless';
     const floorTextureEng = materialEngMapping[studioFloorTexture] || 'studio floor';
-    
+
     const baseMaintained = ['model', 'clothes', 'accessories', 'consistency'];
     const dynamicMaintained = [
-        (!isStudioMode && lighting === 'Maintain Original') ? 'lighting' : null,
-        (!isStudioMode && grading === 'Maintain Original') ? 'grading' : null,
-        (!isStudioMode && style === 'Maintain Original') ? 'visual style' : null,
-        (!isStudioMode && texture === 'Maintain Original') ? 'skin texture' : null,
-        (!isStudioMode && filmStock === 'Maintain Original') ? 'film stock' : null,
+      (!isStudioMode && lighting === 'Maintain Original') ? 'lighting' : null,
+      (!isStudioMode && grading === 'Maintain Original') ? 'grading' : null,
+      (!isStudioMode && style === 'Maintain Original') ? 'visual style' : null,
+      (!isStudioMode && texture === 'Maintain Original') ? 'skin texture' : null,
+      (!isStudioMode && filmStock === 'Maintain Original') ? 'film stock' : null,
     ].filter(Boolean);
 
     const fullMaintainedList = [...dynamicMaintained, ...baseMaintained].join(", ");
 
     const finalPromptArr = [
-        "{{best quality, amazing aesthetics}}",
-        isStudioMode ? `{{professional photography studio, seamless ${studioBgColor} ${bgTextureEng} background}}` : null,
-        isStudioMode ? `{{subject standing on ${studioFloorColor} ${floorTextureEng} floor, clean minimalist environment}}` : null,
-        `{{shot on ${camera}}}`,
-        `{${lens}}`,
-        `{${aperture}}`,
-        narrativeText ? `{{${narrativeText}}}` : "",
-        angle !== 'Maintain Original' ? `{${angle}}` : null,
-        scale !== 'Maintain Original' ? `{${scaleProtocol[scale] || safeString(scale)}}` : null,
-        pose !== 'Maintain Original' ? `{${pose.toLowerCase()} pose}` : null,
-        
-        // Ensure lighting, style, etc. are correctly included in final technical string
-        lighting !== 'Maintain Original' ? `{lighting: ${lighting}}` : null,
-        style !== 'Maintain Original' ? `{style: ${style}}` : null,
-        grading !== 'Maintain Original' ? `{grading: ${grading}}` : null,
-        texture !== 'Maintain Original' ? `{texture: ${texture}}` : null,
-        filmStock !== 'Maintain Original' ? `{film stock: ${filmStock}}` : null,
+      "{{best quality, amazing aesthetics}}",
+      isStudioMode ? `{{professional photography studio, seamless ${studioBgColor} ${bgTextureEng} background}}` : null,
+      isStudioMode ? `{{subject standing on ${studioFloorColor} ${floorTextureEng} floor, clean minimalist environment}}` : null,
+      `{{shot on ${camera}}}`,
+      `{${lens}}`,
+      `{${aperture}}`,
+      narrativeText ? `{{${narrativeText}}}` : "",
+      angle !== 'Maintain Original' ? `{${angle}}` : null,
+      scale !== 'Maintain Original' ? `{${scaleProtocol[scale] || safeString(scale)}}` : null,
+      pose !== 'Maintain Original' ? `{${pose.toLowerCase()} pose}` : null,
 
-        `{match ref: ${fullMaintainedList}}`,
-        `Aspect Ratio ${ratio}`
+      // Ensure lighting, style, etc. are correctly included in final technical string
+      lighting !== 'Maintain Original' ? `{lighting: ${lighting}}` : null,
+      style !== 'Maintain Original' ? `{style: ${style}}` : null,
+      grading !== 'Maintain Original' ? `{grading: ${grading}}` : null,
+      texture !== 'Maintain Original' ? `{texture: ${texture}}` : null,
+      filmStock !== 'Maintain Original' ? `{film stock: ${filmStock}}` : null,
+
+      `{match ref: ${fullMaintainedList}}`,
+      `Aspect Ratio ${ratio}`
     ].filter(v => v !== null && v !== "");
 
     return JSON.stringify({
@@ -327,8 +350,8 @@ const App: React.FC = () => {
         studio_mode: isStudioMode ? "ACTIVE" : "Inactive",
         background: isStudioMode ? `${studioBgColor} (${studioBgTexture})` : "Reference Default",
         floor: isStudioMode ? `${studioFloorColor} (${studioFloorTexture})` : "Reference Default",
-        camera, lens, aperture, 
-        angle, scale, pose, 
+        camera, lens, aperture,
+        angle, scale, pose,
         orbital_degree: `${angleDegree}° (${directionLabel})`,
         dutch_roll: `${cameraSlant || '0'}°`,
         aspect_ratio: ratio,
@@ -368,7 +391,7 @@ const App: React.FC = () => {
 
   const enhanceDirectives = () => {
     if (isStudioMode) return;
-    
+
     // Helper to get random angle direction
     const getRandomAngleDir = () => angleDirections[Math.floor(Math.random() * angleDirections.length)];
 
@@ -602,7 +625,7 @@ const App: React.FC = () => {
           ratio: '2:1'
         }
       },
-      
+
       // --- ABSTRACT / AVANT-GARDE ---
       {
         text: "mid-air parkour jump over urban obstacle, dynamic motion blur background",
@@ -691,7 +714,7 @@ const App: React.FC = () => {
           ratio: '16:9'
         }
       },
-      
+
       // --- PORTRAIT / STUDIO ---
       {
         text: "classic black and white hollywood glamour portrait, harsh shadows",
@@ -750,17 +773,17 @@ const App: React.FC = () => {
     let attempts = 0;
     // Logic to prevent the exact same scenario from repeating immediately
     do {
-        newIndex = Math.floor(Math.random() * scenarios.length);
-        attempts++;
+      newIndex = Math.floor(Math.random() * scenarios.length);
+      attempts++;
     } while (newIndex === lastScenarioIndex.current && attempts < 5);
-    
+
     lastScenarioIndex.current = newIndex;
     const randomScenario = scenarios[newIndex];
     const randomDir = getRandomAngleDir();
 
     // Apply Scenario Narrative
     setManualDirectives(randomScenario.text);
-    
+
     // Apply Cohesive Technical Settings from Scenario
     setLighting(randomScenario.settings.lighting);
     setStyle(randomScenario.settings.style);
@@ -778,20 +801,20 @@ const App: React.FC = () => {
     // Randomize direction and slant slightly for realism vs scenario baseline
     setAngleDegree(randomDir.degree);
     setSelectedAngleId(randomDir.id);
-    
+
     // 30% chance of a slight dutch roll
     if (Math.random() > 0.7) {
-        setCameraSlant((Math.floor(Math.random() * 20) - 10).toString());
+      setCameraSlant((Math.floor(Math.random() * 20) - 10).toString());
     } else {
-        setCameraSlant('');
+      setCameraSlant('');
     }
   };
 
   const resetAll = () => {
     setIsStudioMode(false);
     setManualDirectives(''); setAngle('Maintain Original'); setAngleDegree(0); setCameraSlant('');
-    setScale('Maintain Original'); setPose('Maintain Original'); setLighting('Maintain Original'); 
-    setFilmStock('Maintain Original'); setStyle('Maintain Original'); setGrading('Maintain Original'); 
+    setScale('Maintain Original'); setPose('Maintain Original'); setLighting('Maintain Original');
+    setFilmStock('Maintain Original'); setStyle('Maintain Original'); setGrading('Maintain Original');
     setTexture('Maintain Original'); setRatio('3:4');
     setCamera('Sony A7R V'); setLens('85mm Portrait'); setAperture('f/1.8');
     setSelectedAngleId('front');
@@ -816,7 +839,8 @@ const App: React.FC = () => {
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-red-600/10 blur-[120px]"></div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* Removed isolation: isolate to allow z-index to work globally across panels on mobile */
         .glass-panel { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(40px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
         .glass-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s; height: 44px; }
@@ -857,10 +881,10 @@ const App: React.FC = () => {
             <p className="text-zinc-500 text-[7px] md:text-[10px] font-bold uppercase tracking-[0.1em] md:tracking-[0.2em] mb-0.5 whitespace-nowrap">
               Created by Ulaş Çolaker
             </p>
-            <a 
-              href="https://www.instagram.com/ulas.cr2/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://www.instagram.com/ulas.cr2/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center justify-center p-2 md:px-4 md:py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
             >
               <Instagram size={14} className="md:w-[18px] md:h-[18px]" />
@@ -895,125 +919,126 @@ const App: React.FC = () => {
                   <span className="text-[10px] font-black text-pink-500 uppercase tracking-[0.2em]">Kamera Açısı</span>
                 </div>
                 <div className="flex-1 w-full space-y-4">
-                    <div className="flex items-center justify-between px-2">
-                      <div className="flex items-center gap-2"><Zap className="text-yellow-400 w-4 h-4" /><label className="text-[11px] font-black text-pink-500 uppercase tracking-widest text-white font-bold">Manual Override</label></div>
-                      <div className="flex items-center gap-3">
-                        <button onClick={(e) => { e.stopPropagation(); resetAll(); }} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 text-zinc-400 font-bold text-[9px] uppercase tracking-widest">Sıfırla</button>
-                        <button onClick={(e) => { e.stopPropagation(); enhanceDirectives(); }} disabled={isStudioMode} className={`px-4 py-1.5 bg-pink-600 border border-pink-500 rounded-lg shadow-lg hover:bg-pink-500 text-white font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 ${isStudioMode ? 'opacity-20 cursor-not-allowed' : ''}`}>
-                          <Sparkles size={10} /> Rastgele Fikir
-                        </button>
-                      </div>
+                  <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-2"><Zap className="text-yellow-400 w-4 h-4" /><label className="text-[11px] font-black text-pink-500 uppercase tracking-widest text-white font-bold">Manual Override</label></div>
+                    <div className="flex items-center gap-3">
+                      <button onClick={(e) => { e.stopPropagation(); resetAll(); }} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 text-zinc-400 font-bold text-[9px] uppercase tracking-widest">Sıfırla</button>
+                      <button onClick={(e) => { e.stopPropagation(); enhanceDirectives(); }} disabled={isStudioMode} className={`px-4 py-1.5 bg-pink-600 border border-pink-500 rounded-lg shadow-lg hover:bg-pink-500 text-white font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 ${isStudioMode ? 'opacity-20 cursor-not-allowed' : ''}`}>
+                        <Sparkles size={10} /> Rastgele Fikir
+                      </button>
                     </div>
-                    <textarea value={manualDirectives} onChange={(e) => setManualDirectives(e.target.value)} disabled={isStudioMode} rows={3} className="w-full glass-input !h-32 rounded-2xl px-6 py-4 text-sm text-zinc-100 outline-none resize-none focus:ring-2 focus:ring-pink-500/40 placeholder:text-zinc-600 transition-all shadow-inner font-medium" placeholder={isStudioMode ? "Studio Mode Aktif: Manuel prompt kilitlendi." : dynamicPlaceholder} />
+                  </div>
+                  <textarea value={manualDirectives} onChange={(e) => setManualDirectives(e.target.value)} disabled={isStudioMode} rows={3} className="w-full glass-input !h-32 rounded-2xl px-6 py-4 text-sm text-zinc-100 outline-none resize-none focus:ring-2 focus:ring-pink-500/40 placeholder:text-zinc-600 transition-all shadow-inner font-medium" placeholder={isStudioMode ? "Studio Mode Aktif: Manuel prompt kilitlendi." : dynamicPlaceholder} />
+                  <div className="space-y-2 pt-2 border-t border-white/5">
+                    <div className="flex items-center gap-2 px-1"><EyeOff size={14} className="text-red-500" /><span className="text-[10px] font-black uppercase text-zinc-400 font-bold">Negative Prompt</span></div>
+                    <textarea value={negativePrompt} onChange={(e) => setNegativePrompt(e.target.value)} rows={2} className="w-full glass-input !h-16 rounded-xl px-3 py-2 text-[10px] text-zinc-400 select-all leading-relaxed" />
+                  </div>
                 </div>
               </div>
 
-              <div className="border-y border-white/10 py-6 bg-white/[0.01] -mx-8 px-8 grid grid-cols-1 md:grid-cols-3 gap-4 relative z-50">
-                  <DropdownComponent label="Teknik Açı" icon={<Move size={18} />} value={((translations.angles as Record<string, string>)[angle])} options={options.angles} translations={translations.angles as Record<string, string>} isOpen={isAngleMenuOpen} setOpen={setIsAngleMenuOpen} onChange={setAngle} menuRef={angleMenuRef} />
-                  <DropdownComponent label="Plan Ayarları" icon={<Maximize2 size={18} />} value={((translations.scales as Record<string, string>)[scale])} options={options.scales} translations={translations.scales as Record<string, string>} isOpen={isScaleMenuOpen} setOpen={setIsScaleMenuOpen} onChange={setScale} menuRef={scaleMenuRef} />
-                  <DropdownComponent label="Model Pozu" icon={<PersonStanding size={20} />} value={((translations.poses as Record<string, string>)[pose])} options={options.poses} translations={translations.poses as Record<string, string>} isOpen={isPoseMenuOpen} setOpen={setIsPoseMenuOpen} onChange={setPose} menuRef={poseMenuRef} />
+              <div className="border-y border-white/10 py-6 bg-white/[0.01] -mx-8 px-8 grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+                <DropdownComponent label="Teknik Açı" icon={<Move size={18} />} value={((translations.angles as Record<string, string>)[angle])} options={options.angles} translations={translations.angles as Record<string, string>} isOpen={isAngleMenuOpen} setOpen={setIsAngleMenuOpen} onChange={setAngle} menuRef={angleMenuRef} />
+                <DropdownComponent label="Plan Ayarları" icon={<Maximize2 size={18} />} value={((translations.scales as Record<string, string>)[scale])} options={options.scales} translations={translations.scales as Record<string, string>} isOpen={isScaleMenuOpen} setOpen={setIsScaleMenuOpen} onChange={setScale} menuRef={scaleMenuRef} />
+                <DropdownComponent label="Model Pozu" icon={<PersonStanding size={20} />} value={((translations.poses as Record<string, string>)[pose])} options={options.poses} translations={translations.poses as Record<string, string>} isOpen={isPoseMenuOpen} setOpen={setIsPoseMenuOpen} onChange={setPose} menuRef={poseMenuRef} />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2 relative z-40">
-                  <section className="space-y-4">
-                    <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><Palette size={14} className="text-pink-500" /> Art Direction</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <SelectorComponent label="Aydınlatma" icon={<Sun size={12} />} value={lighting} options={options.lights} onChange={setLighting} translations={translations.lights as Record<string, string>} />
-                        <SelectorComponent label="Renk Grading" icon={<Palette size={12} />} value={grading} options={options.grading} onChange={setGrading} translations={translations.grading as Record<string, string>} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <SelectorComponent label="Cilt Dokusu" icon={<Fingerprint size={12} />} value={texture} options={options.texture} onChange={setTexture} translations={translations.texture as Record<string, string>} />
-                        <SelectorComponent label="Görsel Stil" icon={<Sparkles size={12} />} value={style} options={options.styles} onChange={setStyle} translations={translations.styles as Record<string, string>} />
-                    </div>
-                  </section>
-                  <section className="space-y-4">
-                    <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><HardDrive size={14} className="text-red-500" /> Optical Lab</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <SelectorComponent label="Kamera" icon={<Camera size={12} />} value={camera} options={options.cameras} onChange={setCamera} />
-                        <SelectorComponent label="Lens Optiği" icon={<Telescope size={12} />} value={lens} options={options.lenses} onChange={setLens} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <SelectorComponent label="Diyafram" icon={<Gauge size={12} />} value={aperture} options={options.apertures} onChange={setAperture} />
-                        <SelectorComponent label="Film Stock" icon={<Film size={12} />} value={filmStock} options={options.films} onChange={setFilmStock} translations={translations.films as Record<string, string>} />
-                    </div>
-                  </section>
-              </div>
-              
-              <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row gap-6 items-end relative z-20">
-                  <div className="grid grid-cols-3 gap-4 flex-1 w-full">
-                    <div className="flex flex-col">
-                        <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1">Yön (° Orbital)</span>
-                        <div className="relative flex items-center"><Compass className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={angleDegree} onChange={(e) => setAngleDegree(parseInt(e.target.value) || 0)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold" /></div>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1">Eğim (° Dutch)</span>
-                        <div className="relative flex items-center"><RotateCw className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={cameraSlant} onChange={(e) => setCameraSlant(e.target.value)} placeholder="0" className="w-full glass-input rounded-xl pl-10 pr-4 py-3 text-[11px] font-black text-pink-500 text-center outline-none focus:ring-2 focus:ring-pink-500/40 font-bold" /><span className="absolute right-3 text-[10px] font-black text-pink-500/40 font-bold">°</span></div>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1">En-Boy Oranı</span>
-                        <SelectorComponent label="" icon={<Layout size={10} />} value={ratio} options={options.ratios} onChange={setRatio} />
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2 relative">
+                <section className="space-y-4">
+                  <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><Palette size={14} className="text-pink-500" /> Art Direction</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SelectorComponent label="Aydınlatma" icon={<Sun size={12} />} value={lighting} options={options.lights} onChange={setLighting} translations={translations.lights as Record<string, string>} />
+                    <SelectorComponent label="Renk Grading" icon={<Palette size={12} />} value={grading} options={options.grading} onChange={setGrading} translations={translations.grading as Record<string, string>} />
                   </div>
-                  
-                  <button onClick={() => setIsStudioMode(!isStudioMode)} className={`studio-btn px-8 rounded-2xl flex items-center gap-3 font-black text-[12px] uppercase tracking-widest border border-white/10 shadow-xl shrink-0 ${isStudioMode ? 'active' : 'bg-white/5 text-white hover:bg-white/10'}`}>
-                    <Box size={18} className={isStudioMode ? 'text-black' : 'text-pink-500'} /> Studio Mode
-                  </button>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SelectorComponent label="Cilt Dokusu" icon={<Fingerprint size={12} />} value={texture} options={options.texture} onChange={setTexture} translations={translations.texture as Record<string, string>} />
+                    <SelectorComponent label="Görsel Stil" icon={<Sparkles size={12} />} value={style} options={options.styles} onChange={setStyle} translations={translations.styles as Record<string, string>} />
+                  </div>
+                </section>
+                <section className="space-y-4">
+                  <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><HardDrive size={14} className="text-red-500" /> Optical Lab</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SelectorComponent label="Kamera" icon={<Camera size={12} />} value={camera} options={options.cameras} onChange={setCamera} />
+                    <SelectorComponent label="Lens Optiği" icon={<Telescope size={12} />} value={lens} options={options.lenses} onChange={setLens} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SelectorComponent label="Diyafram" icon={<Gauge size={12} />} value={aperture} options={options.apertures} onChange={setAperture} />
+                    <SelectorComponent label="Film Stock" icon={<Film size={12} />} value={filmStock} options={options.films} onChange={setFilmStock} translations={translations.films as Record<string, string>} />
+                  </div>
+                </section>
+              </div>
+
+              <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row gap-6 items-end relative">
+                <div className="grid grid-cols-3 gap-4 flex-1 w-full">
+                  <div className="flex flex-col">
+                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1">Yön (° Orbital)</span>
+                    <div className="relative flex items-center"><Compass className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={angleDegree} onChange={(e) => setAngleDegree(parseInt(e.target.value) || 0)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold" /></div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1">Eğim (° Dutch)</span>
+                    <div className="relative flex items-center"><RotateCw className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={cameraSlant} onChange={(e) => setCameraSlant(e.target.value)} placeholder="0" className="w-full glass-input rounded-xl pl-10 pr-4 py-3 text-[11px] font-black text-pink-500 text-center outline-none focus:ring-2 focus:ring-pink-500/40 font-bold" /><span className="absolute right-3 text-[10px] font-black text-pink-500/40 font-bold">°</span></div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1">En-Boy Oranı</span>
+                    <SelectorComponent label="" icon={<Layout size={10} />} value={ratio} options={options.ratios} onChange={setRatio} />
+                  </div>
+                </div>
+
+                <button onClick={() => setIsStudioMode(!isStudioMode)} className={`studio-btn px-8 rounded-2xl flex items-center gap-3 font-black text-[12px] uppercase tracking-widest border border-white/10 shadow-xl shrink-0 ${isStudioMode ? 'active' : 'bg-white/5 text-white hover:bg-white/10'}`}>
+                  <Box size={18} className={isStudioMode ? 'text-black' : 'text-pink-500'} /> Studio Mode
+                </button>
               </div>
 
               {/* STUDIO ENVIRONMENT SUB-CONTROLS */}
               {/* Added relative z-index to dropdowns within this expanded section to avoid clipping */}
-              <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-white/5 transition-all duration-700 relative z-10 ${isStudioMode ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-4 invisible h-0 overflow-hidden'}`}>
-                  <SelectorComponent 
-                    label="Arka Plan" 
-                    icon={<Layers size={14} />} 
-                    value={studioBgTexture} 
-                    options={translations.studioTextures as string[]} 
-                    onChange={handleBgTextureChange} 
-                    colorPicker={{ val: studioBgColor, set: setStudioBgColor }}
-                  />
-                  <div className="flex flex-col">
-                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1 text-white font-bold">Bg HEX</span>
-                    <div className="relative flex items-center"><Pipette className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="text" value={studioBgColor} onChange={(e) => setStudioBgColor(e.target.value)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-[10px] font-bold uppercase" /></div>
-                  </div>
-                  <SelectorComponent 
-                    label="Zemin Mat." 
-                    icon={<Mountain size={14} />} 
-                    value={studioFloorTexture} 
-                    options={translations.floorTextures as string[]} 
-                    onChange={handleFloorTextureChange} 
-                    colorPicker={{ val: studioFloorColor, set: setStudioFloorColor }}
-                  />
-                  <div className="flex flex-col">
-                    <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1 text-white font-bold">Zemin HEX</span>
-                    <div className="relative flex items-center"><Pipette className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="text" value={studioFloorColor} onChange={(e) => setStudioFloorColor(e.target.value)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-[10px] font-bold uppercase" /></div>
-                  </div>
+              <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-white/5 transition-all duration-700 relative ${isStudioMode ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-4 invisible h-0 overflow-hidden'}`}>
+                <SelectorComponent
+                  label="Arka Plan"
+                  icon={<Layers size={14} />}
+                  value={studioBgTexture}
+                  options={translations.studioTextures as string[]}
+                  onChange={handleBgTextureChange}
+                  colorPicker={{ val: studioBgColor, set: setStudioBgColor }}
+                />
+                <div className="flex flex-col">
+                  <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1 text-white font-bold">Bg HEX</span>
+                  <div className="relative flex items-center"><Pipette className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="text" value={studioBgColor} onChange={(e) => setStudioBgColor(e.target.value)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-[10px] font-bold uppercase" /></div>
+                </div>
+                <SelectorComponent
+                  label="Zemin Mat."
+                  icon={<Mountain size={14} />}
+                  value={studioFloorTexture}
+                  options={translations.floorTextures as string[]}
+                  onChange={handleFloorTextureChange}
+                  colorPicker={{ val: studioFloorColor, set: setStudioFloorColor }}
+                />
+                <div className="flex flex-col">
+                  <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 block px-1 text-white font-bold">Zemin HEX</span>
+                  <div className="relative flex items-center"><Pipette className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="text" value={studioFloorColor} onChange={(e) => setStudioFloorColor(e.target.value)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-[10px] font-bold uppercase" /></div>
+                </div>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-4 flex flex-col gap-6 relative z-10">
-            <div className="glass-panel p-4 rounded-[1.5rem] space-y-2 relative">
-                <div className="flex items-center gap-2 px-1"><EyeOff size={14} className="text-red-500" /><span className="text-[10px] font-black uppercase text-zinc-400 font-bold">Negative Prompt</span></div>
-                <textarea value={negativePrompt} onChange={(e) => setNegativePrompt(e.target.value)} rows={2} className="w-full glass-input !h-16 rounded-xl px-3 py-2 text-[10px] text-zinc-400 select-all leading-relaxed" />
-            </div>
+
 
             <div className="glass-panel p-6 rounded-[2.5rem] flex-1 flex flex-col min-h-[450px] relative">
-                <div className="flex items-center justify-between mb-4 px-2">
-                    <div className="flex items-center gap-2"><Code size={16} className="text-pink-500" /><span className="text-[11px] font-black uppercase tracking-widest text-white font-bold">JSON Prompt</span></div>
-                    {copied && <span className="text-[10px] font-black text-green-500 uppercase animate-pulse font-bold">Kopyalandı!</span>}
+              <div className="flex items-center justify-between mb-4 px-2">
+                <div className="flex items-center gap-2"><Code size={16} className="text-pink-500" /><span className="text-[11px] font-black uppercase tracking-widest text-white font-bold">JSON Prompt</span></div>
+                {copied && <span className="text-[10px] font-black text-green-500 uppercase animate-pulse font-bold">Kopyalandı!</span>}
+              </div>
+              <div className="flex-1 w-full bg-black/40 rounded-2xl p-4 border border-white/5 overflow-auto font-mono text-[10px] text-zinc-400 select-all leading-relaxed shadow-inner custom-scrollbar">
+                <pre className="whitespace-pre-wrap">{generatedPrompt}</pre>
+              </div>
+              <div className="flex flex-col items-center justify-center pt-6">
+                <div className="prompt-btn-root">
+                  <div className={`absolute inset-[-10px] rounded-full border decoration-layer transition-all duration-1000 ${copied ? 'border-green-500/60 animate-success' : 'border-pink-500/40'}`} />
+                  <button onClick={(e) => { e.stopPropagation(); handleCopy(); }} className={`prompt-btn transition-all duration-700 ${copied ? 'bg-green-600 border-green-400 shadow-[0_0_50px_rgba(34,197,94,0.3)]' : 'bg-black/60 border-pink-500/40 hover:border-pink-500'}`}>
+                    {copied ? <Check size={24} className="text-white mb-2" /> : <ClipboardCopy size={24} className="text-white mb-2" />}
+                    <h2 className="text-[12px] font-black uppercase italic tracking-widest text-white">{copied ? 'KOPYALANDI' : 'KOPYALA'}</h2>
+                  </button>
                 </div>
-                <div className="flex-1 w-full bg-black/40 rounded-2xl p-4 border border-white/5 overflow-auto font-mono text-[10px] text-zinc-400 select-all leading-relaxed shadow-inner custom-scrollbar">
-                    <pre className="whitespace-pre-wrap">{generatedPrompt}</pre>
-                </div>
-                <div className="flex flex-col items-center justify-center pt-6">
-                    <div className="prompt-btn-root">
-                        <div className={`absolute inset-[-10px] rounded-full border decoration-layer transition-all duration-1000 ${copied ? 'border-green-500/60 animate-success' : 'border-pink-500/40'}`} />
-                        <button onClick={(e) => { e.stopPropagation(); handleCopy(); }} className={`prompt-btn transition-all duration-700 ${copied ? 'bg-green-600 border-green-400 shadow-[0_0_50px_rgba(34,197,94,0.3)]' : 'bg-black/60 border-pink-500/40 hover:border-pink-500'}`}>
-                            {copied ? <Check size={24} className="text-white mb-2" /> : <ClipboardCopy size={24} className="text-white mb-2" />}
-                            <h2 className="text-[12px] font-black uppercase italic tracking-widest text-white">{copied ? 'KOPYALANDI' : 'KOPYALA'}</h2>
-                        </button>
-                    </div>
-                </div>
+              </div>
             </div>
           </div>
         </div>
