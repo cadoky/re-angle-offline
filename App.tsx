@@ -863,11 +863,18 @@ const App: React.FC = () => {
   </div>
 </div>
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Created by Ulaş Çolaker</p>
-            <a href="https://www.instagram.com/ulas.cr2/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full text-pink-500 hover:text-white hover:bg-pink-600 transition-all group">
-              <Instagram size={18} />
-            </a>
+          <div className="flex flex-col items-end gap-1 shrink-0 ml-auto">
+  <p className="text-zinc-500 text-[7px] md:text-[10px] font-bold uppercase tracking-[0.1em] md:tracking-[0.2em] mb-0.5 whitespace-nowrap">
+    Created by Ulaş Çolaker
+  </p>
+  <a 
+    href="https://www.instagram.com/ulas.cr2/" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="flex items-center justify-center p-2 md:px-4 md:py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+  >
+    <Instagram size={14} className="md:w-[18px] md:h-[18px]" />
+  </a>
           </div>
         </header>
 
