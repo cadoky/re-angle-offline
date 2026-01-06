@@ -852,16 +852,16 @@ const App: React.FC = () => {
         <header className="mb-8 flex items-center justify-between shrink-0 py-6">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-white/5 border border-white/10 rounded-2xl shadow-xl"><MinimalistLogo /></div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-black tracking-tighter uppercase italic text-white drop-shadow-md">Re-angle!</h1>
-              <div className="relative"><span className="bg-pink-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(219,39,119,0.3)]">V1-OFFLINE</span></div>
-            </div>
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Created by Ulaş Çolaker</p>
-            <a href="https://www.instagram.com/ulas.cr2/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full text-pink-500 hover:text-white hover:bg-pink-600 transition-all group">
-              <Instagram size={18} />
-            </a>
+            <div className="flex flex-col items-start gap-0 md:flex-row md:items-center md:gap-3 shrink-0">
+  <h1 className="text-3xl font-black tracking-tighter uppercase italic text-white drop-shadow-md">
+    Re-angle!
+  </h1>
+  <div className="relative shrink-0">
+    <span className="bg-pink-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(219,39,119,0.3)] whitespace-nowrap">
+      V1-OFFLINE
+    </span>
+  </div>
+</div>
           </div>
         </header>
 
