@@ -205,6 +205,7 @@ const App: React.FC = () => {
   const angleMenuRef = useRef<HTMLDivElement>(null);
   const scaleMenuRef = useRef<HTMLDivElement>(null);
   const poseMenuRef = useRef<HTMLDivElement>(null);
+  const lastScenarioIndex = useRef<number>(-1);
 
   // --- BASIC STATE ---
   const [manualDirectives, setManualDirectives] = useState('');
@@ -302,10 +303,19 @@ const App: React.FC = () => {
         isStudioMode ? `{{subject standing on ${studioFloorColor} ${floorTextureEng} floor, clean minimalist environment}}` : null,
         `{{shot on ${camera}}}`,
         `{${lens}}`,
+        `{${aperture}}`,
         narrativeText ? `{{${narrativeText}}}` : "",
         angle !== 'Maintain Original' ? `{${angle}}` : null,
         scale !== 'Maintain Original' ? `{${scaleProtocol[scale] || safeString(scale)}}` : null,
         pose !== 'Maintain Original' ? `{${pose.toLowerCase()} pose}` : null,
+        
+        // Injected parameters that were previously missing from output
+        lighting !== 'Maintain Original' ? `{${lighting}}` : null,
+        style !== 'Maintain Original' ? `{${style}}` : null,
+        grading !== 'Maintain Original' ? `{${grading}}` : null,
+        texture !== 'Maintain Original' ? `{${texture}}` : null,
+        filmStock !== 'Maintain Original' ? `{${filmStock}}` : null,
+
         `{match ref: ${fullMaintainedList}}`,
         `Aspect Ratio ${ratio}`
     ].filter(v => v !== null && v !== "");
@@ -321,7 +331,8 @@ const App: React.FC = () => {
         angle, scale, pose, 
         orbital_degree: `${angleDegree}° (${directionLabel})`,
         dutch_roll: `${cameraSlant || '0'}°`,
-        aspect_ratio: ratio
+        aspect_ratio: ratio,
+        lighting, style, grading, texture, filmStock
       },
       consistency_anchors: {
         model: "identity lock",
@@ -357,20 +368,434 @@ const App: React.FC = () => {
 
   const enhanceDirectives = () => {
     if (isStudioMode) return;
-    const randomItem = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
-    const narrativePool = [
-      "he/she/they put his/her/their hands on his/her/their waist with a sneaky smile",
-      "he/she/they walking through a heavy urban fog, wearing a long leather trench coat",
-      "standing on a rainy rooftop, he/she/they wearing reflective tactical techwear gear",
-      "adjusting a sharp tailored suit, looking into a shattered mirror"
+    
+    // Helper to get random angle direction
+    const getRandomAngleDir = () => angleDirections[Math.floor(Math.random() * angleDirections.length)];
+
+    // Cohesive Scenarios ensuring all settings match the narrative idea
+    const scenarios = [
+      // --- CYBERPUNK / NEON / NIGHT ---
+      {
+        text: "leaning against a neon-lit cyberpunk garage door, looking sneaky",
+        settings: {
+          lighting: 'Neon / Cyberpunk',
+          style: 'Cinematic',
+          grading: 'Teal & Orange',
+          filmStock: 'Cinestill 800T',
+          lens: '35mm Street',
+          camera: 'Sony A7R V',
+          aperture: 'f/1.2',
+          texture: 'Soft Skin Gloss',
+          scale: 'Medium Long Shot (Waist)',
+          pose: 'Sitting / Crouching',
+          angle: 'Low Angle',
+          ratio: '2.39:1'
+        }
+      },
+      {
+        text: "rain-soaked noir detective standing under a flickering street lamp, moody atmosphere",
+        settings: {
+          lighting: 'Rembrandt Lighting',
+          style: 'Sokak Fotoğrafçılığı',
+          grading: 'Monochrome',
+          filmStock: 'B&W High Grain',
+          lens: '50mm Prime',
+          camera: 'Leica M11',
+          aperture: 'f/1.8',
+          texture: 'Raw Skin Texture',
+          scale: 'Medium Shot (Chest)',
+          pose: 'Frontal Standing',
+          angle: 'Eye Level',
+          ratio: '4:3'
+        }
+      },
+      {
+        text: "hacker sitting in a dark server room illuminated by blue LED lights, intense focus",
+        settings: {
+          lighting: 'Neon / Cyberpunk',
+          style: 'Cinematic',
+          grading: 'High Saturation',
+          filmStock: 'Digital Sharp',
+          lens: '24mm Wide',
+          camera: 'Sony A7R V',
+          aperture: 'f/2.8',
+          texture: 'Matte Finish',
+          scale: 'Close-up (Head/Shoulder)',
+          pose: 'Sitting / Crouching',
+          angle: 'High Angle',
+          ratio: '16:9'
+        }
+      },
+
+      // --- EDITORIAL / HIGH FASHION ---
+      {
+        text: "striding confidently down a high-fashion runway with sharp editorial lighting",
+        settings: {
+          lighting: 'Butterfly Lighting',
+          style: 'Editorial',
+          grading: 'High Saturation',
+          filmStock: 'Digital Sharp',
+          lens: '85mm Portrait',
+          camera: 'Fujifilm GFX100 II',
+          aperture: 'f/8',
+          texture: 'Ultra-Detailed Pores',
+          scale: 'Full Shot (Full Body)',
+          pose: 'Frontal Standing',
+          angle: 'Low Angle',
+          ratio: '4:5'
+        }
+      },
+      {
+        text: "high-fashion pose in a minimalist white studio, wearing avant-garde geometric clothing",
+        settings: {
+          lighting: 'Softbox Studio',
+          style: 'Avant-garde',
+          grading: 'Muted Tones',
+          filmStock: 'Digital Sharp',
+          lens: '50mm Prime',
+          camera: 'Fujifilm GFX100 II',
+          aperture: 'f/11',
+          texture: 'Matte Finish',
+          scale: 'Medium Long Shot (Waist)',
+          pose: 'Dynamic Movement',
+          angle: 'Low Angle',
+          ratio: '2:3'
+        }
+      },
+      {
+        text: "close-up beauty shot with glossy makeup, direct flash photography style",
+        settings: {
+          lighting: 'Butterfly Lighting',
+          style: 'Editorial',
+          grading: 'High Saturation',
+          filmStock: 'Fujifilm Superia',
+          lens: '85mm Portrait',
+          camera: 'Canon EOS R5',
+          aperture: 'f/5.6',
+          texture: 'Soft Skin Gloss',
+          scale: 'Extreme Close-up (Eye/Mouth)',
+          pose: 'Frontal Standing',
+          angle: 'Eye Level',
+          ratio: '4:5'
+        }
+      },
+
+      // --- STREET / URBAN / DOCUMENTARY ---
+      {
+        text: "walking through a heavy urban fog, wearing a long leather trench coat",
+        settings: {
+          lighting: 'Rim Lighting',
+          style: 'Sokak Fotoğrafçılığı',
+          grading: 'Muted Tones',
+          filmStock: 'B&W High Grain',
+          lens: '50mm Prime',
+          camera: 'Leica M11',
+          aperture: 'f/2.8',
+          texture: 'Raw Skin Texture',
+          scale: 'Medium Shot (Chest)',
+          pose: 'Dynamic Movement',
+          angle: 'Eye Level',
+          ratio: '3:2'
+        }
+      },
+      {
+        text: "sitting on a skateboard in a gritty alleyway, fisheye lens distortion, 90s vibe",
+        settings: {
+          lighting: 'Golden Hour',
+          style: 'Sokak Fotoğrafçılığı',
+          grading: 'Warm Vintage',
+          filmStock: 'Fujifilm Superia',
+          lens: '8mm Fisheye',
+          camera: 'Canon EOS R5',
+          aperture: 'f/4',
+          texture: 'Raw Skin Texture',
+          scale: 'Full Shot (Full Body)',
+          pose: 'Sitting / Crouching',
+          angle: 'Low Angle',
+          ratio: '4:3'
+        }
+      },
+      {
+        text: "candid shot laughing at a cafe table, sunlight streaming through window",
+        settings: {
+          lighting: 'Golden Hour',
+          style: 'Belgesel',
+          grading: 'Warm Vintage',
+          filmStock: 'Kodak Portra 400',
+          lens: '35mm Street',
+          camera: 'Leica M11',
+          aperture: 'f/2.8',
+          texture: 'Raw Skin Texture',
+          scale: 'Medium Shot (Chest)',
+          pose: 'Sitting / Crouching',
+          angle: 'Eye Level',
+          ratio: '3:2'
+        }
+      },
+      {
+        text: "standing in a busy subway station with motion blur around, isolated subject",
+        settings: {
+          lighting: 'Softbox Studio',
+          style: 'Cinematic',
+          grading: 'Teal & Orange',
+          filmStock: 'Cinestill 800T',
+          lens: '24mm Wide',
+          camera: 'Sony A7R V',
+          aperture: 'f/1.8',
+          texture: 'Matte Finish',
+          scale: 'Wide Shot (General)',
+          pose: 'Frontal Standing',
+          angle: 'Eye Level',
+          ratio: '16:9'
+        }
+      },
+
+      // --- CINEMATIC / MOVIE STILLS ---
+      {
+        text: "sitting on a vintage leather sofa, he/she/they looking into the camera lens with gravitas",
+        settings: {
+          lighting: 'Rembrandt Lighting',
+          style: 'Cinematic',
+          grading: 'Warm Vintage',
+          filmStock: 'Kodak Portra 400',
+          lens: '50mm Prime',
+          camera: 'Arri Alexa Mini',
+          aperture: 'f/1.8',
+          texture: 'Raw Skin Texture',
+          scale: 'Close-up (Head/Shoulder)',
+          pose: 'Sitting / Crouching',
+          angle: 'Eye Level',
+          ratio: '16:9'
+        }
+      },
+      {
+        text: "dramatic silhouette standing against a massive burning sunset, epic scale",
+        settings: {
+          lighting: 'Rim Lighting',
+          style: 'Cinematic',
+          grading: 'Warm Vintage',
+          filmStock: 'Kodak Portra 400',
+          lens: '200mm Telefoto',
+          camera: 'Arri Alexa Mini',
+          aperture: 'f/2.8',
+          texture: 'Matte Finish',
+          scale: 'Extreme Wide Shot',
+          pose: 'Back View', // Custom mapped to Back
+          angle: 'Low Angle',
+          ratio: '2.39:1'
+        }
+      },
+      {
+        text: "looking back over shoulder in a classic car, wind blowing hair, retro film look",
+        settings: {
+          lighting: 'Golden Hour',
+          style: 'Cinematic',
+          grading: 'Warm Vintage',
+          filmStock: 'Kodak Portra 400',
+          lens: '35mm Street',
+          camera: 'Arri Alexa Mini',
+          aperture: 'f/2.8',
+          texture: 'Raw Skin Texture',
+          scale: 'Close-up (Head/Shoulder)',
+          pose: 'Over the Shoulder',
+          angle: 'Eye Level',
+          ratio: '2:1'
+        }
+      },
+      
+      // --- ABSTRACT / AVANT-GARDE ---
+      {
+        text: "mid-air parkour jump over urban obstacle, dynamic motion blur background",
+        settings: {
+          lighting: 'Golden Hour',
+          style: 'Avant-garde',
+          grading: 'High Saturation',
+          filmStock: 'Fujifilm Superia',
+          lens: '14mm Ultra-Wide',
+          camera: 'Nikon Z9',
+          aperture: 'f/4',
+          texture: 'Matte Finish',
+          scale: 'Wide Shot (General)',
+          pose: 'Dynamic Movement',
+          angle: 'Worm\'s Eye',
+          ratio: '16:9'
+        }
+      },
+      {
+        text: "symmetrical shot of a character standing in front of a pastel colored wall, deadpan expression",
+        settings: {
+          lighting: 'Softbox Studio',
+          style: 'Avant-garde',
+          grading: 'High Saturation',
+          filmStock: 'Fujifilm Superia',
+          lens: '24mm Wide',
+          camera: 'Arri Alexa Mini',
+          aperture: 'f/11',
+          texture: 'Matte Finish',
+          scale: 'Medium Shot (Chest)',
+          pose: 'Frontal Standing',
+          angle: 'Eye Level',
+          ratio: '4:3'
+        }
+      },
+      {
+        text: "distorted reflection in a broken mirror shards, psychological horror vibe",
+        settings: {
+          lighting: 'Gobo Shadows',
+          style: 'Avant-garde',
+          grading: 'Muted Tones',
+          filmStock: 'B&W High Grain',
+          lens: '50mm Prime',
+          camera: 'Sony A7R V',
+          aperture: 'f/1.4',
+          texture: 'Raw Skin Texture',
+          scale: 'Close-up (Head/Shoulder)',
+          pose: 'Frontal Standing',
+          angle: 'Eye Level',
+          ratio: '1:1'
+        }
+      },
+
+      // --- ETHEREAL / FANTASY / SOFT ---
+      {
+        text: "floating in water with flowers, ophelia style, dreamy soft focus",
+        settings: {
+          lighting: 'Softbox Studio',
+          style: 'Minimalist',
+          grading: 'Muted Tones',
+          filmStock: 'Kodak Portra 400',
+          lens: '35mm Street',
+          camera: 'Canon EOS R5',
+          aperture: 'f/1.2',
+          texture: 'Soft Skin Gloss',
+          scale: 'Medium Shot (Chest)',
+          pose: 'Sitting / Crouching',
+          angle: 'Overhead',
+          ratio: '4:5'
+        }
+      },
+      {
+        text: "standing in a field of tall grass at twilight, mystical atmosphere",
+        settings: {
+          lighting: 'Rim Lighting',
+          style: 'Minimalist',
+          grading: 'Muted Tones',
+          filmStock: 'Cinestill 800T',
+          lens: '85mm Portrait',
+          camera: 'Sony A7R V',
+          aperture: 'f/1.4',
+          texture: 'Soft Skin Gloss',
+          scale: 'Wide Shot (General)',
+          pose: 'Back View',
+          angle: 'Low Angle',
+          ratio: '16:9'
+        }
+      },
+      
+      // --- PORTRAIT / STUDIO ---
+      {
+        text: "classic black and white hollywood glamour portrait, harsh shadows",
+        settings: {
+          lighting: 'Butterfly Lighting',
+          style: 'Cinematic',
+          grading: 'Monochrome',
+          filmStock: 'B&W High Grain',
+          lens: '85mm Portrait',
+          camera: 'Leica M11',
+          aperture: 'f/4',
+          texture: 'Soft Skin Gloss',
+          scale: 'Close-up (Head/Shoulder)',
+          pose: 'Three-Quarter Turn',
+          angle: 'Eye Level',
+          ratio: '4:5'
+        }
+      },
+      {
+        text: "close up portrait with artistic shadows cast by window blinds (film noir)",
+        settings: {
+          lighting: 'Gobo Shadows',
+          style: 'Minimalist',
+          grading: 'Monochrome',
+          filmStock: 'B&W High Grain',
+          lens: '85mm Portrait',
+          camera: 'Sony A7R V',
+          aperture: 'f/2.8',
+          texture: 'Ultra-Detailed Pores',
+          scale: 'Extreme Close-up (Eye/Mouth)',
+          pose: 'Frontal Standing',
+          angle: 'Eye Level',
+          ratio: '4:5'
+        }
+      },
+      {
+        text: "double exposure portrait combining face with cityscape",
+        settings: {
+          lighting: 'Softbox Studio',
+          style: 'Avant-garde',
+          grading: 'Teal & Orange',
+          filmStock: 'Digital Sharp',
+          lens: '50mm Prime',
+          camera: 'Canon EOS R5',
+          aperture: 'f/8',
+          texture: 'Matte Finish',
+          scale: 'Close-up (Head/Shoulder)',
+          pose: '90 Profile View',
+          angle: 'Eye Level',
+          ratio: '1:1'
+        }
+      }
     ];
-    setManualDirectives(randomItem(narrativePool));
-    setAngle(randomItem(options.angles.filter(i => i !== 'Maintain Original')));
-    const randomDir = angleDirections[Math.floor(Math.random() * angleDirections.length)];
+
+    let newIndex;
+    let attempts = 0;
+    // Logic to prevent the exact same scenario from repeating immediately
+    do {
+        newIndex = Math.floor(Math.random() * scenarios.length);
+        attempts++;
+    } while (newIndex === lastScenarioIndex.current && attempts < 5);
+    
+    lastScenarioIndex.current = newIndex;
+    const randomScenario = scenarios[newIndex];
+    const randomDir = getRandomAngleDir();
+
+    // Apply Scenario Narrative
+    setManualDirectives(randomScenario.text);
+    
+    // Apply Cohesive Technical Settings from Scenario
+    setLighting(randomScenario.settings.lighting);
+    setStyle(randomScenario.settings.style);
+    setGrading(randomScenario.settings.grading);
+    setFilmStock(randomScenario.settings.filmStock);
+    setLens(randomScenario.settings.lens);
+    setCamera(randomScenario.settings.camera);
+    setAperture(randomScenario.settings.aperture);
+    setTexture(randomScenario.settings.texture);
+    setScale(randomScenario.settings.scale);
+    
+    // Handle special pose cases if needed, otherwise direct map
+    if (randomScenario.settings.pose === 'Back View') {
+       setPose('Back View'); // Ensure this exists in options if used, or map to 'Rear' equivalent if needed. 
+       // Actually 'Back View' isn't in original options, mapping to 'Rear' equivalent in angle, but 'Back' pose isn't standard.
+       // Let's map to 'Maintain Original' or a safe default if not in list.
+       // Checking original options: 'Frontal Standing', '90 Profile View', 'Three-Quarter Turn', 'Sitting / Crouching', 'Dynamic Movement', 'Over the Shoulder'
+       setPose('Three-Quarter Turn'); // Fallback for safety or add to options.
+    } else {
+       setPose(randomScenario.settings.pose);
+    }
+    
+    setAngle(randomScenario.settings.angle);
+    setRatio(randomScenario.settings.ratio);
+
+    // Randomize direction and slant slightly for realism vs scenario baseline
     setAngleDegree(randomDir.degree);
     setSelectedAngleId(randomDir.id);
-    setScale(randomItem(options.scales.filter(i => i !== 'Maintain Original')));
-    setPose(randomItem(options.poses.filter(i => i !== 'Maintain Original')));
+    
+    // 30% chance of a slight dutch roll
+    if (Math.random() > 0.7) {
+        setCameraSlant((Math.floor(Math.random() * 20) - 10).toString());
+    } else {
+        setCameraSlant('');
+    }
   };
 
   const resetAll = () => {
@@ -489,12 +914,12 @@ const App: React.FC = () => {
                   <section className="space-y-4">
                     <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><Palette size={14} className="text-pink-500" /> Art Direction</h3>
                     <div className="grid grid-cols-2 gap-4">
-                        <SelectorComponent label="Aydınlatma" icon={<Sun size={12} />} value={lighting} options={options.lights} onChange={setLighting} translations={translations.lights as Record<string, string>} disabled={isStudioMode} />
-                        <SelectorComponent label="Renk Grading" icon={<Palette size={12} />} value={grading} options={options.grading} onChange={setGrading} translations={translations.grading as Record<string, string>} disabled={isStudioMode} />
+                        <SelectorComponent label="Aydınlatma" icon={<Sun size={12} />} value={lighting} options={options.lights} onChange={setLighting} translations={translations.lights as Record<string, string>} disabled={false} />
+                        <SelectorComponent label="Renk Grading" icon={<Palette size={12} />} value={grading} options={options.grading} onChange={setGrading} translations={translations.grading as Record<string, string>} disabled={false} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <SelectorComponent label="Cilt Dokusu" icon={<Fingerprint size={12} />} value={texture} options={options.texture} onChange={setTexture} translations={translations.texture as Record<string, string>} disabled={isStudioMode} />
-                        <SelectorComponent label="Görsel Stil" icon={<Sparkles size={12} />} value={style} options={options.styles} onChange={setStyle} translations={translations.styles as Record<string, string>} disabled={isStudioMode} />
+                        <SelectorComponent label="Cilt Dokusu" icon={<Fingerprint size={12} />} value={texture} options={options.texture} onChange={setTexture} translations={translations.texture as Record<string, string>} disabled={false} />
+                        <SelectorComponent label="Görsel Stil" icon={<Sparkles size={12} />} value={style} options={options.styles} onChange={setStyle} translations={translations.styles as Record<string, string>} disabled={false} />
                     </div>
                   </section>
                   <section className="space-y-4">
@@ -505,7 +930,7 @@ const App: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <SelectorComponent label="Diyafram" icon={<Gauge size={12} />} value={aperture} options={options.apertures} onChange={setAperture} />
-                        <SelectorComponent label="Film Stock" icon={<Film size={12} />} value={filmStock} options={options.films} onChange={setFilmStock} translations={translations.films as Record<string, string>} disabled={isStudioMode} />
+                        <SelectorComponent label="Film Stock" icon={<Film size={12} />} value={filmStock} options={options.films} onChange={setFilmStock} translations={translations.films as Record<string, string>} disabled={false} />
                     </div>
                   </section>
               </div>
