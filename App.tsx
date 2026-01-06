@@ -96,7 +96,7 @@ const materialEngMapping: Record<string, string> = {
   'Kaba Beton': 'Rough Raw Concrete',
   'Parlatılmış Mermer': 'Polished Marble Surface',
   'Boyalı Tuğla': 'Painted Brick Wall',
-  'Buzlu Cam': 'Frosted Glass Panel',
+  'Buzlu Cam': 'Frosted Glass',
   'Derin İpek': 'Deep Silk Drape',
   'Sonsuz Fon (Infinity)': 'Infinity Cyclorama Curve',
   'Parlak Epoksi': 'High-Gloss Epoxy Floor',
