@@ -863,6 +863,12 @@ const App: React.FC = () => {
   </div>
 </div>
           </div>
+          <div className="flex flex-col items-end gap-1">
+            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Created by Ulaş Çolaker</p>
+            <a href="https://www.instagram.com/ulas.cr2/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full text-pink-500 hover:text-white hover:bg-pink-600 transition-all group">
+              <Instagram size={18} />
+            </a>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
