@@ -165,23 +165,23 @@ const SelectorComponent: React.FC<SelectorProps> = ({ label, icon, value, option
   return (
     <div className="dropdown-container w-full relative" ref={selRef} style={{ zIndex: isOpen ? 50 : undefined }}>
       {label && <label className={`text-[8px] font-black uppercase tracking-widest px-1 flex items-center gap-2 mb-1.5 font-bold ${disabled ? 'text-zinc-700' : 'text-white'}`}>{label}</label>}
-      <div className={`w-full flex items-center gap-2 text-[10px] font-black glass-input px-3 py-2.5 rounded-xl border border-white/10 hover:border-pink-500/40 shadow-sm transition-all ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+      <div onClick={(e) => { if (!disabled) { e.stopPropagation(); setOpen(!isOpen); } }} className={`w-full flex items-center gap-2 text-[10px] font-black glass-input px-3 py-2.5 rounded-xl border border-white/10 hover:border-pink-500/40 shadow-sm transition-all ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
         <span className={`opacity-50 ${disabled ? 'text-zinc-700' : 'text-pink-500'}`}>{icon}</span>
 
-        <button disabled={disabled} onClick={(e) => { e.stopPropagation(); setOpen(!isOpen); }} className="flex-1 text-left truncate uppercase text-white font-bold outline-none flex items-center justify-between">
+        <div className="flex-1 text-left truncate uppercase text-white font-bold outline-none flex items-center justify-between">
           <span className="ml-1">{menuTranslations ? menuTranslations[safeString(value)] : safeString(value)}</span>
           {!disabled && <ChevronDown size={10} className={`text-pink-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />}
-        </button>
+        </div>
 
         {colorPicker && !disabled && (
-          <div className="color-dot ml-2 shadow-lg" style={{ backgroundColor: colorPicker.val }}>
+          <div onClick={(e) => e.stopPropagation()} className="color-dot ml-2 shadow-lg" style={{ backgroundColor: colorPicker.val }}>
             <input type="color" value={colorPicker.val} onChange={(e) => colorPicker.set(e.target.value)} />
           </div>
         )}
       </div>
 
       {isOpen && !disabled && (
-        <div className={`dropdown-menu rounded-2xl overflow-hidden animate-in fade-in duration-300 shadow-[0_20px_50px_rgba(0,0,0,1)] w-full ${openUpwards ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
+        <div className={`dropdown-menu rounded-2xl overflow-hidden animate-in fade-in duration-300 shadow-[0_20px_50px_rgba(0,0,0,1)] w-full custom-scrollbar ${openUpwards ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
           {menuOptions?.map((opt) => (
             <button key={opt} onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }} className="dropdown-item w-full text-left font-bold">{menuTranslations ? menuTranslations[opt] : opt}</button>
           ))}
@@ -213,7 +213,7 @@ const DropdownComponent: React.FC<DropdownProps> = ({ label, icon, value, option
         <ChevronDown size={14} className={`text-pink-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className={`dropdown-menu rounded-2xl overflow-hidden animate-in fade-in duration-300 shadow-[0_20px_50px_rgba(0,0,0,1)] w-full ${openUpwards ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
+        <div className={`dropdown-menu rounded-2xl overflow-hidden animate-in fade-in duration-300 shadow-[0_20px_50px_rgba(0,0,0,1)] w-full custom-scrollbar ${openUpwards ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
           {menuOptions?.map((opt) => (
             <button key={opt} onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }} className="dropdown-item w-full text-left">{menuTranslations ? menuTranslations[opt] : opt}</button>
           ))}
@@ -262,6 +262,7 @@ const App: React.FC = () => {
   const [isPoseMenuOpen, setIsPoseMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState('');
+  const [promptChanged, setPromptChanged] = useState(false);
   const [dynamicPlaceholder, setDynamicPlaceholder] = useState('');
 
   const getDirectionLabel = (deg: number): string => {
@@ -372,6 +373,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     setGeneratedPrompt(buildFinalPromptJSON());
+    setPromptChanged(true);
+    const timer = setTimeout(() => setPromptChanged(false), 500);
+    return () => clearTimeout(timer);
   }, [manualDirectives, angle, angleDegree, cameraSlant, lens, scale, pose, lighting, filmStock, camera, aperture, ratio, style, grading, texture, negativePrompt, isStudioMode, studioBgColor, studioBgTexture, studioFloorColor, studioFloorTexture]);
 
   const handleCopy = () => {
@@ -893,7 +897,7 @@ const App: React.FC = () => {
         </header>
 
         {/* Added relative z-index to children containers to ensure they stack correctly on mobile */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-8 relative">
           <div className="lg:col-span-8 flex flex-col gap-6 relative z-20">
             <div className="glass-panel p-8 rounded-[2.5rem] shadow-2xl flex flex-col gap-8 relative">
               <div className="flex flex-col md:flex-row gap-10 items-center">
@@ -1019,18 +1023,18 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col gap-6 relative z-10">
+          <div className="lg:col-span-4 flex flex-col gap-6 relative z-10 h-full">
 
 
-            <div className="glass-panel p-6 rounded-[2.5rem] flex-1 flex flex-col min-h-[450px] relative">
-              <div className="flex items-center justify-between mb-4 px-2">
+            <div className="glass-panel p-6 rounded-[2.5rem] flex flex-col h-full relative justify-between">
+              <div className="flex items-center justify-between mb-4 px-2 shrink-0">
                 <div className="flex items-center gap-2"><Code size={16} className="text-pink-500" /><span className="text-[11px] font-black uppercase tracking-widest text-white font-bold">JSON Prompt</span></div>
                 {copied && <span className="text-[10px] font-black text-green-500 uppercase animate-pulse font-bold">Kopyalandı!</span>}
               </div>
-              <div className="flex-1 w-full bg-black/40 rounded-2xl p-4 border border-white/5 overflow-auto font-mono text-[10px] text-zinc-400 select-all leading-relaxed shadow-inner custom-scrollbar">
+              <div className={`w-full h-[600px] bg-black/40 rounded-2xl p-4 border overflow-auto font-mono text-[10px] text-zinc-400 select-all leading-relaxed shadow-inner custom-scrollbar transition-all duration-500 ${promptChanged ? 'border-pink-500 shadow-[0_0_20px_rgba(236,72,153,0.3)] bg-pink-500/10' : 'border-white/5'}`}>
                 <pre className="whitespace-pre-wrap">{generatedPrompt}</pre>
               </div>
-              <div className="flex flex-col items-center justify-center pt-6">
+              <div className="flex flex-col items-center justify-center pt-4 shrink-0">
                 <div className="prompt-btn-root">
                   <div className={`absolute inset-[-10px] rounded-full border decoration-layer transition-all duration-1000 ${copied ? 'border-green-500/60 animate-success' : 'border-pink-500/40'}`} />
                   <button onClick={(e) => { e.stopPropagation(); handleCopy(); }} className={`prompt-btn transition-all duration-700 ${copied ? 'bg-green-600 border-green-400 shadow-[0_0_50px_rgba(34,197,94,0.3)]' : 'bg-black/60 border-pink-500/40 hover:border-pink-500'}`}>
