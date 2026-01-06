@@ -91,19 +91,19 @@ const translations: Record<string, Record<string, string> | string[]> = {
 };
 
 const materialEngMapping: Record<string, string> = {
-  'Eksiz Kağıt': 'seamless paper',
-  'Kadife Kumaş': 'velvet fabric',
-  'Kaba Beton': 'rough concrete',
-  'Parlatılmış Mermer': 'polished marble',
-  'Boyalı Tuğla': 'painted brick',
-  'Buzlu Cam': 'frosted glass',
-  'Derin İpek': 'deep silk',
-  'Sonsuz Fon (Infinity)': 'pure infinity curve seamless studio',
-  'Parlak Epoksi': 'high-gloss epoxy',
-  'Mat Ahşap': 'matte hardwood',
-  'Yansımalı Fayans': 'reflective tiled',
-  'Endüstriyel Beton': 'industrial concrete',
-  'Dokulu Halı': 'textured carpet'
+  'Eksiz Kağıt': 'Seamless Studio Paper',
+  'Kadife Kumaş': 'Premium Velvet Fabric',
+  'Kaba Beton': 'Rough Raw Concrete',
+  'Parlatılmış Mermer': 'Polished Marble Surface',
+  'Boyalı Tuğla': 'Painted Brick Wall',
+  'Buzlu Cam': 'Frosted Glass Panel',
+  'Derin İpek': 'Deep Silk Drape',
+  'Sonsuz Fon (Infinity)': 'Infinity Cyclorama Curve',
+  'Parlak Epoksi': 'High-Gloss Epoxy Floor',
+  'Mat Ahşap': 'Matte Hardwood Floor',
+  'Yansımalı Fayans': 'Reflective Tiled Surface',
+  'Endüstriyel Beton': 'Industrial Concrete Floor',
+  'Dokulu Halı': 'Textured Fabric Carpet'
 };
 
 const options = {
@@ -323,8 +323,11 @@ const App: React.FC = () => {
 
     // Calculate parameter values for consistency
     const studioModeVal = isStudioMode ? "ACTIVE" : "Inactive";
-    const bgVal = isStudioMode ? `${studioBgColor} (${studioBgTexture})` : "Reference Default";
-    const floorVal = isStudioMode ? `${studioFloorColor} (${studioFloorTexture})` : "Reference Default";
+    const bgTextureName = materialEngMapping[studioBgTexture] || studioBgTexture;
+    const floorTextureName = materialEngMapping[studioFloorTexture] || studioFloorTexture;
+
+    const bgVal = isStudioMode ? `${studioBgColor} (${bgTextureName})` : "Reference Default";
+    const floorVal = isStudioMode ? `${studioFloorColor} (${floorTextureName})` : "Reference Default";
     const orbitalVal = `${angleDegree}° (${directionLabel})`;
     const dutchVal = `${cameraSlant || '0'}°`;
 
