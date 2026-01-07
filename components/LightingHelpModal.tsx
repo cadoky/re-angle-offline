@@ -13,6 +13,7 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const lastDiff = useRef<number>(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -175,7 +176,7 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
                     {scale === 1 && (
                         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-[10px] text-zinc-400 font-bold uppercase tracking-widest pointer-events-none">
                             <span className="flex items-center gap-2">
-                                <Move size={12} /> Drag to Pan • Scroll to Zoom
+                                <Move size={12} /> Drag to Pan • Scroll/Pinch to Zoom
                             </span>
                         </div>
                     )}
