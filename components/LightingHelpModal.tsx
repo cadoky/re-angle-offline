@@ -65,7 +65,7 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
                                             <ZoomOut size={16} />
                                         </button>
                                         <span className="text-[10px] font-mono text-zinc-500 w-12 text-center">
-                                            {Math.round(state.scale * 100)}%
+                                            {Math.round((state?.scale || 1) * 100)}%
                                         </span>
                                         <button onClick={() => zoomIn()} className="p-2 hover:bg-white/10 rounded-md text-zinc-400 hover:text-white transition-colors" title="Zoom In">
                                             <ZoomIn size={16} />
@@ -98,7 +98,7 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
                                 </TransformComponent>
 
                                 {/* Hint Overlay */}
-                                {state.scale === 1 && (
+                                {(state?.scale || 1) === 1 && (
                                     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-[10px] text-zinc-400 font-bold uppercase tracking-widest pointer-events-none z-20">
                                         <span className="flex items-center gap-2">
                                             <Move size={12} /> Drag to Pan • Pinch to Zoom
