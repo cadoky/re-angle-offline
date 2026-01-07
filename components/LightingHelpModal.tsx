@@ -13,7 +13,6 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const startPinchDist = useRef<number>(0);
     const startScale = useRef<number>(1);
     const containerRef = useRef<HTMLDivElement>(null);
