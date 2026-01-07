@@ -13,7 +13,9 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const lastDiff = useRef<number>(0);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const startPinchDist = useRef<number>(0);
+    const startScale = useRef<number>(1);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -146,7 +148,8 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
 
                 {/* Content */}
                 <div
-                    className="flex-1 overflow-hidden relative bg-[#050505] flex items-center justify-center cursor-move touch-none"
+                    className="flex-1 overflow-hidden relative bg-[#050505] flex items-center justify-center cursor-move"
+                    style={{ touchAction: 'none' }}
                     ref={containerRef}
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
