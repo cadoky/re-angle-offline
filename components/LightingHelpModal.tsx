@@ -172,14 +172,7 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
         setIsDragging(false);
     };
 
-    // Touch handlers for mobile
-    const handleTouchStart = (e: React.TouchEvent) => {
-        if (scale > 1 && e.touches.length === 1) {
-            const touch = e.touches[0];
-            setIsDragging(true);
-            setDragStart({ x: touch.clientX - position.x, y: touch.clientY - position.y });
-        }
-    };
+
 
     const handleTouchMove = (e: React.TouchEvent) => {
         if (isDragging && scale > 1 && e.touches.length === 1) {
@@ -194,9 +187,7 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
         }
     };
 
-    const handleTouchEnd = () => {
-        setIsDragging(false);
-    };
+
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-8">
