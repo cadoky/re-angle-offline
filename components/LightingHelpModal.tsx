@@ -172,23 +172,6 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
         setIsDragging(false);
     };
 
-
-
-    const handleTouchMove = (e: React.TouchEvent) => {
-        if (isDragging && scale > 1 && e.touches.length === 1) {
-            const touch = e.touches[0];
-            // Prevent default to stop scrolling the page while dragging
-            if (e.cancelable) e.preventDefault();
-
-            setPosition({
-                x: touch.clientX - dragStart.x,
-                y: touch.clientY - dragStart.y
-            });
-        }
-    };
-
-
-
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-8">
             <div
