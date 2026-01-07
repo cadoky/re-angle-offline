@@ -55,6 +55,12 @@ export const options = {
     poses: Object.keys(tr.options.poses),
     ratios: ['1:1', '4:5', '3:4', '2:3', '9:16', '16:9', '4:3', '3:2', '2:1', '2.39:1'],
     lights: Object.keys(tr.options.lights),
+    lightsBasic: [
+        'Maintain Original', 'Golden Hour', 'Neon Lights', 'Studio Light',
+        'Dramatic Light', 'Hard Light', 'Shadowy Light', 'Backlight',
+        'Sunset', 'Balanced Light', 'Soft Light'
+    ],
+    lightsAdvanced: Object.keys(tr.options.lights),
     films: Object.keys(tr.options.films),
     cameras: ['Sony A7R V', 'Canon EOS R5', 'Nikon Z9', 'Fujifilm GFX100 II', 'Leica M11', 'Arri Alexa Mini'],
     apertures: ['f/1.2', 'f/1.8', 'f/2.8', 'f/4', 'f/8', 'f/11', 'f/16'],

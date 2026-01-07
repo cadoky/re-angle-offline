@@ -35,6 +35,7 @@ import MinimalistLogo from './components/MinimalistLogo';
 import SelectorComponent from './components/SelectorComponent';
 import DropdownComponent from './components/DropdownComponent';
 import HowItWorksModal from './components/HowItWorksModal';
+import LightingHelpModal from './components/LightingHelpModal';
 import { angleDirections, locales, materialEngMapping, options } from './data/constants';
 import { safeString } from './utils/helpers';
 
@@ -51,6 +52,7 @@ const App: React.FC = () => {
 
   // --- BASIC STATE ---
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  const [isLightingHelpOpen, setIsLightingHelpOpen] = useState(false);
   const [manualDirectives, setManualDirectives] = useState('');
   const [angle, setAngle] = useState('Maintain Original');
   const [angleDegree, setAngleDegree] = useState(0);
@@ -75,6 +77,14 @@ const App: React.FC = () => {
   const [studioBgTexture, setStudioBgTexture] = useState('Sonsuz Fon (Infinity)'); // Default set to Infinity (Key in TR, mapped in constants)
   const [studioFloorColor, setStudioFloorColor] = useState('#ffffff');
   const [studioFloorTexture, setStudioFloorTexture] = useState('Sonsuz Fon (Infinity)'); // Default set to Infinity
+
+  // --- COLOURED GELS STATE ---
+  const [gelColorLeft, setGelColorLeft] = useState('#ff004c');
+  const [gelColorRight, setGelColorRight] = useState('#00eaff');
+  const [gelColorBack, setGelColorBack] = useState('#9d00ff');
+
+  // New Lighting Mode State
+  const [lightingMode, setLightingMode] = useState<'basic' | 'advanced'>('advanced');
 
   // UI States
   const [isAngleMenuOpen, setIsAngleMenuOpen] = useState(false);
@@ -103,6 +113,72 @@ const App: React.FC = () => {
 
   const handleFloorTextureChange = (val: string) => {
     setStudioFloorTexture(val);
+  };
+
+  const lightingImages = {
+    'Rembrandt with a Softbox': '',
+    'Rembrandt through a Brolly': '',
+    'Rembrandt with a Honeycomb': '',
+    'Rembrandt with a Silver Brolly': '',
+    'Rembrandt Short': '',
+    'Rembrandt Broad': '',
+    'Split': '',
+    'Split with Fill': '',
+    'Split/Short': '',
+    'Split/Broad': '',
+    'Key with a Close Softbox': '',
+    'Key with a Far Away Softbox': '',
+    'Loop': '',
+    'Butterfly': '',
+    'Flat Light': '',
+    'Badger': '',
+    'Clamshell': '',
+    'Loop with a Background Light': '',
+    'Loop with a Rim Light': '',
+    'High Key': '',
+    'Key and Fill': '',
+    'Key, Fill and Hair Light': '',
+    'Hard Key with Kickers': '',
+    'Coloured Gels': ''
+  };
+
+  const lightingPrompts: Record<string, string> = {
+    'Maintain Original': "natural ambient lighting",
+    'Rembrandt with a Softbox': "classic Rembrandt lighting using a large softbox at 45-degrees, creating a triangle of light on the shadow cheek with soft, wrap-around transitions",
+    'Rembrandt through a Brolly': "Rembrandt lighting diffused through a translucent umbrella (brolly), creating a broader, softer triangle of light with gentle fall-off",
+    'Rembrandt with a Honeycomb': "Rembrandt lighting restricted by a honeycomb grid, producing a focused, dramatic beam with minimal spill and high contrast",
+    'Rembrandt with a Silver Brolly': "Rembrandt lighting reflected from a silver umbrella, producing a punchy, high-contrast look with defined specular highlights",
+    'Rembrandt Short': "Short lighting setup (lighting the side of the face turned away from camera) in Rembrandt style, slimming the face with dramatic shadow fall-off",
+    'Rembrandt Broad': "Broad lighting setup (lighting the side of the face facing the camera) in Rembrandt style, widening facial features with less shadow coverage",
+    'Split': "Side lighting positioned at 90 degrees relative to subject, half the face illuminated and half in deep shadow for high-drama mystery",
+    'Split with Fill': "Split lighting with a secondary fill source reducing the shadow density, retaining drama but revealing detail on the dark side",
+    'Split/Short': "Split lighting applied to the short side of the face, exaggerating facial contours and maximizing dramatic depth",
+    'Split/Broad': "Split lighting applied to the broad side of the face, creating a wider, more open facial appearance with stark side shadows",
+    'Key with a Close Softbox': "Large softbox positioned very close to subject, creating extremely soft, flattering light with rapid fall-off into darkness",
+    'Key with a Far Away Softbox': "Softbox positioned far from subject, creating harder, more directional light with distinct shadows and less rapid fall-off",
+    'Loop': "Key light positioned slightly above and to the side (30-45 degrees), creating a small nose shadow that loops down towards the mouth corner",
+    'Butterfly': "Key light positioned directly above and in front of subject, creating a butterfly-shaped shadow under the nose, emphasizing cheekbones",
+    'Flat Light': "Frontal lighting placed near camera axis, filling all shadows for a smooth, texture-less beauty look",
+    'Badger': "Two strong strip lights positioned slightly behind and to the sides of subject, creating a dark center face with glowing edges (rim light driven)",
+    'Clamshell': "Two frontal lights stacked vertically (key above, fill below), eliminating shadows under eyes/nose/chin for flawless beauty lighting",
+    'Loop with a Background Light': "Classic Loop lighting on subject with a dedicated light illuminating the background to separate subject from environment",
+    'Loop with a Rim Light': "Loop lighting on face with a strong backlight (kicker) on hair/shoulders to separate subject from background",
+    'High Key': "Bright, even illumination with minimal shadows and blown-out white background, creating an upbeat, clean commercial look",
+    'Key and Fill': "Standard two-point lighting with a main key light and a weaker fill light to control contrast ratio",
+    'Key, Fill and Hair Light': "Three-point lighting setup: Key for main exposure, Fill for shadow detail, and Hair/Rim light for separation and depth",
+    'Hard Key with Kickers': "Small, hard light source (snoot/bare bulb) as key for high contrast, supplemented by strong edge lights (kickers) for drama",
+    'Coloured Gels': "Creative lighting using colored gels on multiple sources to tint shadows and highlights with vibrant hues",
+    // Basic Options Descriptions
+    'Golden Hour': "Warm, golden sunlight low on the horizon, creating soft, long shadows and a magical, nostalgic atmosphere",
+    'Neon Lights': "Vibrant, high-contrast artificial lighting with saturated colors (pink, blue, purple), evoking a cyberpunk or nightlife mood",
+    'Studio Light': "Clean, professional studio lighting with balanced key and fill, ensuring subject is well-lit and separated from background",
+    'Dramatic Light': "High-contrast lighting with deep shadows and bright highlights, emphasizing form and texture for an emotional or intense look",
+    'Hard Light': "Strong, direct light source creating sharp-edged shadows and high contrast, similar to bright midday sun or a spotlight",
+    'Shadowy Light': "Low-key lighting dominated by shadows, revealing only partial details of the subject for mystery and mood",
+    'Backlight': "Strong light source behind the subject, creating a silhouette effect or a glowing rim around the edges (halo)",
+    'Sunset': "Rich, orange-red hues of the setting sun, providing warm, directional light and a romantic or dramatic backdrop",
+    'Balanced Light': "Even, natural-looking illumination where shadows are soft and not distracting, suitable for general purpose shots",
+    'Soft Light': "Diffused, large light source (like an overcast sky or softbox) wrapping around the subject, minimizing skin texture and shadows"
   };
 
   useEffect(() => {
@@ -148,6 +224,22 @@ const App: React.FC = () => {
     const bgTextureName = materialEngMapping[studioBgTexture] || studioBgTexture;
     const floorTextureName = materialEngMapping[studioFloorTexture] || studioFloorTexture;
 
+    // Resolve lighting value with detailed description
+    let lightingVal = lightingPrompts[lighting] || lighting;
+
+    if (lighting === 'Coloured Gels') {
+      const activeGels = [];
+      if (gelColorLeft) activeGels.push(`Left: ${gelColorLeft}`);
+      if (gelColorRight) activeGels.push(`Right: ${gelColorRight}`);
+      if (gelColorBack) activeGels.push(`Back: ${gelColorBack}`);
+
+      if (activeGels.length > 0) {
+        lightingVal = `${lightingPrompts[lighting]} (${activeGels.join(', ')})`;
+      } else {
+        lightingVal = `${lightingPrompts[lighting]} (None)`;
+      }
+    }
+
     const bgVal = isStudioMode ? `${studioBgColor} (${bgTextureName})` : "Reference Default";
     const floorVal = isStudioMode ? `${studioFloorColor} (${floorTextureName})` : "Reference Default";
     const orbitalVal = `${angleDegree}° (${directionLabel})`;
@@ -175,7 +267,7 @@ const App: React.FC = () => {
       `{aspect_ratio: ${ratio}}`,
 
       // Ensure lighting, style, etc. are correctly included in final technical string
-      lighting !== 'Maintain Original' ? `{lighting: ${lighting}}` : null,
+      lighting !== 'Maintain Original' ? `{lighting: ${lightingVal}}` : null,
       style !== 'Maintain Original' ? `{style: ${style}}` : null,
       grading !== 'Maintain Original' ? `{grading: ${grading}}` : null,
       texture !== 'Maintain Original' ? `{texture: ${texture}}` : null,
@@ -197,7 +289,7 @@ const App: React.FC = () => {
         orbital_degree: orbitalVal,
         dutch_roll: dutchVal,
         aspect_ratio: ratio,
-        lighting, style, grading, texture, filmStock
+        lighting: lightingVal, style, grading, texture, filmStock
       },
       consistency_anchors: {
         model: "identity lock",
@@ -217,7 +309,7 @@ const App: React.FC = () => {
     setPromptChanged(true);
     const timer = setTimeout(() => setPromptChanged(false), 500);
     return () => clearTimeout(timer);
-  }, [manualDirectives, angle, angleDegree, cameraSlant, lens, scale, pose, lighting, filmStock, camera, aperture, ratio, style, grading, texture, negativePrompt, isStudioMode, studioBgColor, studioBgTexture, studioFloorColor, studioFloorTexture]);
+  }, [manualDirectives, angle, angleDegree, cameraSlant, lens, scale, pose, lighting, filmStock, camera, aperture, ratio, style, grading, texture, negativePrompt, isStudioMode, studioBgColor, studioBgTexture, studioFloorColor, studioFloorTexture, gelColorLeft, gelColorRight, gelColorBack]);
 
   const handleCopy = () => {
     const textArea = document.createElement("textarea");
@@ -245,7 +337,7 @@ const App: React.FC = () => {
       {
         text: "leaning against a neon-lit cyberpunk garage door, looking sneaky",
         settings: {
-          lighting: 'Neon / Cyberpunk',
+          lighting: 'Coloured Gels',
           style: 'Cinematic',
           grading: 'Teal & Orange',
           filmStock: 'Cinestill 800T',
@@ -263,11 +355,11 @@ const App: React.FC = () => {
       // I'll keep the list minimal to save tokens as agreed
       {
         text: "rain-soaked noir detective standing under a flickering street lamp, moody atmosphere",
-        settings: { lighting: 'Rembrandt Lighting', style: 'Sokak Fotoğrafçılığı', grading: 'Monochrome', filmStock: 'B&W High Grain', lens: '50mm Prime', camera: 'Leica M11', aperture: 'f/1.8', texture: 'Raw Skin Texture', scale: 'Medium Shot (Chest)', pose: 'Frontal Standing', angle: 'Eye Level', ratio: '4:3' }
+        settings: { lighting: 'Rembrandt with a Softbox', style: 'Sokak Fotoğrafçılığı', grading: 'Monochrome', filmStock: 'B&W High Grain', lens: '50mm Prime', camera: 'Leica M11', aperture: 'f/1.8', texture: 'Raw Skin Texture', scale: 'Medium Shot (Chest)', pose: 'Frontal Standing', angle: 'Eye Level', ratio: '4:3' }
       },
       {
         text: "hacker sitting in a dark server room illuminated by blue LED lights, intense focus",
-        settings: { lighting: 'Neon / Cyberpunk', style: 'Cinematic', grading: 'High Saturation', filmStock: 'Digital Sharp', lens: '24mm Wide', camera: 'Sony A7R V', aperture: 'f/2.8', texture: 'Matte Finish', scale: 'Close-up (Head/Shoulder)', pose: 'Sitting / Crouching', angle: 'High Angle', ratio: '16:9' }
+        settings: { lighting: 'Coloured Gels', style: 'Cinematic', grading: 'High Saturation', filmStock: 'Digital Sharp', lens: '24mm Wide', camera: 'Sony A7R V', aperture: 'f/2.8', texture: 'Matte Finish', scale: 'Close-up (Head/Shoulder)', pose: 'Sitting / Crouching', angle: 'High Angle', ratio: '16:9' }
       }
     ];
 
@@ -455,10 +547,73 @@ const App: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2 relative">
                 <section className="space-y-4">
-                  <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><Palette size={14} className="text-pink-500" /> {t.labels.artDirection}</h3>
+                  <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2 justify-between">
+                    <div className="flex items-center gap-2"><Palette size={14} className="text-pink-500" /> {t.labels.artDirection}</div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setIsLightingHelpOpen(true)} className="text-[9px] font-bold text-pink-500 hover:text-white transition-colors bg-pink-500/10 hover:bg-pink-500 px-2 py-1 rounded-md uppercase tracking-wider">{t.labels.lightHelp}</button>
+                    </div>
+                  </h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <SelectorComponent label={t.labels.lighting} icon={<Sun size={12} />} value={lighting} options={options.lights} onChange={setLighting} translations={t.options.lights as Record<string, string>} helpTexts={t.helpDescriptions} />
+                    <div className="flex flex-col gap-2 p-3 bg-white/5 border border-white/10 rounded-2xl relative">
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+                        <label className="text-[8px] font-black uppercase tracking-widest px-1 flex items-center gap-2 font-bold text-white">
+                          {t.labels.lighting}
+                          <HelpTooltip text={t.helpDescriptions['Aydınlatma'] || t.helpDescriptions['Lighting']} />
+                        </label>
+                        <div className="flex bg-black/40 rounded-lg p-0.5 border border-white/10">
+                          <button onClick={() => setLightingMode('basic')} className={`px-2 py-1 rounded-md text-[8px] font-black uppercase transition-all ${lightingMode === 'basic' ? 'bg-pink-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>{t.labels.basic}</button>
+                          <button onClick={() => setLightingMode('advanced')} className={`px-2 py-1 rounded-md text-[8px] font-black uppercase transition-all ${lightingMode === 'advanced' ? 'bg-pink-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>{t.labels.advanced}</button>
+                        </div>
+                      </div>
+                      <SelectorComponent
+                        label=""
+                        icon={<Sun size={12} />}
+                        value={lighting}
+                        options={lightingMode === 'basic' ? options.lightsBasic : options.lightsAdvanced}
+                        onChange={setLighting}
+                        translations={t.options.lights as Record<string, string>}
+                        helpTexts={t.helpDescriptions}
+                        optionImages={lightingImages}
+                      />
+                    </div>
                     <SelectorComponent label={t.labels.grading} icon={<Palette size={12} />} value={grading} options={options.grading} onChange={setGrading} translations={t.options.grading as Record<string, string>} helpTexts={t.helpDescriptions} />
+                  </div>
+
+                  {/* COLOURED GELS SUB-CONTROLS */}
+                  <div className={`grid grid-cols-3 gap-2 pt-2 border-t border-white/5 transition-all duration-500 overflow-hidden ${lighting === 'Coloured Gels' ? 'opacity-100 max-h-24 py-2' : 'opacity-0 max-h-0'}`}>
+                    <div className="flex flex-col gap-1 items-stretch">
+                      <span className="text-[8px] font-black text-zinc-500 uppercase flex justify-between">{t.labels.gelLeft}</span>
+                      {gelColorLeft ? (
+                        <div className="w-full h-8 rounded-lg border border-white/10 relative overflow-hidden shadow-sm group" style={{ backgroundColor: gelColorLeft }}>
+                          <input type="color" value={gelColorLeft} onChange={(e) => setGelColorLeft(e.target.value)} className="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+                          <button onClick={(e) => { e.stopPropagation(); setGelColorLeft('') }} className="absolute top-0 right-0 h-full w-6 bg-black/20 hover:bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setGelColorLeft('#ff004c')} className="w-full h-8 rounded-lg border border-dashed border-white/20 hover:border-pink-500/50 hover:bg-pink-500/10 text-white/40 hover:text-pink-500 flex items-center justify-center text-[10px] font-black transition-all">+</button>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-stretch">
+                      <span className="text-[8px] font-black text-zinc-500 uppercase flex justify-between">{t.labels.gelRight}</span>
+                      {gelColorRight ? (
+                        <div className="w-full h-8 rounded-lg border border-white/10 relative overflow-hidden shadow-sm group" style={{ backgroundColor: gelColorRight }}>
+                          <input type="color" value={gelColorRight} onChange={(e) => setGelColorRight(e.target.value)} className="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+                          <button onClick={(e) => { e.stopPropagation(); setGelColorRight('') }} className="absolute top-0 right-0 h-full w-6 bg-black/20 hover:bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setGelColorRight('#00eaff')} className="w-full h-8 rounded-lg border border-dashed border-white/20 hover:border-pink-500/50 hover:bg-pink-500/10 text-white/40 hover:text-pink-500 flex items-center justify-center text-[10px] font-black transition-all">+</button>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-stretch">
+                      <span className="text-[8px] font-black text-zinc-500 uppercase flex justify-between">{t.labels.gelBack}</span>
+                      {gelColorBack ? (
+                        <div className="w-full h-8 rounded-lg border border-white/10 relative overflow-hidden shadow-sm group" style={{ backgroundColor: gelColorBack }}>
+                          <input type="color" value={gelColorBack} onChange={(e) => setGelColorBack(e.target.value)} className="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+                          <button onClick={(e) => { e.stopPropagation(); setGelColorBack('') }} className="absolute top-0 right-0 h-full w-6 bg-black/20 hover:bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setGelColorBack('#9d00ff')} className="w-full h-8 rounded-lg border border-dashed border-white/20 hover:border-pink-500/50 hover:bg-pink-500/10 text-white/40 hover:text-pink-500 flex items-center justify-center text-[10px] font-black transition-all">+</button>
+                      )}
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <SelectorComponent label={t.labels.skinTexture} icon={<Fingerprint size={12} />} value={texture} options={options.texture} onChange={setTexture} translations={t.options.texture as Record<string, string>} helpTexts={t.helpDescriptions} />
@@ -563,6 +718,12 @@ const App: React.FC = () => {
         onClose={() => setIsHowItWorksOpen(false)}
         title={t.labels.howItWorksTitle}
         body={t.labels.howItWorksBody}
+      />
+      <LightingHelpModal
+        isOpen={isLightingHelpOpen}
+        onClose={() => setIsLightingHelpOpen(false)}
+        title={t.labels.lightHelp}
+        imageUrl="https://cdn.mos.cms.futurecdn.net/HWcnaRWrN2XvgrCvPpbpyH.jpg"
       />
     </div>
   );

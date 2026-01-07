@@ -26,6 +26,8 @@ export interface SelectorProps {
     options: string[] | undefined;
     onChange: (v: any) => void;
     translations?: Record<string, string>;
+    helpTexts?: Record<string, string>;
+    optionImages?: Record<string, string>;
     disabled?: boolean;
     colorPicker?: {
         val: string;
