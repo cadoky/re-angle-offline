@@ -13,9 +13,97 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const startPinchDist = useRef<number>(0);
-    const startScale = useRef<number>(1);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // Refs for mutable state in event listeners
+    const scaleRef = useRef(1);
+    const positionRef = useRef({ x: 0, y: 0 });
+    const isDraggingRef = useRef(false);
+    const dragStartRef = useRef({ x: 0, y: 0 });
+    const startPinchDistRef = useRef(0);
+    const startScaleRef = useRef(1);
+
+    // Sync refs with state
+    useEffect(() => {
+        scaleRef.current = scale;
+    }, [scale]);
+
+    useEffect(() => {
+        positionRef.current = position;
+    }, [position]);
+
+    // Native touch listeners with { passive: false }
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const onTouchStart = (e: TouchEvent) => {
+            if (e.touches.length === 2) {
+                // Pinch start
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+
+                startPinchDistRef.current = dist;
+                startScaleRef.current = scaleRef.current;
+                isDraggingRef.current = false;
+            } else if (e.touches.length === 1 && scaleRef.current > 1) {
+                // Pan start
+                const touch = e.touches[0];
+                isDraggingRef.current = true;
+                dragStartRef.current = {
+                    x: touch.clientX - positionRef.current.x,
+                    y: touch.clientY - positionRef.current.y
+                };
+            }
+        };
+
+        const onTouchMove = (e: TouchEvent) => {
+            // CRITICAL: Prevent default to stop browser zooming/scrolling
+            if (e.cancelable) e.preventDefault();
+
+            if (e.touches.length === 2) {
+                // Pinch move
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+
+                if (startPinchDistRef.current > 0) {
+                    const ratio = dist / startPinchDistRef.current;
+                    const newScale = Math.min(Math.max(startScaleRef.current * ratio, 1), 4);
+                    setScale(newScale);
+                }
+            } else if (isDraggingRef.current && e.touches.length === 1 && scaleRef.current > 1) {
+                // Pan move
+                const touch = e.touches[0];
+                setPosition({
+                    x: touch.clientX - dragStartRef.current.x,
+                    y: touch.clientY - dragStartRef.current.y
+                });
+            }
+        };
+
+        const onTouchEnd = () => {
+            isDraggingRef.current = false;
+            startPinchDistRef.current = 0;
+
+            // Snap back check
+            if (scaleRef.current < 1) {
+                setScale(1);
+                setPosition({ x: 0, y: 0 });
+            }
+        };
+
+        container.addEventListener('touchstart', onTouchStart, { passive: false });
+        container.addEventListener('touchmove', onTouchMove, { passive: false });
+        container.addEventListener('touchend', onTouchEnd);
+
+        return () => {
+            container.removeEventListener('touchstart', onTouchStart);
+            container.removeEventListener('touchmove', onTouchMove);
+            container.removeEventListener('touchend', onTouchEnd);
+        };
+    }, []); // Empty dependency array, relies on refs
 
     useEffect(() => {
         if (isOpen) {
@@ -26,9 +114,11 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
         } else {
             // Restore body scroll
             document.body.style.overflow = 'unset';
+            // Reset refs
+            scaleRef.current = 1;
+            positionRef.current = { x: 0, y: 0 };
         }
 
-        // Cleanup function to ensure scroll is restored if component unmounts
         return () => {
             document.body.style.overflow = 'unset';
         };
@@ -155,9 +245,6 @@ const LightingHelpModal: React.FC<LightingHelpModalProps> = ({ isOpen, onClose, 
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
                     onWheel={handleWheel}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
                 >
                     <div
                         style={{
