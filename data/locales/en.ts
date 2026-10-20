@@ -66,7 +66,7 @@ export const en = {
         'Film Stock': 'Simulates analog film aesthetics and grain structure.',
         'Background': 'Selects the background texture or color in studio mode.',
         'Floor Mat.': 'Selects the floor texture or color in studio mode.',
-        'Direction (° Orbital)': 'The horizontal rotation angle of the camera around the model.',
+        'Direction (° Orbital)': 'The horizontal rotation angle of the camera around the model. 0° is head-on, 90° shows the subject\'s left profile, 270° their right. Leave empty (tap the centre of the wheel) to keep the reference angle.',
         'Tilt (° Dutch)': 'The camera\'s tilt (Dutch angle).',
         'Aspect Ratio': 'Determines the aspect ratio (width:height) of the image.',
         'Bg HEX': 'Custom color code (HEX) for the background.',

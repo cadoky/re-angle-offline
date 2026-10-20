@@ -66,7 +66,7 @@ export const tr = {
         'Film Stock': 'Analog film estetiği ve gren yapısını simüle eder.',
         'Arka Plan': 'Stüdyo modunda arka plan dokusunu veya rengini seçer.',
         'Zemin Mat.': 'Stüdyo modunda zemin dokusunu veya rengini seçer.',
-        'Yön (° Orbital)': 'Kameranın model etrafındaki yatay dönüş açısı.',
+        'Yön (° Orbital)': 'Kameranın model etrafındaki yatay dönüş açısı. 0° tam karşıdan, 90° öznenin sol profili, 270° sağ profili. Boş bırakırsan (çarkın ortasına bas) referanstaki açı korunur.',
         'Eğim (° Dutch)': 'Kameranın yana yatırma (eğiklik) açısı.',
         'En-Boy Oranı': 'Görselin genişlik ve yükseklik oranını belirler.',
         'Bg HEX': 'Arka plan için özel renk kodu (HEX).',

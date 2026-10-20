@@ -7,7 +7,8 @@ const s = (over = {}) => ({ ...defaultSettings, ...over });
 // Defaults: nothing changed, so everything is preserved and no camera geometry is written.
 const base = JSON.parse(buildPrompt(s(), 'gemini'));
 assert.equal(base.schema, 're-angle/v2');
-assert.equal(base.camera.orbit, undefined);
+assert.equal(base.camera, undefined);
+assert.ok(base.preserve.includes('camera and lens look'));
 assert.ok(base.preserve.includes('lighting'));
 assert.equal(base.lighting, undefined);
 assert.equal(base.look, undefined);
@@ -30,12 +31,18 @@ assert.match(j.lighting, /crimson \(#ff004c\) from the left/);
 assert.equal(JSON.stringify(j).split('3:4').length - 1, 2); // output field + prompt sentence
 
 // Orbit is symmetric and explicit about whose side.
-assert.equal(describeOrbit(0), null);
-assert.equal(describeOrbit(360), null);
+assert.equal(describeOrbit(null), null);
+assert.match(describeOrbit(0)!.text, /head-on/);
+assert.match(describeOrbit(360)!.text, /^0° /);
 assert.match(describeOrbit(90)!.text, /left profile/);
 assert.match(describeOrbit(270)!.text, /right profile/);
 assert.match(describeOrbit(-45)!.text, /^315° .*right side/);
 assert.match(describeOrbit(180)!.text, /back/);
+
+// Camera, lens and aperture are independent and read naturally.
+assert.match(buildPrompt(s({ camera: 'Leica M11', lens: '85mm Portrait', aperture: 'f/1.8' }), 'text'), /Shot on a Leica M11 with an 85mm portrait lens at f\/1\.8, shallow depth of field\./);
+assert.match(buildPrompt(s({ aperture: 'f/8' }), 'text'), /Shot at f\/8, deep focus\./);
+assert.ok(!JSON.parse(buildPrompt(s({ aperture: 'f/8' }), 'gemini')).preserve.includes('camera and lens look'));
 
 // Pose wording is natural, not "90 profile view pose".
 assert.match(buildPrompt(s({ pose: '90 Profile View' }), 'text'), /turned 90° in profile/);

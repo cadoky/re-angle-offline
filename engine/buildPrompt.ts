@@ -6,16 +6,16 @@ export const KEEP = 'Maintain Original';
 export const defaultSettings = {
   manualDirectives: '',
   angle: KEEP,
-  angleDegree: 0,
+  angleDegree: null as number | null, // null = keep the reference viewpoint
   cameraSlant: '',
-  lens: '85mm Portrait',
+  lens: KEEP,
   scale: KEEP,
   pose: KEEP,
   ratio: '3:4',
   lighting: KEEP,
   filmStock: KEEP,
-  camera: 'Sony A7R V',
-  aperture: 'f/1.8',
+  camera: KEEP,
+  aperture: KEEP,
   style: KEEP,
   grading: KEEP,
   texture: KEEP,
@@ -72,10 +72,11 @@ const skins: Record<string, string> = {
   'Matte Finish': 'matte skin finish',
 };
 
-// Orbit: 0° = reference front view, positive = camera walks to the photographer's right (the subject's left).
-export function describeOrbit(deg: number): { text: string; tag: string } | null {
+// Orbit relative to the subject: 0° = facing them head-on, positive = camera walks to the photographer's right (the subject's left).
+export function describeOrbit(deg: number | null): { text: string; tag: string } | null {
+  if (deg === null) return null;
   const d = ((Math.round(deg) % 360) + 360) % 360;
-  if (d === 0) return null;
+  if (d === 0) return { text: '0° — camera directly in front of the subject, facing them head-on', tag: 'front view, facing viewer' };
   const delta = d <= 180 ? d : 360 - d;
   const side = d < 180 ? 'left' : 'right';
   if (delta === 180) return { text: '180° — camera moves directly behind the subject, showing their back', tag: 'from behind, back view' };
@@ -119,7 +120,7 @@ function depthOfField(aperture: string) {
 export function getWarnings(s: Settings): Warning[] {
   const w: Warning[] = [];
   if (focal(s.lens) >= 135 && ['Wide Shot (General)', 'Extreme Wide Shot', 'Long Distance'].includes(s.scale)) w.push('teleWide');
-  if (focal(s.lens) <= 14 && ['Extreme Close-up (Eye/Mouth)', 'Close-up (Head/Shoulder)'].includes(s.scale)) w.push('ultraWideClose');
+  if (focal(s.lens) > 0 && focal(s.lens) <= 14 && ['Extreme Close-up (Eye/Mouth)', 'Close-up (Head/Shoulder)'].includes(s.scale)) w.push('ultraWideClose');
   return w;
 }
 
@@ -148,6 +149,7 @@ function resolve(s: Settings) {
 
   const preserve = ['face and identity', 'hairstyle', 'outfit', 'accessories'];
   if (!set(s.pose)) preserve.push('pose');
+  if (!set(s.camera) && !set(s.lens) && !set(s.aperture)) preserve.push('camera and lens look');
   if (!studio) {
     if (!lighting) preserve.push('lighting');
     if (!look.grading) preserve.push('color grading');
@@ -168,8 +170,9 @@ function resolve(s: Settings) {
       background: `${colorName(s.studioBgColor)} ${(materialEngMapping[s.studioBgTexture] || s.studioBgTexture).toLowerCase()}`,
       floor: `${colorName(s.studioFloorColor)} ${(materialEngMapping[s.studioFloorTexture] || s.studioFloorTexture).toLowerCase()}`,
     } : undefined,
-    lens: `${s.lens.toLowerCase()} lens, ${s.aperture}, ${depthOfField(s.aperture)}`,
-    body: s.camera,
+    lensName: set(s.lens) ? `${s.lens.toLowerCase()} lens` : undefined,
+    aperture: set(s.aperture) ? `${s.aperture}, ${depthOfField(s.aperture)}` : undefined,
+    body: set(s.camera) ? s.camera : undefined,
     lighting,
     look,
     preserve,
@@ -178,6 +181,8 @@ function resolve(s: Settings) {
 }
 
 type Resolved = ReturnType<typeof resolve>;
+
+const optics = (r: Resolved) => [r.lensName, r.aperture].filter(Boolean).join(', ') || undefined;
 
 function narrative(r: Resolved, flux: boolean): string {
   const view = [r.orbit && r.orbit.text.split(' — ')[1], r.elevation?.[0], r.framing].filter(Boolean) as string[];
@@ -188,8 +193,16 @@ function narrative(r: Resolved, flux: boolean): string {
   if (r.pose) out.push(`The person is ${r.pose}.`);
   if (r.scene) out.push(`Scene: ${r.scene}.`);
   if (r.studio) out.push(`Place them in a professional photo studio with a ${r.studio.background} backdrop and a ${r.studio.floor} floor.`);
-  const lens = `${/^(8|11|18)/.test(r.lens) ? 'an' : 'a'} ${r.lens}`;
-  out.push(flux ? `Use the look of ${lens}.` : `Shot on a ${r.body} with ${lens}.`);
+  if (flux) {
+    if (optics(r)) out.push(`Optics: ${optics(r)}.`);
+  } else if (r.body || r.lensName || r.aperture) {
+    const shot = [
+      r.body && `on a ${r.body}`,
+      r.lensName && `with ${/^(8|11|18)/.test(r.lensName) ? 'an' : 'a'} ${r.lensName}`,
+      r.aperture && `at ${r.aperture}`,
+    ].filter(Boolean);
+    out.push(`Shot ${shot.join(' ')}.`);
+  }
   if (r.lighting) out.push(`Lighting: ${r.lighting}.`);
   const look = Object.values(r.look).filter(Boolean) as string[];
   if (look.length) out.push(`Look: ${look.join(', ')}.`);
@@ -204,7 +217,7 @@ function tags(r: Resolved, s: Settings): string {
     r.orbit?.tag, r.elevation?.[1], r.framing, r.roll ? 'dutch angle' : undefined, r.pose,
     r.scene || undefined,
     r.studio && `studio, ${r.studio.background} backdrop, ${r.studio.floor} floor`,
-    `shot on ${r.body}`, r.lens,
+    r.body && `shot on ${r.body}`, optics(r),
     set(s.lighting) ? `${s.lighting.toLowerCase()} lighting` : undefined,
     ...Object.values(r.look),
   ].filter(Boolean);
@@ -217,7 +230,7 @@ function json(r: Resolved): string {
     elevation: r.elevation?.[0],
     roll_deg: r.roll || undefined,
     framing: r.framing,
-    lens: r.lens,
+    lens: optics(r),
     body: r.body,
   };
   const look = Object.values(r.look).some(Boolean) ? r.look : undefined;
@@ -226,7 +239,7 @@ function json(r: Resolved): string {
     schema: 're-angle/v2',
     task: 're-angle the reference photo',
     preserve: r.preserve,
-    camera,
+    camera: Object.values(camera).some(v => v !== undefined) ? camera : undefined,
     pose: r.pose,
     scene: r.scene || undefined,
     studio: r.studio,

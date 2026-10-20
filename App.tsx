@@ -39,7 +39,7 @@ import HowItWorksModal from './components/HowItWorksModal';
 import { angleDirections, locales, options } from './data/constants';
 import { lightingPrompts } from './data/promptText';
 import { scenarios } from './data/scenarios';
-import { buildPrompt, defaultSettings, getWarnings, targets, type Settings, type Target } from './engine/buildPrompt';
+import { buildPrompt, defaultSettings, KEEP, getWarnings, targets, type Settings, type Target } from './engine/buildPrompt';
 
 // --- MAIN APP COMPONENT ---
 const App: React.FC = () => {
@@ -63,7 +63,10 @@ const App: React.FC = () => {
     gelColorLeft, gelColorRight, gelColorBack
   } = settings;
   const [target, setTarget] = useState<Target>('gemini');
-  const selectedAngleId = angleDirections.find(d => d.degree === ((angleDegree % 360) + 360) % 360)?.id;
+  const selectedAngleId = angleDegree === null ? undefined : angleDirections.find(d => d.degree === ((angleDegree % 360) + 360) % 360)?.id;
+  const keepLabel = t.options.angles[KEEP];
+  // Camera/lens/aperture values are proper names; only "Maintain Original" needs translating.
+  const withKeep = (opts: string[]) => Object.fromEntries(opts.map(o => [o, o === KEEP ? keepLabel : o]));
 
   // New Lighting Mode State
   const [lightingMode, setLightingMode] = useState<'basic' | 'advanced'>('advanced');
@@ -223,10 +226,10 @@ const App: React.FC = () => {
                 <div className="flex flex-col items-center gap-4 shrink-0">
                   <div className="relative w-40 h-40 flex items-center justify-center">
                     <div className="absolute inset-0 border border-white/10 rounded-full pointer-events-none"></div>
-                    <div className="z-10 bg-white/5 p-4 rounded-full border border-white/10 flex flex-col items-center backdrop-blur-md shadow-inner">
+                    <button onClick={() => update('angleDegree')(null)} title={keepLabel} className={`z-10 bg-white/5 w-[76px] h-[76px] rounded-full border flex flex-col items-center justify-center backdrop-blur-md shadow-inner cursor-pointer transition-colors ${angleDegree === null ? 'border-pink-500/60' : 'border-white/10 hover:border-pink-500/40'}`}>
                       <User className="w-6 h-6 text-pink-500 opacity-80" />
-                      <span className="text-[7px] font-black text-white uppercase mt-1 tracking-widest">{t.labels.view} ({angleDegree}°)</span>
-                    </div>
+                      <span className="text-[7px] font-black text-white uppercase mt-1 tracking-widest">{angleDegree === null ? keepLabel : `${t.labels.view} (${angleDegree}°)`}</span>
+                    </button>
                     {angleDirections.map((dir) => {
                       const radius = 66;
                       const x = Math.cos((dir.iconPos * Math.PI) / 180) * radius;
@@ -344,11 +347,11 @@ const App: React.FC = () => {
                 <section className="space-y-4">
                   <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><HardDrive size={14} className="text-red-500" /> {t.labels.opticalLab}</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <SelectorComponent label={t.labels.camera} icon={<Camera size={12} />} value={camera} options={options.cameras} onChange={update('camera')} helpTexts={t.helpDescriptions} />
-                    <SelectorComponent label={t.labels.lensOptics} icon={<Telescope size={12} />} value={lens} options={options.lenses} onChange={update('lens')} helpTexts={t.helpDescriptions} />
+                    <SelectorComponent label={t.labels.camera} icon={<Camera size={12} />} value={camera} options={options.cameras} translations={withKeep(options.cameras)} onChange={update('camera')} helpTexts={t.helpDescriptions} />
+                    <SelectorComponent label={t.labels.lensOptics} icon={<Telescope size={12} />} value={lens} options={options.lenses} translations={withKeep(options.lenses)} onChange={update('lens')} helpTexts={t.helpDescriptions} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <SelectorComponent label={t.labels.aperture} icon={<Gauge size={12} />} value={aperture} options={options.apertures} onChange={update('aperture')} helpTexts={t.helpDescriptions} />
+                    <SelectorComponent label={t.labels.aperture} icon={<Gauge size={12} />} value={aperture} options={options.apertures} translations={withKeep(options.apertures)} onChange={update('aperture')} helpTexts={t.helpDescriptions} />
                     <SelectorComponent label={t.labels.filmStock} icon={<Film size={12} />} value={filmStock} options={options.films} onChange={update('filmStock')} translations={t.options.films as Record<string, string>} helpTexts={t.helpDescriptions} />
                   </div>
                 </section>
@@ -358,7 +361,7 @@ const App: React.FC = () => {
                 <div className="grid grid-cols-3 gap-4 flex-1 w-full">
                   <div className="flex flex-col">
                     <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 px-1 flex items-center gap-2">{t.labels.orbitalDirection} <HelpTooltip text={t.helpDescriptions['Yön (° Orbital)'] || t.helpDescriptions['Direction (° Orbital)']} /></span>
-                    <div className="relative flex items-center"><Compass className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={angleDegree} onChange={(e) => update('angleDegree')(parseInt(e.target.value) || 0)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold" /></div>
+                    <div className="relative flex items-center"><Compass className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={angleDegree ?? ''} placeholder="—" onChange={(e) => update('angleDegree')(e.target.value === '' ? null : parseInt(e.target.value) || 0)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold" /></div>
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 px-1 flex items-center gap-2">{t.labels.dutchTilt} <HelpTooltip text={t.helpDescriptions['Eğim (° Dutch)'] || t.helpDescriptions['Tilt (° Dutch)']} /></span>
