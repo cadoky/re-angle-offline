@@ -10,7 +10,7 @@ import {
   HardDrive,
   Check,
   Sparkles,
-  Play,
+  ChevronRight,
   User,
   Gauge,
   PersonStanding,
@@ -218,7 +218,7 @@ const App: React.FC = () => {
                 {t.labels.howItWorks}
               </button>
             </div>
-            <div className="glass-panel p-8 rounded-[2.5rem] shadow-2xl flex flex-col gap-8 relative">
+            <div className="glass-panel p-4 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl flex flex-col gap-8 relative">
               <div className="flex flex-col md:flex-row gap-10 items-center">
                 <div className="flex flex-col items-center gap-4 shrink-0">
                   <div className="relative w-40 h-40 flex items-center justify-center">
@@ -228,14 +228,14 @@ const App: React.FC = () => {
                       <span className="text-[7px] font-black text-white uppercase mt-1 tracking-widest">{t.labels.view} ({angleDegree}°)</span>
                     </div>
                     {angleDirections.map((dir) => {
-                      const radius = 68;
+                      const radius = 66;
                       const x = Math.cos((dir.iconPos * Math.PI) / 180) * radius;
                       const y = Math.sin((dir.iconPos * Math.PI) / 180) * radius;
                       const isActive = selectedAngleId === dir.id;
                       return (
                         <button key={dir.id} onClick={(e) => { e.stopPropagation(); update('angleDegree')(dir.degree); }}
-                          className={`absolute angle-btn p-2 rounded-full z-20 transition-all ${isActive ? 'bg-pink-600 shadow-[0_0_25px_rgba(219,39,119,0.6)] scale-110' : 'bg-white/5'}`}
-                          style={{ transform: `translate(${x}px, ${y}px)` }}><Play size={8} className={isActive ? 'text-white' : 'text-zinc-500'} style={{ transform: `rotate(${dir.iconPos}deg)` }} /></button>
+                          className={`absolute angle-btn w-7 h-7 flex items-center justify-center rounded-full z-20 transition-all ${isActive ? 'bg-pink-600 shadow-[0_0_25px_rgba(219,39,119,0.6)] scale-110' : 'bg-white/5'}`}
+                          style={{ transform: `translate(${x}px, ${y}px)` }}><ChevronRight size={14} strokeWidth={3} className={isActive ? 'text-white' : 'text-zinc-500'} style={{ transform: `rotate(${dir.iconPos}deg)` }} /></button>
                       );
                     })}
                   </div>
@@ -261,13 +261,13 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              <div className="border-y border-white/10 py-6 bg-white/[0.01] -mx-8 px-8 grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+              <div className="border-y border-white/10 py-6 bg-white/[0.01] -mx-4 px-4 md:-mx-8 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-4 relative">
                 <DropdownComponent label={t.labels.technicalAngle} icon={<Move size={18} />} value={((t.options.angles as Record<string, string>)[angle])} options={options.angles} translations={t.options.angles as Record<string, string>} helpTexts={t.helpDescriptions} isOpen={isAngleMenuOpen} setOpen={setIsAngleMenuOpen} onChange={update('angle')} menuRef={angleMenuRef} />
                 <DropdownComponent label={t.labels.shotSettings} icon={<Maximize2 size={18} />} value={((t.options.scales as Record<string, string>)[scale])} options={options.scales} translations={t.options.scales as Record<string, string>} helpTexts={t.helpDescriptions} isOpen={isScaleMenuOpen} setOpen={setIsScaleMenuOpen} onChange={update('scale')} menuRef={scaleMenuRef} />
                 <DropdownComponent label={t.labels.modelPose} icon={<PersonStanding size={20} />} value={((t.options.poses as Record<string, string>)[pose])} options={options.poses} translations={t.options.poses as Record<string, string>} helpTexts={t.helpDescriptions} isOpen={isPoseMenuOpen} setOpen={setIsPoseMenuOpen} onChange={update('pose')} menuRef={poseMenuRef} />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2 relative">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:px-2 relative">
                 <section className="space-y-4">
                   <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2 justify-between">
                     <div className="flex items-center gap-2"><Palette size={14} className="text-pink-500" /> {t.labels.artDirection}</div>
@@ -275,7 +275,7 @@ const App: React.FC = () => {
                       <button onClick={() => setIsLightingHelpOpen(true)} className="text-[9px] font-bold text-pink-500 hover:text-white transition-colors bg-pink-500/10 hover:bg-pink-500 px-2 py-1 rounded-md uppercase tracking-wider">{t.labels.lightHelp}</button>
                     </div>
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1">
                     <div className="flex flex-col gap-2 p-3 bg-white/5 border border-white/10 rounded-2xl relative">
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
                         <label className="text-[8px] font-black uppercase tracking-widest px-1 flex items-center gap-2 font-bold text-white">
@@ -297,7 +297,6 @@ const App: React.FC = () => {
                         helpTexts={t.helpDescriptions}
                       />
                     </div>
-                    <SelectorComponent label={t.labels.grading} icon={<Palette size={12} />} value={grading} options={options.grading} onChange={update('grading')} translations={t.options.grading as Record<string, string>} helpTexts={t.helpDescriptions} />
                   </div>
 
                   {/* COLOURED GELS SUB-CONTROLS */}
@@ -337,8 +336,9 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
+                    <SelectorComponent label={t.labels.grading} icon={<Palette size={12} />} value={grading} options={options.grading} onChange={update('grading')} translations={t.options.grading as Record<string, string>} helpTexts={t.helpDescriptions} />
                     <SelectorComponent label={t.labels.skinTexture} icon={<Fingerprint size={12} />} value={texture} options={options.texture} onChange={update('texture')} translations={t.options.texture as Record<string, string>} helpTexts={t.helpDescriptions} />
-                    <SelectorComponent label={t.labels.visualStyle} icon={<Sparkles size={12} />} value={style} options={options.styles} onChange={update('style')} translations={t.options.styles as Record<string, string>} helpTexts={t.helpDescriptions} />
+                    <div className="col-span-2"><SelectorComponent label={t.labels.visualStyle} icon={<Sparkles size={12} />} value={style} options={options.styles} onChange={update('style')} translations={t.options.styles as Record<string, string>} helpTexts={t.helpDescriptions} /></div>
                   </div>
                 </section>
                 <section className="space-y-4">
