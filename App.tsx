@@ -210,14 +210,14 @@ const App: React.FC = () => {
         </header>
 
         {/* Added relative z-index to children containers to ensure they stack correctly on mobile */}
+        <div className="flex justify-start mb-6">
+          <button onClick={() => setIsHowItWorksOpen(true)} className="text-[10px] font-black uppercase text-pink-500 hover:text-pink-400 tracking-widest transition-colors flex items-center gap-2 group">
+            <Sparkles size={12} className="group-hover:rotate-12 transition-transform" />
+            {t.labels.howItWorks}
+          </button>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-8 relative">
           <div className="lg:col-span-8 flex flex-col gap-6 relative z-20">
-            <div className="flex justify-start">
-              <button onClick={() => setIsHowItWorksOpen(true)} className="text-[10px] font-black uppercase text-pink-500 hover:text-pink-400 tracking-widest transition-colors flex items-center gap-2 group">
-                <Sparkles size={12} className="group-hover:rotate-12 transition-transform" />
-                {t.labels.howItWorks}
-              </button>
-            </div>
             <div className="glass-panel p-4 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl flex flex-col gap-8 relative">
               <div className="flex flex-col md:flex-row gap-10 items-center">
                 <div className="flex flex-col items-center gap-4 shrink-0">
