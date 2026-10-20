@@ -221,7 +221,7 @@ const App: React.FC = () => {
               </h1>
               <div className="relative shrink-0">
                 <span className="bg-pink-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(219,39,119,0.3)] whitespace-nowrap">
-                  V1-Beta
+                  V2
                 </span>
               </div>
             </div>
