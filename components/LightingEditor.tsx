@@ -5,7 +5,7 @@ import SelectorComponent from './SelectorComponent';
 import { customToLight } from '../data/lightingSetups';
 import { lightHeights, lightModifiers, lightRoles, lightTypes, MAX_LIGHTS, type CustomLight } from '../engine/buildPrompt';
 
-type T = { labels: Record<string, string>; options: Record<string, Record<string, string>> };
+type T = { labels: Record<string, string>; options: Record<string, Record<string, string>>; diagramLabels: Record<string, string> };
 
 interface LightingEditorProps {
     isOpen: boolean;
@@ -68,7 +68,7 @@ const LightingEditor: React.FC<LightingEditorProps> = ({ isOpen, onClose, lights
                 <div className="flex flex-col md:flex-row gap-6">
                     {/* Stage: preset-diagram drawing underneath, drag handles on top in the same viewBox. */}
                     <div className="relative w-full max-w-[420px] mx-auto md:mx-0 aspect-square shrink-0 rounded-2xl border border-white/10 bg-black/50 select-none">
-                        <LightDiagram setup="" lights={lights.map(customToLight)} className="absolute inset-0 w-full h-full" />
+                        <LightDiagram setup="" lights={lights.map(customToLight)} labels={t.diagramLabels} className="absolute inset-0 w-full h-full" />
                         <svg
                             viewBox="-100 -100 200 200"
                             className="absolute inset-0 w-full h-full select-none"

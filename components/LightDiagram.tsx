@@ -18,7 +18,7 @@ const shape = (l: Light, fill: string) => {
   }
 };
 
-const LightDiagram: React.FC<{ setup: string; colors?: Record<string, string>; className?: string; lights?: Light[] }> = ({ setup, colors, className, lights }) => {
+const LightDiagram: React.FC<{ setup: string; colors?: Record<string, string>; className?: string; lights?: Light[]; labels?: Record<string, string> }> = ({ setup, colors, className, lights, labels }) => {
   const s: LightSetup | undefined = lights ? { lights } : lightingSetups[setup];
   if (!s) return null;
   return (
@@ -36,7 +36,7 @@ const LightDiagram: React.FC<{ setup: string; colors?: Record<string, string>; c
           <g key={i}>
             <line x1={px} y1={py} x2={tx} y2={ty} stroke={fill} strokeOpacity={0.45} strokeWidth={1.2} strokeDasharray="3 3" />
             <g transform={`translate(${px} ${py}) rotate(${deg - 90})`}>{shape(l, fill)}</g>
-            <text x={clamp(px + (px / len) * 20)} y={clamp(py + (py / len) * 20) + 3} textAnchor="middle" fontSize={12} fontWeight={700} fill="#d4d4d8">{l.label}</text>
+            <text x={clamp(px + (px / len) * 20)} y={clamp(py + (py / len) * 20) + 3} textAnchor="middle" fontSize={12} fontWeight={700} fill="#d4d4d8">{labels?.[l.label] ?? l.label}</text>
           </g>
         );
       })}
