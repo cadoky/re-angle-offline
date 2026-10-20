@@ -1,6 +1,6 @@
 // Run: npm test
 import assert from 'node:assert/strict';
-import { buildPrompt, colorName, CUSTOM, defaultSettings, describeCustomLight, describeOrbit, getWarnings, targets } from './buildPrompt.ts';
+import { buildPrompt, colorName, CUSTOM, customLightTag, defaultSettings, describeCustomLight, describeOrbit, getWarnings, targets } from './buildPrompt.ts';
 
 const s = (over = {}) => ({ ...defaultSettings, ...over });
 
@@ -36,7 +36,7 @@ assert.match(describeOrbit(0)!.text, /head-on/);
 assert.match(describeOrbit(360)!.text, /^0° /);
 assert.match(describeOrbit(90)!.text, /left profile/);
 assert.match(describeOrbit(270)!.text, /right profile/);
-assert.match(describeOrbit(-45)!.text, /^315° .*right side/);
+assert.match(describeOrbit(-45)!.text, /^45° to the subject's right .*right side/); // never "315°", readers took it as the other way round
 assert.match(describeOrbit(180)!.text, /back/);
 
 // Camera, lens and aperture are independent and read naturally.
@@ -67,12 +67,15 @@ assert.deepEqual(getWarnings(s()), []);
 
 // Custom light plot: positions and roles become explicit sentences; an empty plot changes nothing.
 const key = { x: -0.7, y: 0.7, role: 'Key', type: 'Strobe', modifier: 'Octabox', color: '#ffffff', height: 'High' };
-assert.equal(describeCustomLight(key), 'key light: strobe with an octabox, camera-left, 45° from the camera axis, far, above head height, angled down, white (#ffffff)');
-assert.match(describeCustomLight({ ...key, x: 0.3, y: -0.6, role: 'Background', modifier: 'Bare Bulb' }), /^background light aimed at the backdrop: bare-bulb strobe, camera-right, 153° .*behind the subject/);
+// Plot x -0.7 is camera-left in the plot, i.e. the subject's own right.
+assert.equal(describeCustomLight(key), "key light: strobe with an octabox, 45° to the subject's right, in front of them, far, above head height, angled down, white (#ffffff)");
+assert.match(describeCustomLight({ ...key, x: 0.3, y: -0.6, role: 'Background', modifier: 'Bare Bulb' }), /^background light aimed at the backdrop: bare-bulb strobe, 153° to the subject's left, behind them/);
+assert.equal(customLightTag({ ...key, x: 0.7, y: -0.7, role: 'Rim', color: '#00eaff' }), "cyan rim light from the subject's back-left");
 const plot = JSON.parse(buildPrompt(s({ lighting: CUSTOM, customLights: [key, { ...key, x: 0.6, role: 'Fill', color: '#ff004c' }] }), 'gemini'));
-assert.match(plot.lighting, /^custom 2-light setup: 1\) key light.*; 2\) fill light.*crimson/);
+assert.match(plot.lighting, /^custom 2-light setup, positioned relative to the subject .*: 1\) key light.*; 2\) fill light.*crimson/);
 assert.ok(!plot.preserve.includes('lighting'));
 assert.ok(JSON.parse(buildPrompt(s({ lighting: CUSTOM }), 'gemini')).preserve.includes('lighting'));
-assert.match(buildPrompt(s({ lighting: CUSTOM, customLights: [key] }), 'sd'), /custom 1-light setup/);
+assert.match(buildPrompt(s({ lighting: CUSTOM, customLights: [key] }), 'sd'), /custom studio lighting, white key light from the subject's front-right/);
+assert.match(buildPrompt(s({ lens: '35mm Street' }), 'text'), /with a 35mm lens\./);
 
 console.log('engine tests passed');

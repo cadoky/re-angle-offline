@@ -96,7 +96,7 @@ export function describeOrbit(deg: number | null): { text: string; tag: string }
     delta <= 67 ? [`a three-quarter view of their ${side} side`, `three-quarter view, ${side} side`] :
     delta <= 112 ? [`their ${side} profile`, `profile view, from ${side} side`] :
     [`a rear three-quarter view from their ${side} side`, `from behind, rear three-quarter view, ${side} side`];
-  return { text: `${d}° — camera moves around to the subject's ${side}, showing ${view}`, tag };
+  return { text: `${delta}° to the subject's ${side} — camera moves around to the subject's ${side}, showing ${view}`, tag };
 }
 
 const heights: Record<string, string> = {
@@ -107,18 +107,30 @@ const heights: Record<string, string> = {
   'Overhead': 'directly overhead, pointing down',
 };
 
-// 0° = from the camera axis, 90° = beside the subject, 180° = directly behind them.
-export function describeCustomLight(l: CustomLight): string {
+// Lights are placed relative to the subject, not the camera, so the plot stays valid when the camera orbits.
+// In the plot the subject faces +y, so their own right is -x. 0° = straight in front of them, 180° = behind.
+const lightAngle = (l: CustomLight) => {
   const deg = Math.round((Math.atan2(l.x, l.y) * 180) / Math.PI);
-  const a = Math.abs(deg);
-  const side = deg < 0 ? 'camera-left' : 'camera-right';
-  const where = a <= 10 ? 'frontal, on the camera axis' : a >= 170 ? 'directly behind the subject' : `${side}, ${a}° from the camera axis${a > 100 ? ' (behind the subject)' : ''}`;
+  return { a: Math.abs(deg), side: deg < 0 ? 'right' : 'left' };
+};
+
+export function describeCustomLight(l: CustomLight): string {
+  const { a, side } = lightAngle(l);
+  const where = a <= 10 ? 'directly in front of the subject' : a >= 170 ? 'directly behind the subject'
+    : `${a}° to the subject's ${side}, ${a < 80 ? 'in front of them' : a <= 100 ? 'beside them' : 'behind them'}`;
   const r = Math.hypot(l.x, l.y);
   const distance = r < 0.5 ? 'close' : r < 0.95 ? 'medium distance' : 'far';
   const mod = l.modifier.toLowerCase();
   const source = l.modifier === 'Bare Bulb' ? `bare-bulb ${l.type.toLowerCase()}` : `${l.type.toLowerCase()} with ${/^[aeiou]/.test(mod) ? 'an' : 'a'} ${mod}`;
   const role = l.role === 'Background' ? 'background light aimed at the backdrop' : `${l.role.toLowerCase()} light`;
   return `${role}: ${source}, ${where}, ${distance}, ${heights[l.height] || l.height}, ${colorName(l.color)}`;
+}
+
+// Short form for tag prompts, where the full sentences would blow the token budget.
+export function customLightTag(l: CustomLight): string {
+  const { a, side } = lightAngle(l);
+  const from = a <= 22 ? 'front' : a >= 158 ? 'back' : a < 68 ? `front-${side}` : a <= 112 ? side : `back-${side}`;
+  return `${colorName(l.color).split(' (')[0]} ${l.role === 'Background' ? 'background' : l.role.toLowerCase()} light from the subject's ${from}`;
 }
 
 const namedColors: [string, number, number, number][] = [
@@ -168,7 +180,7 @@ function resolve(s: Settings) {
 
   const custom = s.lighting === CUSTOM ? (s.customLights || []).slice(0, MAX_LIGHTS) : [];
   let lighting = s.lighting === CUSTOM
-    ? (custom.length ? `custom ${custom.length}-light setup: ${custom.map((l, i) => `${i + 1}) ${describeCustomLight(l)}`).join('; ')}` : undefined)
+    ? (custom.length ? `custom ${custom.length}-light setup, positioned relative to the subject (the lights stay put when the camera moves): ${custom.map((l, i) => `${i + 1}) ${describeCustomLight(l)}`).join('; ')}` : undefined)
     : set(s.lighting) ? (lightingPrompts[s.lighting] || s.lighting) : undefined;
   if (s.lighting === 'Coloured Gels') {
     const gels = [['left', s.gelColorLeft], ['right', s.gelColorRight], ['behind the subject', s.gelColorBack]]
@@ -206,7 +218,8 @@ function resolve(s: Settings) {
       background: `${colorName(s.studioBgColor)} ${(materialEngMapping[s.studioBgTexture] || s.studioBgTexture).toLowerCase()}`,
       floor: `${colorName(s.studioFloorColor)} ${(materialEngMapping[s.studioFloorTexture] || s.studioFloorTexture).toLowerCase()}`,
     } : undefined,
-    lensName: set(s.lens) ? `${s.lens.toLowerCase()} lens` : undefined,
+    lensName: set(s.lens) ? `${s.lens.replace(/ Street$/, '').toLowerCase()} lens` : undefined, // "Street" is a UI hint, not optics
+    customTags: custom.map(customLightTag),
     aperture: set(s.aperture) ? `${s.aperture}, ${depthOfField(s.aperture)}` : undefined,
     body: set(s.camera) ? s.camera : undefined,
     lighting,
@@ -239,10 +252,10 @@ function narrative(r: Resolved, flux: boolean): string {
     ].filter(Boolean);
     out.push(`Shot ${shot.join(' ')}.`);
   }
-  if (r.lighting) out.push(`Lighting: ${r.lighting}.`);
+  if (r.lighting) out.push(`Replace the reference lighting with: ${r.lighting}.`);
   const look = Object.values(r.look).filter(Boolean) as string[];
   if (look.length) out.push(`Look: ${look.join(', ')}.`);
-  out.push(`Keep the ${joinList(r.preserve)} exactly the same as in the reference.`);
+  out.push(`Keep the ${joinList(r.preserve)} exactly the same as in the reference; change only what is described above.`);
   if (!flux) out.push(`Aspect ratio ${r.ratio}.`);
   return out.join(' ');
 }
@@ -254,7 +267,7 @@ function tags(r: Resolved, s: Settings): string {
     r.scene || undefined,
     r.studio && `studio, ${r.studio.background} backdrop, ${r.studio.floor} floor`,
     r.body && `shot on ${r.body}`, optics(r),
-    s.lighting === CUSTOM ? r.lighting : set(s.lighting) ? `${s.lighting.toLowerCase()} lighting` : undefined,
+    s.lighting === CUSTOM ? (r.customTags.length ? ['custom studio lighting', ...r.customTags].join(', ') : undefined) : set(s.lighting) ? `${s.lighting.toLowerCase()} lighting` : undefined,
     ...Object.values(r.look),
   ].filter(Boolean);
   return `${t.join(', ')}\n\nNegative prompt: ${s.negativePrompt.trim()}`;
@@ -273,7 +286,7 @@ function json(r: Resolved): string {
   // JSON.stringify drops undefined fields, so only changed values appear.
   return JSON.stringify({
     schema: 're-angle/v2',
-    task: 're-angle the reference photo',
+    task: 'edit the reference photo: show the same person from a new camera viewpoint',
     preserve: r.preserve,
     camera: Object.values(camera).some(v => v !== undefined) ? camera : undefined,
     pose: r.pose,
