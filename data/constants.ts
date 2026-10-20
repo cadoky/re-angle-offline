@@ -25,7 +25,7 @@ export const options = {
     lightsBasic: [
         'Maintain Original', 'Golden Hour', 'Neon Lights', 'Studio Light',
         'Dramatic Light', 'Hard Light', 'Shadowy Light', 'Backlight',
-        'Sunset', 'Balanced Light', 'Soft Light'
+        'Sunset', 'Balanced Light', 'Soft Light', 'Custom Setup'
     ],
     lightsAdvanced: Object.keys(tr.options.lights),
     films: Object.keys(tr.options.films),

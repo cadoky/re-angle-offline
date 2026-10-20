@@ -10,10 +10,8 @@ import {
   HardDrive,
   Check,
   Sparkles,
-  ChevronRight,
   ChevronUp,
   ChevronDown,
-  User,
   Gauge,
   PersonStanding,
   Compass,
@@ -30,7 +28,8 @@ import {
   Mountain,
   Telescope,
   Globe,
-  TriangleAlert
+  TriangleAlert,
+  History
 } from 'lucide-react';
 
 import HelpTooltip from './components/HelpTooltip';
@@ -38,10 +37,17 @@ import MinimalistLogo from './components/MinimalistLogo';
 import SelectorComponent from './components/SelectorComponent';
 import DropdownComponent from './components/DropdownComponent';
 import HowItWorksModal from './components/HowItWorksModal';
+import AnglePad from './components/AnglePad';
+import LightDiagram from './components/LightDiagram';
+import LightingEditor, { presets as lightPresets } from './components/LightingEditor';
+import { customToLight } from './data/lightingSetups';
 import { angleDirections, locales, options } from './data/constants';
 import { lightingPrompts } from './data/promptText';
-import { scenarios } from './data/scenarios';
-import { buildPrompt, defaultSettings, KEEP, getWarnings, targets, type Settings, type Target } from './engine/buildPrompt';
+import scenarios from './data/scenarios.json';
+import { buildPrompt, CUSTOM, defaultSettings, KEEP, getWarnings, targets, type Settings, type Target } from './engine/buildPrompt';
+
+type HistoryItem = { prompt: string; target: Target; settings: Settings; at: number };
+const HISTORY_KEY = 're-angle-history';
 
 // --- MAIN APP COMPONENT ---
 const App: React.FC = () => {
@@ -57,15 +63,27 @@ const App: React.FC = () => {
   // --- STATE ---
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [isLightingHelpOpen, setIsLightingHelpOpen] = useState(false);
+  const [isLightEditorOpen, setIsLightEditorOpen] = useState(false);
+  const openLightEditor = () => {
+    setSettings(prev => ({ ...prev, lighting: CUSTOM, customLights: prev.customLights.length ? prev.customLights : [{ ...lightPresets[0], color: '#ffffff' }] }));
+    setIsLightEditorOpen(true);
+  };
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [history, setHistory] = useState<HistoryItem[]>(() => {
+    try {
+      const v = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      return Array.isArray(v) ? v : [];
+    } catch { return []; }
+  });
+  const [copiedKey, setCopiedKey] = useState('');
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const update = <K extends keyof Settings>(key: K) => (val: Settings[K]) => setSettings(prev => ({ ...prev, [key]: val }));
   const {
     manualDirectives, angle, angleDegree, cameraSlant, lens, scale, pose, ratio, lighting, filmStock, camera, aperture,
     style, grading, texture, negativePrompt, isStudioMode, studioBgColor, studioBgTexture, studioFloorColor, studioFloorTexture,
-    gelColorLeft, gelColorRight, gelColorBack
+    gelColorLeft, gelColorRight, gelColorBack, customLights
   } = settings;
-  const [target, setTarget] = useState<Target>('gemini');
-  const selectedAngleId = angleDegree === null ? undefined : angleDirections.find(d => d.degree === ((angleDegree % 360) + 360) % 360)?.id;
+  const [target, setTarget] = useState<Target>('json');
   const keepLabel = t.options.angles[KEEP];
   // Camera/lens/aperture values are proper names; only "Maintain Original" needs translating.
   const withKeep = (opts: string[]) => Object.fromEntries(opts.map(o => [o, o === KEEP ? keepLabel : o]));
@@ -77,7 +95,6 @@ const App: React.FC = () => {
   const [isAngleMenuOpen, setIsAngleMenuOpen] = useState(false);
   const [isScaleMenuOpen, setIsScaleMenuOpen] = useState(false);
   const [isPoseMenuOpen, setIsPoseMenuOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [promptChanged, setPromptChanged] = useState(false);
   const [dynamicPlaceholder, setDynamicPlaceholder] = useState('');
 
@@ -105,12 +122,20 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, [generatedPrompt]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(generatedPrompt).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  useEffect(() => {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch { /* private mode: history stays in memory */ }
+  }, [history]);
+
+  // Every copy lands at the top of the last-10 history; copying the same prompt again moves it up.
+  const copyPrompt = (prompt: string, s: Settings, tg: Target, key: string) =>
+    navigator.clipboard.writeText(prompt).then(() => {
+      setHistory(prev => [{ prompt, target: tg, settings: s, at: Date.now() }, ...prev.filter(h => h.prompt !== prompt)].slice(0, 10));
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(k => (k === key ? '' : k)), 2000);
     }, err => console.error('Failed to copy', err));
-  };
+
+  const handleCopy = () => copyPrompt(generatedPrompt, settings, target, 'main');
+  const copied = copiedKey === 'main';
 
   const enhanceDirectives = () => {
     if (isStudioMode) return;
@@ -196,7 +221,7 @@ const App: React.FC = () => {
               </h1>
               <div className="relative shrink-0">
                 <span className="bg-pink-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(219,39,119,0.3)] whitespace-nowrap">
-                  V1-Beta
+                  V2
                 </span>
               </div>
             </div>
@@ -236,26 +261,19 @@ const App: React.FC = () => {
           <div className="lg:col-span-8 flex flex-col gap-6 relative z-20">
             <div className="glass-panel p-4 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl flex flex-col gap-8 relative">
               <div className="flex flex-col md:flex-row gap-10 items-center">
-                <div className="flex flex-col items-center gap-4 shrink-0">
-                  <div className="relative w-40 h-40 flex items-center justify-center">
-                    <div className="absolute inset-0 border border-white/10 rounded-full pointer-events-none"></div>
-                    <button onClick={() => update('angleDegree')(null)} title={keepLabel} className={`z-10 bg-white/5 w-[76px] h-[76px] rounded-full border flex flex-col items-center justify-center backdrop-blur-md shadow-inner cursor-pointer transition-colors ${angleDegree === null ? 'border-pink-500/60' : 'border-white/10 hover:border-pink-500/40'}`}>
-                      <User className="w-6 h-6 text-pink-500 opacity-80" />
-                      <span className="text-[7px] font-black text-white uppercase mt-1 tracking-widest">{angleDegree === null ? keepLabel : `${t.labels.view} (${angleDegree}°)`}</span>
-                    </button>
-                    {angleDirections.map((dir) => {
-                      const radius = 66;
-                      const x = Math.cos((dir.iconPos * Math.PI) / 180) * radius;
-                      const y = Math.sin((dir.iconPos * Math.PI) / 180) * radius;
-                      const isActive = selectedAngleId === dir.id;
-                      return (
-                        <button key={dir.id} onClick={(e) => { e.stopPropagation(); update('angleDegree')(dir.degree); }}
-                          className={`absolute angle-btn w-7 h-7 flex items-center justify-center rounded-full z-20 transition-all ${isActive ? 'bg-pink-600 shadow-[0_0_25px_rgba(219,39,119,0.6)] scale-110' : 'bg-white/5'}`}
-                          style={{ transform: `translate(${x}px, ${y}px)` }}><ChevronRight size={14} strokeWidth={3} className={isActive ? 'text-white' : 'text-zinc-500'} style={{ transform: `rotate(${dir.iconPos}deg)` }} /></button>
-                      );
-                    })}
-                  </div>
-                  <span className="text-[10px] font-black text-pink-500 uppercase tracking-[0.2em]">{t.labels.angle}</span>
+                <div className="flex flex-col items-center gap-3 shrink-0">
+                  <AnglePad
+                    orbit={angleDegree === null ? null : ((angleDegree % 360) + 360) % 360}
+                    elevation={angle}
+                    onChange={(orbit, elevation) => setSettings(prev => ({ ...prev, angleDegree: orbit, angle: elevation }))}
+                    elevationLabels={t.options.angles as Record<string, string>}
+                    sideLabels={{ back: t.labels.padBack, right: t.labels.padRight, front: t.labels.padFront, left: t.labels.padLeft }}
+                    keepLabel={keepLabel}
+                    hint={t.labels.padHint}
+                    positionLabel={t.labels.camPosition}
+                    sectors={t.labels.camSectors}
+                  />
+                  <span className="text-[10px] font-black text-pink-500 uppercase tracking-[0.2em] flex items-center">{t.labels.angle}<HelpTooltip text={t.helpDescriptions['Kamera Açısı'] || t.helpDescriptions['Camera Angle']} /></span>
                 </div>
                 <div className="flex-1 w-full space-y-4">
                   <div className="flex items-center justify-between px-2">
@@ -268,7 +286,7 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   <textarea value={manualDirectives} onChange={(e) => update('manualDirectives')(e.target.value)} disabled={isStudioMode} rows={3} className="w-full glass-input !h-32 rounded-2xl px-6 py-4 text-sm text-zinc-100 outline-hidden resize-none focus:ring-2 focus:ring-pink-500/40 placeholder:text-zinc-600 transition-all shadow-inner font-medium" placeholder={isStudioMode ? t.placeholders.studioModeLocked : dynamicPlaceholder} />
-                  {target === 'sd' && (
+                  {(target === 'sd' || target === 'midjourney') && (
                     <div className="space-y-2 pt-2 border-t border-white/5">
                       <div className="flex items-center gap-2 px-1"><EyeOff size={14} className="text-red-500" /><span className="text-[10px] font-black uppercase text-zinc-400 font-bold">{t.labels.negativePrompt}</span></div>
                       <textarea value={negativePrompt} onChange={(e) => update('negativePrompt')(e.target.value)} rows={2} className="w-full glass-input !h-16 rounded-xl px-3 py-2 text-[10px] text-zinc-400 select-all leading-relaxed" />
@@ -308,10 +326,12 @@ const App: React.FC = () => {
                         icon={<Sun size={12} />}
                         value={lighting}
                         options={lightingMode === 'basic' ? options.lightsBasic : options.lightsAdvanced}
-                        onChange={update('lighting')}
+                        onChange={(v: string) => (v === CUSTOM ? openLightEditor() : update('lighting')(v))}
                         translations={t.options.lights as Record<string, string>}
                         helpTexts={t.helpDescriptions}
                       />
+                      <button onClick={openLightEditor} className={`w-full h-10 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-colors ${lighting === CUSTOM ? 'bg-pink-600 border-pink-500 text-white hover:bg-pink-500' : 'bg-white/5 border-dashed border-white/20 text-pink-500 hover:bg-pink-500/10'}`}>{t.labels.customLightEdit}{lighting === CUSTOM ? ` (${customLights.length})` : ''}</button>
+                      <LightDiagram setup={lighting} lights={lighting === CUSTOM ? customLights.map(customToLight) : undefined} colors={{ gelLeft: gelColorLeft, gelRight: gelColorRight, gelBack: gelColorBack }} className="w-full max-w-[200px] mx-auto aspect-square" />
                     </div>
                   </div>
 
@@ -431,12 +451,12 @@ const App: React.FC = () => {
 
             <div className="glass-panel p-6 rounded-[2.5rem] flex flex-col h-full relative justify-between">
               <div className="flex items-center justify-between mb-4 px-2 shrink-0">
-                <div className="flex items-center gap-2"><Code size={16} className="text-pink-500" /><span className="text-[11px] font-black uppercase tracking-widest text-white font-bold">{target === 'gemini' ? t.labels.jsonPrompt : t.labels.prompt}</span></div>
+                <div className="flex items-center gap-2"><Code size={16} className="text-pink-500" /><span className="text-[11px] font-black uppercase tracking-widest text-white font-bold">{target === 'json' ? t.labels.jsonPrompt : t.labels.prompt}</span></div>
                 {copied && <span className="text-[10px] font-black text-green-500 uppercase animate-pulse font-bold">{t.labels.copied}</span>}
               </div>
               <div className="flex flex-col gap-1.5 mb-4 px-2 shrink-0">
                 <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">{t.labels.targetModel}</span>
-                <div className="grid grid-cols-4 bg-black/40 rounded-lg p-0.5 border border-white/10">
+                <div className="grid grid-cols-4 gap-0.5 bg-black/40 rounded-lg p-0.5 border border-white/10">
                   {targets.map(tg => (
                     <button key={tg} onClick={() => setTarget(tg)} className={`px-1 py-1.5 rounded-md text-[8px] font-black uppercase transition-all ${target === tg ? 'bg-pink-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>{t.targets[tg]}</button>
                   ))}
@@ -456,11 +476,31 @@ const App: React.FC = () => {
                     <h2 className="text-[12px] font-black uppercase italic tracking-widest text-white">{copied ? t.labels.copied : t.labels.copy}</h2>
                   </button>
                 </div>
+                <div className="w-full mt-6">
+                  <button onClick={() => setIsHistoryOpen(true)} className="flex items-center justify-center gap-2 h-11 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 text-white font-black text-[9px] uppercase tracking-widest w-full"><History size={14} className="text-pink-500" />{t.labels.history} ({history.length})</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <LightingEditor isOpen={isLightEditorOpen} onClose={() => setIsLightEditorOpen(false)} lights={customLights} onChange={update('customLights')} t={t as unknown as { labels: Record<string, string>; options: Record<string, Record<string, string>> }} />
+      <HowItWorksModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} title={t.labels.history} body={history.length ? '' : t.labels.historyEmpty}>
+        <div className="mt-4 space-y-3">
+          {history.map(h => (
+            <div key={h.at} className="bg-white/5 border border-white/10 rounded-2xl p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest"><span className="text-pink-500">{t.targets[h.target]}</span> · {new Date(h.at).toLocaleString(lang)}</span>
+                <div className="flex gap-2">
+                  <button onClick={() => { setSettings({ ...defaultSettings, ...h.settings }); setTarget(h.target); setIsHistoryOpen(false); }} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 text-zinc-300 font-black text-[9px] uppercase tracking-widest">{t.labels.restore}</button>
+                  <button onClick={() => copyPrompt(h.prompt, h.settings, h.target, `hist-${h.at}`)} className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${copiedKey === `hist-${h.at}` ? 'bg-green-600 text-white' : 'bg-pink-600 hover:bg-pink-500 text-white'}`}>{copiedKey === `hist-${h.at}` ? t.labels.copied : t.labels.copy}</button>
+                </div>
+              </div>
+              <pre className="whitespace-pre-wrap font-mono text-[10px] text-zinc-400 max-h-24 overflow-auto custom-scrollbar">{h.prompt}</pre>
+            </div>
+          ))}
+        </div>
+      </HowItWorksModal>
       <HowItWorksModal
         isOpen={isHowItWorksOpen}
         onClose={() => setIsHowItWorksOpen(false)}
@@ -471,10 +511,16 @@ const App: React.FC = () => {
         isOpen={isLightingHelpOpen}
         onClose={() => setIsLightingHelpOpen(false)}
         title={t.labels.lightHelp}
-        body={(lightingMode === 'basic' ? options.lightsBasic : options.lightsAdvanced)
-          .filter(k => lightingPrompts[k])
-          .map(k => `**${(t.options.lights as Record<string, string>)[k]}**: ${lightingPrompts[k]}`).join('\n')}
-      />
+      >
+        <div className="space-y-3">
+          {(lightingMode === 'basic' ? options.lightsBasic : options.lightsAdvanced).filter(k => lightingPrompts[k]).map(k => (
+            <button key={k} onClick={() => { update('lighting')(k); setIsLightingHelpOpen(false); }} className={`w-full flex items-center gap-3 text-left p-2 rounded-2xl border transition-colors ${lighting === k ? 'border-pink-500/60 bg-pink-500/10' : 'border-white/10 bg-white/5 hover:border-pink-500/40'}`}>
+              <LightDiagram setup={k} colors={{ gelLeft: gelColorLeft, gelRight: gelColorRight, gelBack: gelColorBack }} className="w-24 h-24 shrink-0" />
+              <span className="text-[11px] text-zinc-300 leading-relaxed"><strong className="text-white block">{(t.options.lights as Record<string, string>)[k]}</strong>{lightingPrompts[k]}</span>
+            </button>
+          ))}
+        </div>
+      </HowItWorksModal>
     </div>
   );
 };

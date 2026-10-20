@@ -35,19 +35,42 @@ export const tr = {
         created_by: 'Created by Ulaş Çolaker',
         howItWorks: 'Nasıl Çalışır?',
         howItWorksTitle: 'Algoritma Nasıl Çalışır?',
-        howItWorksBody: 'Re-angle, seçtiğiniz parametreleri (açı, lens, ışık vb.) görsel düzenleme modellerinin anlayacağı bir prompt\'a çevirir. Hiçbir yere istek atmaz, her şey tarayıcıda çalışır.\n\nAlgoritma;\n1. **Sadece değişeni yazar**: "Değiştirme" seçili alanlar prompt\'a girmez, korunacaklar listesine eklenir (yüz, saç, kıyafet, ışık...).\n2. **Net kamera dili**: Yön derecesini "kamera öznenin soluna geçer, sol profilini gösterir" gibi açık bir cümleye çevirir.\n3. **Hedefe göre format**: Gemini (Nano Banana) için JSON, Flux Kontext için düzenleme talimatı, SD/ComfyUI için tag dizisi ve negative prompt, ya da düz metin.\n4. **Çakışma uyarısı**: Genel plan + 200mm gibi birbiriyle çelişen seçimlerde uyarır.',
+        howItWorksBody: 'Re-angle, seçtiğiniz parametreleri (açı, lens, ışık vb.) görsel düzenleme modellerinin anlayacağı bir prompt\'a çevirir. Hiçbir yere istek atmaz, her şey tarayıcıda çalışır.\n\nAlgoritma;\n1. **Sadece değişeni yazar**: "Değiştirme" seçili alanlar prompt\'a girmez, korunacaklar listesine eklenir (yüz, saç, kıyafet, ışık...).\n2. **Net kamera dili**: Yön derecesini "kamera öznenin soluna geçer, sol profilini gösterir" gibi açık bir cümleye çevirir.\n3. **Hedefe göre format**: Yapılandırılmış JSON, Gemini (Nano Banana) için "Using the provided photo..." kalıbı, ChatGPT için başlıklı madde listesi, Midjourney için --oref referanslı parametreli prompt, Flux Kontext ve Seedream için kısa düzenleme talimatı, SD/ComfyUI için tag dizisi ve negative prompt, ya da düz metin.\n4. **Çakışma uyarısı**: Genel plan + 200mm gibi birbiriyle çelişen seçimlerde uyarır.',
         gelLeft: 'Sol Gel',
         gelRight: 'Sağ Gel',
         gelBack: 'Arka Gel',
         lightHelp: 'Işık Yardımı',
         basic: 'Basit',
-        advanced: 'Gelişmiş'
+        advanced: 'Gelişmiş',
+        padBack: 'Arka',
+        padRight: 'Sağ',
+        padFront: 'Ön',
+        padLeft: 'Sol',
+        padHint: 'Kamerayı sürükle',
+        camPosition: 'Kamera Konumu',
+        customLight: 'Özel Işık Kurulumu',
+        customLightEdit: 'Özel ışık kur / düzenle',
+        customLightHint: 'Işıkları sürükleyerek yerleştir. Kamera altta, fon üstte, model ortada kameraya bakıyor.',
+        addLight: 'Işık Ekle',
+        removeLight: 'Işığı Sil',
+        lightRole: 'Rol',
+        lightType: 'Tür',
+        lightModifier: 'Şekillendirici',
+        lightHeight: 'Yükseklik',
+        lightColor: 'Renk',
+        lightAngle: 'Açı',
+        lightDistance: 'Mesafe',
+        done: 'Tamam',
+        camSectors: ['Model önü', 'Ön-sol çapraz', 'Model solu', 'Arka-sol çapraz', 'Model arkası', 'Arka-sağ çapraz', 'Model sağı', 'Ön-sağ çapraz'],
+        history: 'Geçmiş',
+        historyEmpty: 'Henüz kopyalanan prompt yok. Kopyaladığın son 10 prompt burada durur (sadece bu tarayıcıda).',
+        restore: 'Ayarları Yükle'
     },
     placeholders: {
         manualPrompt: 'İsteğe bağlı prompt (Sadece İngilizce). Örn: ',
         studioModeLocked: 'Studio Mode Aktif: Manuel prompt kilitlendi.'
     },
-    targets: { gemini: 'Gemini', flux: 'Flux', sd: 'SD', text: 'Metin' },
+    targets: { json: 'JSON', gemini: 'Gemini', chatgpt: 'ChatGPT', midjourney: 'Midjourney', flux: 'Flux', seedream: 'Seedream', sd: 'SD', text: 'Metin' },
     warnings: {
         teleWide: 'Genel plan için 200mm çok dar: model ya kadrajı ya da lensi yok sayar. 24–35mm deneyin.',
         ultraWideClose: 'Yakın planda çok geniş açı lens yüzü bozar. 50–85mm deneyin.'
@@ -71,7 +94,7 @@ export const tr = {
         'En-Boy Oranı': 'Görselin genişlik ve yükseklik oranını belirler.',
         'Bg HEX': 'Arka plan için özel renk kodu (HEX).',
         'Zemin HEX': 'Zemin için özel renk kodu (HEX).',
-        'Kamera Açısı': 'Kameranın yatay düzlemdeki konumu.'
+        'Kamera Açısı': 'Pad üzerinde sürükle: yatay eksen kameranın model etrafındaki dönüşü (orta = tam karşı, kenarlar = arka), dikey eksen kamera yüksekliği (üst = tepeden, alt = yerden). Değiştirme butonu referanstaki açıyı korur.'
     },
     options: {
         angles: { 'Maintain Original': 'Değiştirme', 'Eye Level': 'Göz Hizası', 'Low Angle': 'Düşük Açı', 'High Angle': 'Yüksek Açı', 'Worm\'s Eye': 'Kurbağa Bakışı', 'Bird\'s Eye': 'Kuş Bakışı', 'Overhead': 'Üst Açı' },
@@ -112,8 +135,13 @@ export const tr = {
             'Backlight': 'Ters Işık',
             'Sunset': 'Gün Batımı',
             'Balanced Light': 'Dengeli Işık',
-            'Soft Light': 'Yumuşak Işık'
+            'Soft Light': 'Yumuşak Işık',
+            'Custom Setup': 'Özel Kurulum'
         },
+        lightRoles: { 'Key': 'Ana Işık', 'Fill': 'Dolgu', 'Rim': 'Kontur', 'Hair': 'Saç Işığı', 'Accent': 'Vurgu', 'Background': 'Fon Işığı' },
+        lightTypes: { 'Strobe': 'Flaş', 'Continuous LED': 'Sürekli LED', 'Tungsten': 'Tungsten', 'Daylight / Sun': 'Gün Işığı / Güneş', 'Neon Tube': 'Neon Tüp', 'Practical Lamp': 'Pratik Lamba' },
+        lightModifiers: { 'Bare Bulb': 'Çıplak Ampul', 'Softbox': 'Softbox', 'Octabox': 'Oktabox', 'Stripbox': 'Stripbox', 'Umbrella': 'Şemsiye', 'Beauty Dish': 'Beauty Dish', 'Honeycomb Grid': 'Petek (Grid)', 'Snoot': 'Snoot', 'Fresnel': 'Fresnel', 'Gobo': 'Gobo' },
+        lightHeights: { 'Floor': 'Yerden', 'Low': 'Alçak', 'Eye Level': 'Göz Hizası', 'High': 'Yüksek', 'Overhead': 'Tepeden' },
         styles: { 'Maintain Original': 'Değiştirme', 'Editorial': 'Editöryal', 'Cinematic': 'Sinematik', 'Documentary': 'Belgesel', 'Street Photography': 'Sokak Fotoğrafçılığı', 'Minimalist': 'Minimalist', 'Avant-garde': 'Avangart' },
         films: { 'Maintain Original': 'Değiştirme', 'Kodak Portra 400': 'Kodak Portra 400', 'Fujifilm Superia': 'Fujifilm Superia', 'B&W High Grain': 'Siyah Beyaz (Yüksek Gren)', 'Cinestill 800T': 'Cinestill 800T', 'Digital Sharp': 'Dijital Keskin' },
         texture: { 'Maintain Original': 'Değiştirme', 'Ultra-Detailed Pores': 'Gözenek Detaylı', 'Soft Skin Gloss': 'Yumuşak Cilt Parlaması', 'Raw Skin Texture': 'Ham Cilt Dokusu', 'Matte Finish': 'Mat Görünüm' },

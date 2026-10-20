@@ -35,19 +35,42 @@ export const en = {
         created_by: 'Created by Ulaş Çolaker',
         howItWorks: 'How It Works?',
         howItWorksTitle: 'How Algorithm Works?',
-        howItWorksBody: 'Re-angle turns your selected parameters (angle, lens, lighting, etc.) into a prompt that image-editing models understand. Nothing is sent anywhere; everything runs in your browser.\n\nThe Algorithm;\n1. **Only what changes**: Fields left on "Maintain Original" stay out of the prompt and go to the preserve list (face, hair, outfit, lighting...).\n2. **Clear camera language**: The orbit degree becomes an explicit sentence such as "the camera moves to the subject\'s left, showing their left profile".\n3. **Per-model format**: JSON for Gemini (Nano Banana), an edit instruction for Flux Kontext, tags plus negative prompt for SD/ComfyUI, or plain text.\n4. **Conflict warnings**: Flags contradicting choices such as Wide Shot + 200mm.',
+        howItWorksBody: 'Re-angle turns your selected parameters (angle, lens, lighting, etc.) into a prompt that image-editing models understand. Nothing is sent anywhere; everything runs in your browser.\n\nThe Algorithm;\n1. **Only what changes**: Fields left on "Maintain Original" stay out of the prompt and go to the preserve list (face, hair, outfit, lighting...).\n2. **Clear camera language**: The orbit degree becomes an explicit sentence such as "the camera moves to the subject\'s left, showing their left profile".\n3. **Per-model format**: structured JSON, Google\'s "Using the provided photo..." template for Gemini (Nano Banana), sectioned bullet instructions for ChatGPT, a parameter prompt with --oref for Midjourney, short edit directives for Flux Kontext and Seedream, tags plus negative prompt for SD/ComfyUI, or plain text.\n4. **Conflict warnings**: Flags contradicting choices such as Wide Shot + 200mm.',
         gelLeft: 'Left Gel',
         gelRight: 'Right Gel',
         gelBack: 'Back Gel',
         lightHelp: 'Light Help',
         basic: 'Basic',
-        advanced: 'Advanced'
+        advanced: 'Advanced',
+        padBack: 'Back',
+        padRight: 'Right',
+        padFront: 'Front',
+        padLeft: 'Left',
+        padHint: 'Drag to move the camera',
+        camPosition: 'Camera Position',
+        customLight: 'Custom Light Setup',
+        customLightEdit: 'Build / edit custom lights',
+        customLightHint: 'Drag the lights into place. Camera at the bottom, backdrop at the top, the model in the middle facing the camera.',
+        addLight: 'Add Light',
+        removeLight: 'Remove Light',
+        lightRole: 'Role',
+        lightType: 'Type',
+        lightModifier: 'Modifier',
+        lightHeight: 'Height',
+        lightColor: 'Color',
+        lightAngle: 'Angle',
+        lightDistance: 'Distance',
+        done: 'Done',
+        camSectors: ['Front of model', 'Front-left', 'Model\'s left', 'Back-left', 'Behind model', 'Back-right', 'Model\'s right', 'Front-right'],
+        history: 'History',
+        historyEmpty: 'No copied prompts yet. Your last 10 copied prompts are kept here (this browser only).',
+        restore: 'Load Settings'
     },
     placeholders: {
         manualPrompt: 'Optional prompt (English only). E.g: ',
         studioModeLocked: 'Studio Mode Active: Manual prompt locked.'
     },
-    targets: { gemini: 'Gemini', flux: 'Flux', sd: 'SD', text: 'Text' },
+    targets: { json: 'JSON', gemini: 'Gemini', chatgpt: 'ChatGPT', midjourney: 'Midjourney', flux: 'Flux', seedream: 'Seedream', sd: 'SD', text: 'Text' },
     warnings: {
         teleWide: '200mm is too tight for a wide shot: the model will ignore either the framing or the lens. Try 24–35mm.',
         ultraWideClose: 'An ultra-wide lens distorts faces in a close-up. Try 50–85mm.'
@@ -71,7 +94,7 @@ export const en = {
         'Aspect Ratio': 'Determines the aspect ratio (width:height) of the image.',
         'Bg HEX': 'Custom color code (HEX) for the background.',
         'Floor HEX': 'Custom color code (HEX) for the floor.',
-        'Camera Angle': 'Camera position in the horizontal plane.'
+        'Camera Angle': 'Drag on the pad: the horizontal axis orbits the camera around the subject (middle = head-on, edges = behind), the vertical axis sets camera height (top = overhead, bottom = ground). Maintain Original keeps the reference angle.'
     },
     options: {
         angles: { 'Maintain Original': 'Maintain Original', 'Eye Level': 'Eye Level', 'Low Angle': 'Low Angle', 'High Angle': 'High Angle', 'Worm\'s Eye': 'Worm\'s Eye', 'Bird\'s Eye': 'Bird\'s Eye', 'Overhead': 'Overhead' },
@@ -112,8 +135,13 @@ export const en = {
             'Backlight': 'Backlight',
             'Sunset': 'Sunset',
             'Balanced Light': 'Balanced Light',
-            'Soft Light': 'Soft Light'
+            'Soft Light': 'Soft Light',
+            'Custom Setup': 'Custom Setup'
         },
+        lightRoles: { 'Key': 'Key', 'Fill': 'Fill', 'Rim': 'Rim', 'Hair': 'Hair', 'Accent': 'Accent', 'Background': 'Background' },
+        lightTypes: { 'Strobe': 'Strobe', 'Continuous LED': 'Continuous LED', 'Tungsten': 'Tungsten', 'Daylight / Sun': 'Daylight / Sun', 'Neon Tube': 'Neon Tube', 'Practical Lamp': 'Practical Lamp' },
+        lightModifiers: { 'Bare Bulb': 'Bare Bulb', 'Softbox': 'Softbox', 'Octabox': 'Octabox', 'Stripbox': 'Stripbox', 'Umbrella': 'Umbrella', 'Beauty Dish': 'Beauty Dish', 'Honeycomb Grid': 'Honeycomb Grid', 'Snoot': 'Snoot', 'Fresnel': 'Fresnel', 'Gobo': 'Gobo' },
+        lightHeights: { 'Floor': 'Floor', 'Low': 'Low', 'Eye Level': 'Eye Level', 'High': 'High', 'Overhead': 'Overhead' },
         styles: { 'Maintain Original': 'Maintain Original', 'Editorial': 'Editorial', 'Cinematic': 'Cinematic', 'Documentary': 'Documentary', 'Street Photography': 'Street Photography', 'Minimalist': 'Minimalist', 'Avant-garde': 'Avant-garde' },
         films: { 'Maintain Original': 'Maintain Original', 'Kodak Portra 400': 'Kodak Portra 400', 'Fujifilm Superia': 'Fujifilm Superia', 'B&W High Grain': 'B&W High Grain', 'Cinestill 800T': 'Cinestill 800T', 'Digital Sharp': 'Digital Sharp' },
         texture: { 'Maintain Original': 'Maintain Original', 'Ultra-Detailed Pores': 'Ultra-Detailed Pores', 'Soft Skin Gloss': 'Soft Skin Gloss', 'Raw Skin Texture': 'Raw Skin Texture', 'Matte Finish': 'Matte Finish' },

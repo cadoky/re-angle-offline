@@ -2,6 +2,16 @@ import { lightingPrompts, materialEngMapping } from '../data/promptText.ts';
 
 // Option values (keys from data/locales) are what the engine reads; 'Maintain Original' means "leave as in the reference".
 export const KEEP = 'Maintain Original';
+// Lighting value that reads the light plot in settings.customLights instead of a preset.
+export const CUSTOM = 'Custom Setup';
+
+export const lightRoles = ['Key', 'Fill', 'Rim', 'Hair', 'Accent', 'Background'];
+export const lightTypes = ['Strobe', 'Continuous LED', 'Tungsten', 'Daylight / Sun', 'Neon Tube', 'Practical Lamp'];
+export const lightModifiers = ['Bare Bulb', 'Softbox', 'Octabox', 'Stripbox', 'Umbrella', 'Beauty Dish', 'Honeycomb Grid', 'Snoot', 'Fresnel', 'Gobo'];
+export const lightHeights = ['Floor', 'Low', 'Eye Level', 'High', 'Overhead'];
+export const MAX_LIGHTS = 5;
+// Top-down position, same plot as the lighting diagrams: x -1 camera-left … 1 camera-right, y -1 behind the subject … 1 at the camera.
+export type CustomLight = { x: number; y: number; role: string; type: string; modifier: string; color: string; height: string };
 
 export const defaultSettings = {
   manualDirectives: '',
@@ -28,11 +38,12 @@ export const defaultSettings = {
   gelColorLeft: '#ff004c',
   gelColorRight: '#00eaff',
   gelColorBack: '#9d00ff',
+  customLights: [] as CustomLight[],
 };
 
 export type Settings = typeof defaultSettings;
-export type Target = 'gemini' | 'flux' | 'sd' | 'text';
-export const targets: Target[] = ['gemini', 'flux', 'sd', 'text'];
+export type Target = 'json' | 'gemini' | 'chatgpt' | 'midjourney' | 'flux' | 'seedream' | 'sd' | 'text';
+export const targets: Target[] = ['json', 'gemini', 'chatgpt', 'midjourney', 'flux', 'seedream', 'sd', 'text'];
 export type Warning = 'teleWide' | 'ultraWideClose';
 
 const elevations: Record<string, [string, string]> = {
@@ -85,7 +96,41 @@ export function describeOrbit(deg: number | null): { text: string; tag: string }
     delta <= 67 ? [`a three-quarter view of their ${side} side`, `three-quarter view, ${side} side`] :
     delta <= 112 ? [`their ${side} profile`, `profile view, from ${side} side`] :
     [`a rear three-quarter view from their ${side} side`, `from behind, rear three-quarter view, ${side} side`];
-  return { text: `${d}° — camera moves around to the subject's ${side}, showing ${view}`, tag };
+  return { text: `${delta}° to the subject's ${side} — camera moves around to the subject's ${side}, showing ${view}`, tag };
+}
+
+const heights: Record<string, string> = {
+  'Floor': 'at floor level, pointing up',
+  'Low': 'below face height, angled up',
+  'Eye Level': 'at face height',
+  'High': 'above head height, angled down',
+  'Overhead': 'directly overhead, pointing down',
+};
+
+// Lights are placed relative to the subject, not the camera, so the plot stays valid when the camera orbits.
+// In the plot the subject faces +y, so their own right is -x. 0° = straight in front of them, 180° = behind.
+const lightAngle = (l: CustomLight) => {
+  const deg = Math.round((Math.atan2(l.x, l.y) * 180) / Math.PI);
+  return { a: Math.abs(deg), side: deg < 0 ? 'right' : 'left' };
+};
+
+export function describeCustomLight(l: CustomLight): string {
+  const { a, side } = lightAngle(l);
+  const where = a <= 10 ? 'directly in front of the subject' : a >= 170 ? 'directly behind the subject'
+    : `${a}° to the subject's ${side}, ${a < 80 ? 'in front of them' : a <= 100 ? 'beside them' : 'behind them'}`;
+  const r = Math.hypot(l.x, l.y);
+  const distance = r < 0.5 ? 'close' : r < 0.95 ? 'medium distance' : 'far';
+  const mod = l.modifier.toLowerCase();
+  const source = l.modifier === 'Bare Bulb' ? `bare-bulb ${l.type.toLowerCase()}` : `${l.type.toLowerCase()} with ${/^[aeiou]/.test(mod) ? 'an' : 'a'} ${mod}`;
+  const role = l.role === 'Background' ? 'background light aimed at the backdrop' : `${l.role.toLowerCase()} light`;
+  return `${role}: ${source}, ${where}, ${distance}, ${heights[l.height] || l.height}, ${colorName(l.color)}`;
+}
+
+// Short form for tag prompts, where the full sentences would blow the token budget.
+export function customLightTag(l: CustomLight): string {
+  const { a, side } = lightAngle(l);
+  const from = a <= 22 ? 'front' : a >= 158 ? 'back' : a < 68 ? `front-${side}` : a <= 112 ? side : `back-${side}`;
+  return `${colorName(l.color).split(' (')[0]} ${l.role === 'Background' ? 'background' : l.role.toLowerCase()} light from the subject's ${from}`;
 }
 
 const namedColors: [string, number, number, number][] = [
@@ -133,7 +178,10 @@ function resolve(s: Settings) {
   const scene = studio ? '' : s.manualDirectives.trim();
   const roll = parseFloat(s.cameraSlant) || 0;
 
-  let lighting = set(s.lighting) ? (lightingPrompts[s.lighting] || s.lighting) : undefined;
+  const custom = s.lighting === CUSTOM ? (s.customLights || []).slice(0, MAX_LIGHTS) : [];
+  let lighting = s.lighting === CUSTOM
+    ? (custom.length ? `custom ${custom.length}-light setup, positioned relative to the subject (the lights stay put when the camera moves): ${custom.map((l, i) => `${i + 1}) ${describeCustomLight(l)}`).join('; ')}` : undefined)
+    : set(s.lighting) ? (lightingPrompts[s.lighting] || s.lighting) : undefined;
   if (s.lighting === 'Coloured Gels') {
     const gels = [['left', s.gelColorLeft], ['right', s.gelColorRight], ['behind the subject', s.gelColorBack]]
       .filter(([, c]) => c).map(([where, c]) => `${colorName(c)} ${where === 'behind the subject' ? where : `from the ${where}`}`);
@@ -170,7 +218,9 @@ function resolve(s: Settings) {
       background: `${colorName(s.studioBgColor)} ${(materialEngMapping[s.studioBgTexture] || s.studioBgTexture).toLowerCase()}`,
       floor: `${colorName(s.studioFloorColor)} ${(materialEngMapping[s.studioFloorTexture] || s.studioFloorTexture).toLowerCase()}`,
     } : undefined,
-    lensName: set(s.lens) ? `${s.lens.toLowerCase()} lens` : undefined,
+    lensName: set(s.lens) ? `${s.lens.replace(/ Street$/, '').toLowerCase()} lens` : undefined, // "Street" is a UI hint, not optics
+    customTags: custom.map(customLightTag),
+    customLines: custom.map(describeCustomLight),
     aperture: set(s.aperture) ? `${s.aperture}, ${depthOfField(s.aperture)}` : undefined,
     body: set(s.camera) ? s.camera : undefined,
     lighting,
@@ -184,11 +234,24 @@ type Resolved = ReturnType<typeof resolve>;
 
 const optics = (r: Resolved) => [r.lensName, r.aperture].filter(Boolean).join(', ') || undefined;
 
-function narrative(r: Resolved, flux: boolean): string {
-  const view = [r.orbit && r.orbit.text.split(' — ')[1], r.elevation?.[0], r.framing].filter(Boolean) as string[];
+const viewParts = (r: Resolved) => [r.orbit && r.orbit.text.split(' — ')[1], r.elevation?.[0], r.framing].filter(Boolean) as string[];
+
+// Sentence prompts. 'photo' is plain text (and the JSON prompt field); gemini follows Google's
+// "Using the provided image…" edit template; flux and seedream are edit models that read short directives.
+type Style = 'photo' | 'gemini' | 'flux' | 'seedream';
+const openers: Record<Style, [string, string]> = {
+  photo: ['Re-photograph the same person from a new camera position', 'Re-photograph the same person'],
+  gemini: ['Using the provided photo of this person, re-photograph them from a new camera position', 'Using the provided photo of this person, edit the image'],
+  flux: ['Change the camera viewpoint of this photo', 'Edit this photo'],
+  seedream: ['Change the camera angle of the reference image', 'Edit the reference image'],
+};
+
+function narrative(r: Resolved, style: Style): string {
+  const flux = style === 'flux' || style === 'seedream';
+  const view = viewParts(r);
   const out: string[] = [];
-  const opener = flux ? 'Change the camera viewpoint of this photo' : 'Re-photograph the same person from a new camera position';
-  out.push(view.length ? `${opener}: ${view.join('; ')}.` : `${flux ? 'Edit this photo' : 'Re-photograph the same person'}.`);
+  const [opener, plain] = openers[style];
+  out.push(view.length ? `${opener}: ${view.join('; ')}.` : `${plain}.`);
   if (r.roll) out.push(`Tilt the camera ${Math.abs(r.roll)}° for a Dutch angle.`);
   if (r.pose) out.push(`The person is ${r.pose}.`);
   if (r.scene) out.push(`Scene: ${r.scene}.`);
@@ -203,25 +266,53 @@ function narrative(r: Resolved, flux: boolean): string {
     ].filter(Boolean);
     out.push(`Shot ${shot.join(' ')}.`);
   }
-  if (r.lighting) out.push(`Lighting: ${r.lighting}.`);
+  if (r.lighting) out.push(`Replace the reference lighting with: ${r.lighting}.`);
   const look = Object.values(r.look).filter(Boolean) as string[];
   if (look.length) out.push(`Look: ${look.join(', ')}.`);
-  out.push(`Keep the ${joinList(r.preserve)} exactly the same as in the reference.`);
+  out.push(style === 'seedream'
+    ? `Keep the ${joinList(r.preserve)} unchanged.`
+    : `Keep the ${joinList(r.preserve)} exactly the same as in the reference; change only what is described above.`);
   if (!flux) out.push(`Aspect ratio ${r.ratio}.`);
   return out.join(' ');
 }
 
-function tags(r: Resolved, s: Settings): string {
-  const t = [
-    'photorealistic photo', 'same person as reference',
+// ChatGPT image editing follows clear, sectioned instructions with an explicit "keep" list.
+function chatgpt(r: Resolved): string {
+  const camera = [
+    ...viewParts(r),
+    r.roll ? `tilt the camera ${Math.abs(r.roll)}° (Dutch angle)` : '',
+    [r.body && `shot on a ${r.body}`, optics(r)].filter(Boolean).join(', '),
+  ].filter(Boolean);
+  const out = ['Edit the uploaded photo: show the same person from a new camera position.'];
+  if (camera.length) out.push(`Camera:\n${camera.map(c => `- ${c}`).join('\n')}`);
+  if (r.pose) out.push(`Pose: the person is ${r.pose}.`);
+  if (r.scene) out.push(`Scene: ${r.scene}.`);
+  if (r.studio) out.push(`Setting: professional photo studio, ${r.studio.background} backdrop, ${r.studio.floor} floor.`);
+  if (r.customLines.length) out.push(`Lighting (replace the original lighting; positions are relative to the person and stay fixed when the camera moves):\n${r.customLines.map(l => `- ${l}`).join('\n')}`);
+  else if (r.lighting) out.push(`Lighting (replace the original lighting): ${r.lighting}.`);
+  const look = Object.values(r.look).filter(Boolean) as string[];
+  if (look.length) out.push(`Look: ${look.join(', ')}.`);
+  out.push(`Keep exactly the same: ${r.preserve.map(p => (p === 'face and identity' ? 'face and identity (it must clearly be the same person)' : p)).join(', ')}.\nChange nothing else. Aspect ratio ${r.ratio}.`);
+  return out.join('\n\n');
+}
+
+const tagList = (r: Resolved, s: Settings) => [
     r.orbit?.tag, r.elevation?.[1], r.framing, r.roll ? 'dutch angle' : undefined, r.pose,
     r.scene || undefined,
     r.studio && `studio, ${r.studio.background} backdrop, ${r.studio.floor} floor`,
     r.body && `shot on ${r.body}`, optics(r),
-    set(s.lighting) ? `${s.lighting.toLowerCase()} lighting` : undefined,
+    s.lighting === CUSTOM ? (r.customTags.length ? ['custom studio lighting', ...r.customTags].join(', ') : undefined) : set(s.lighting) ? `${s.lighting.toLowerCase()} lighting` : undefined,
     ...Object.values(r.look),
-  ].filter(Boolean);
-  return `${t.join(', ')}\n\nNegative prompt: ${s.negativePrompt.trim()}`;
+  ].filter(Boolean) as string[];
+
+function tags(r: Resolved, s: Settings): string {
+  return `${['photorealistic photo', 'same person as reference', ...tagList(r, s)].join(', ')}\n\nNegative prompt: ${s.negativePrompt.trim()}`;
+}
+
+// Midjourney generates rather than edits: the person comes in through Omni Reference (--oref, V7), the rest is descriptive phrases and parameters.
+function midjourney(r: Resolved, s: Settings): string {
+  const neg = s.negativePrompt.trim();
+  return `${['photorealistic photo of the same person as the reference', ...tagList(r, s)].join(', ')} --oref <REFERENCE_IMAGE_URL> --ow 300 --ar ${r.ratio} --style raw --v 7${neg ? ` --no ${neg}` : ''}`;
 }
 
 function json(r: Resolved): string {
@@ -237,7 +328,7 @@ function json(r: Resolved): string {
   // JSON.stringify drops undefined fields, so only changed values appear.
   return JSON.stringify({
     schema: 're-angle/v2',
-    task: 're-angle the reference photo',
+    task: 'edit the reference photo: show the same person from a new camera viewpoint',
     preserve: r.preserve,
     camera: Object.values(camera).some(v => v !== undefined) ? camera : undefined,
     pose: r.pose,
@@ -246,13 +337,15 @@ function json(r: Resolved): string {
     lighting: r.lighting,
     look,
     output: { aspect_ratio: r.ratio },
-    prompt: narrative(r, false),
+    prompt: narrative(r, 'photo'),
   }, null, 2);
 }
 
 export function buildPrompt(s: Settings, target: Target): string {
   const r = resolve(s);
-  if (target === 'gemini') return json(r);
+  if (target === 'json') return json(r);
+  if (target === 'chatgpt') return chatgpt(r);
+  if (target === 'midjourney') return midjourney(r, s);
   if (target === 'sd') return tags(r, s);
-  return narrative(r, target === 'flux');
+  return narrative(r, target === 'text' ? 'photo' : target);
 }
