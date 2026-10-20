@@ -13,10 +13,11 @@ export interface DropdownProps {
     value: string | number | undefined;
     options: string[];
     translations?: Record<string, string>;
+    helpTexts?: Record<string, string>;
     isOpen: boolean;
     setOpen: (v: boolean) => void;
     onChange: (v: any) => void;
-    menuRef: React.RefObject<HTMLDivElement>;
+    menuRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export interface SelectorProps {
@@ -27,7 +28,6 @@ export interface SelectorProps {
     onChange: (v: any) => void;
     translations?: Record<string, string>;
     helpTexts?: Record<string, string>;
-    optionImages?: Record<string, string>;
     disabled?: boolean;
     colorPicker?: {
         val: string;

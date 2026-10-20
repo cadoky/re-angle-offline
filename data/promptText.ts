@@ -1,0 +1,72 @@
+// English prompt fragments. Keys are option values from data/locales.
+
+export const lightingPrompts: Record<string, string> = {
+  'Rembrandt with a Softbox': "classic Rembrandt lighting using a large softbox at 45-degrees, creating a triangle of light on the shadow cheek with soft, wrap-around transitions",
+  'Rembrandt through a Brolly': "Rembrandt lighting diffused through a translucent umbrella (brolly), creating a broader, softer triangle of light with gentle fall-off",
+  'Rembrandt with a Honeycomb': "Rembrandt lighting restricted by a honeycomb grid, producing a focused, dramatic beam with minimal spill and high contrast",
+  'Rembrandt with a Silver Brolly': "Rembrandt lighting reflected from a silver umbrella, producing a punchy, high-contrast look with defined specular highlights",
+  'Rembrandt Short': "Short lighting setup (lighting the side of the face turned away from camera) in Rembrandt style, slimming the face with dramatic shadow fall-off",
+  'Rembrandt Broad': "Broad lighting setup (lighting the side of the face facing the camera) in Rembrandt style, widening facial features with less shadow coverage",
+  'Split': "Side lighting positioned at 90 degrees relative to subject, half the face illuminated and half in deep shadow for high-drama mystery",
+  'Split with Fill': "Split lighting with a secondary fill source reducing the shadow density, retaining drama but revealing detail on the dark side",
+  'Split/Short': "Split lighting applied to the short side of the face, exaggerating facial contours and maximizing dramatic depth",
+  'Split/Broad': "Split lighting applied to the broad side of the face, creating a wider, more open facial appearance with stark side shadows",
+  'Key with a Close Softbox': "Large softbox positioned very close to subject, creating extremely soft, flattering light with rapid fall-off into darkness",
+  'Key with a Far Away Softbox': "Softbox positioned far from subject, creating harder, more directional light with distinct shadows and less rapid fall-off",
+  'Loop': "Key light positioned slightly above and to the side (30-45 degrees), creating a small nose shadow that loops down towards the mouth corner",
+  'Butterfly': "Key light positioned directly above and in front of subject, creating a butterfly-shaped shadow under the nose, emphasizing cheekbones",
+  'Flat Light': "Frontal lighting placed near camera axis, filling all shadows for a smooth, texture-less beauty look",
+  'Badger': "Two strong strip lights positioned slightly behind and to the sides of subject, creating a dark center face with glowing edges (rim light driven)",
+  'Clamshell': "Two frontal lights stacked vertically (key above, fill below), eliminating shadows under eyes/nose/chin for flawless beauty lighting",
+  'Loop with a Background Light': "Classic Loop lighting on subject with a dedicated light illuminating the background to separate subject from environment",
+  'Loop with a Rim Light': "Loop lighting on face with a strong backlight (kicker) on hair/shoulders to separate subject from background",
+  'High Key': "Bright, even illumination with minimal shadows and blown-out white background, creating an upbeat, clean commercial look",
+  'Key and Fill': "Standard two-point lighting with a main key light and a weaker fill light to control contrast ratio",
+  'Key, Fill and Hair Light': "Three-point lighting setup: Key for main exposure, Fill for shadow detail, and Hair/Rim light for separation and depth",
+  'Hard Key with Kickers': "Small, hard light source (snoot/bare bulb) as key for high contrast, supplemented by strong edge lights (kickers) for drama",
+  'Coloured Gels': "Creative lighting using colored gels on multiple sources to tint shadows and highlights with vibrant hues",
+  // Basic Options Descriptions
+  'Golden Hour': "Warm, golden sunlight low on the horizon, creating soft, long shadows and a magical, nostalgic atmosphere",
+  'Neon Lights': "Vibrant, high-contrast artificial lighting with saturated colors (pink, blue, purple), evoking a cyberpunk or nightlife mood",
+  'Studio Light': "Clean, professional studio lighting with balanced key and fill, ensuring subject is well-lit and separated from background",
+  'Dramatic Light': "High-contrast lighting with deep shadows and bright highlights, emphasizing form and texture for an emotional or intense look",
+  'Hard Light': "Strong, direct light source creating sharp-edged shadows and high contrast, similar to bright midday sun or a spotlight",
+  'Shadowy Light': "Low-key lighting dominated by shadows, revealing only partial details of the subject for mystery and mood",
+  'Backlight': "Strong light source behind the subject, creating a silhouette effect or a glowing rim around the edges (halo)",
+  'Sunset': "Rich, orange-red hues of the setting sun, providing warm, directional light and a romantic or dramatic backdrop",
+  'Balanced Light': "Even, natural-looking illumination where shadows are soft and not distracting, suitable for general purpose shots",
+  'Soft Light': "Diffused, large light source (like an overcast sky or softbox) wrapping around the subject, minimizing skin texture and shadows"
+};
+
+export const materialEngMapping: Record<string, string> = {
+    // TR Keys
+    'Eksiz Kağıt': 'Seamless Studio Paper',
+    'Kadife Kumaş': 'Premium Velvet Fabric',
+    'Kaba Beton': 'Rough Raw Concrete',
+    'Parlatılmış Mermer': 'Polished Marble Surface',
+    'Boyalı Tuğla': 'Painted Brick Wall',
+    'Buzlu Cam': 'Frosted Glass Panel',
+    'Derin İpek': 'Deep Silk Drape',
+    'Sonsuz Fon (Infinity)': 'Infinity Cyclorama Curve',
+    'Parlak Epoksi': 'High-Gloss Epoxy Floor',
+    'Mat Ahşap': 'Matte Hardwood Floor',
+    'Yansımalı Fayans': 'Reflective Tiled Surface',
+    'Endüstriyel Beton': 'Industrial Concrete Floor',
+    'Dokulu Halı': 'Textured Fabric Carpet',
+
+    // EN Keys (Identity or Specific Mapping if needed)
+    'Seamless Paper': 'Seamless Studio Paper',
+    'Velvet Fabric': 'Premium Velvet Fabric',
+    'Rough Concrete': 'Rough Raw Concrete',
+    'Polished Marble': 'Polished Marble Surface',
+    'Painted Brick': 'Painted Brick Wall',
+    'Frosted Glass': 'Frosted Glass Panel',
+    'Deep Silk': 'Deep Silk Drape',
+    'Infinity Cyclorama': 'Infinity Cyclorama Curve',
+    'Glossy Epoxy': 'High-Gloss Epoxy Floor',
+    'Matte Wood': 'Matte Hardwood Floor',
+    'Reflective Tiles': 'Reflective Tiled Surface',
+    'Industrial Concrete': 'Industrial Concrete Floor',
+    'Textured Carpet': 'Textured Fabric Carpet',
+    'Infinity Cyclorama Curve': 'Infinity Cyclorama Curve' // Fallback
+};

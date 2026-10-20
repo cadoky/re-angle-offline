@@ -15,45 +15,12 @@ export const angleDirections: AngleDirection[] = [
 
 export const locales = { tr, en };
 
-export const materialEngMapping: Record<string, string> = {
-    // TR Keys
-    'Eksiz Kağıt': 'Seamless Studio Paper',
-    'Kadife Kumaş': 'Premium Velvet Fabric',
-    'Kaba Beton': 'Rough Raw Concrete',
-    'Parlatılmış Mermer': 'Polished Marble Surface',
-    'Boyalı Tuğla': 'Painted Brick Wall',
-    'Buzlu Cam': 'Frosted Glass Panel',
-    'Derin İpek': 'Deep Silk Drape',
-    'Sonsuz Fon (Infinity)': 'Infinity Cyclorama Curve',
-    'Parlak Epoksi': 'High-Gloss Epoxy Floor',
-    'Mat Ahşap': 'Matte Hardwood Floor',
-    'Yansımalı Fayans': 'Reflective Tiled Surface',
-    'Endüstriyel Beton': 'Industrial Concrete Floor',
-    'Dokulu Halı': 'Textured Fabric Carpet',
-
-    // EN Keys (Identity or Specific Mapping if needed)
-    'Seamless Paper': 'Seamless Studio Paper',
-    'Velvet Fabric': 'Premium Velvet Fabric',
-    'Rough Concrete': 'Rough Raw Concrete',
-    'Polished Marble': 'Polished Marble Surface',
-    'Painted Brick': 'Painted Brick Wall',
-    'Frosted Glass': 'Frosted Glass Panel',
-    'Deep Silk': 'Deep Silk Drape',
-    'Infinity Cyclorama': 'Infinity Cyclorama Curve',
-    'Glossy Epoxy': 'High-Gloss Epoxy Floor',
-    'Matte Wood': 'Matte Hardwood Floor',
-    'Reflective Tiles': 'Reflective Tiled Surface',
-    'Industrial Concrete': 'Industrial Concrete Floor',
-    'Textured Carpet': 'Textured Fabric Carpet',
-    'Infinity Cyclorama Curve': 'Infinity Cyclorama Curve' // Fallback
-};
-
 export const options = {
     angles: Object.keys(tr.options.angles),
-    lenses: ['8mm Fisheye', '14mm Ultra-Wide', '24mm Wide', '35mm Street', '50mm Prime', '85mm Portrait', '200mm Telefoto'],
+    lenses: ['Maintain Original', '8mm Fisheye', '14mm Ultra-Wide', '24mm Wide', '35mm Street', '50mm Prime', '85mm Portrait', '200mm Telephoto'],
     scales: Object.keys(tr.options.scales),
     poses: Object.keys(tr.options.poses),
-    ratios: ['1:1', '4:5', '3:4', '2:3', '9:16', '16:9', '4:3', '3:2', '2:1', '2.39:1'],
+    ratios: ['1:1', '4:5', '5:4', '3:4', '4:3', '2:3', '3:2', '9:16', '16:9', '21:9'],
     lights: Object.keys(tr.options.lights),
     lightsBasic: [
         'Maintain Original', 'Golden Hour', 'Neon Lights', 'Studio Light',
@@ -62,8 +29,8 @@ export const options = {
     ],
     lightsAdvanced: Object.keys(tr.options.lights),
     films: Object.keys(tr.options.films),
-    cameras: ['Sony A7R V', 'Canon EOS R5', 'Nikon Z9', 'Fujifilm GFX100 II', 'Leica M11', 'Arri Alexa Mini'],
-    apertures: ['f/1.2', 'f/1.8', 'f/2.8', 'f/4', 'f/8', 'f/11', 'f/16'],
+    cameras: ['Maintain Original', 'Sony A7R V', 'Canon EOS R5', 'Nikon Z9', 'Fujifilm GFX100 II', 'Leica M11', 'Arri Alexa Mini'],
+    apertures: ['Maintain Original', 'f/1.2', 'f/1.8', 'f/2.8', 'f/4', 'f/8', 'f/11', 'f/16'],
     styles: Object.keys(tr.options.styles),
     texture: Object.keys(tr.options.texture),
     grading: Object.keys(tr.options.grading)
