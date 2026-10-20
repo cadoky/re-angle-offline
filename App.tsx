@@ -331,7 +331,7 @@ const App: React.FC = () => {
                         helpTexts={t.helpDescriptions}
                       />
                       <button onClick={openLightEditor} className={`w-full h-10 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-colors ${lighting === CUSTOM ? 'bg-pink-600 border-pink-500 text-white hover:bg-pink-500' : 'bg-white/5 border-dashed border-white/20 text-pink-500 hover:bg-pink-500/10'}`}>{t.labels.customLightEdit}{lighting === CUSTOM ? ` (${customLights.length})` : ''}</button>
-                      <LightDiagram setup={lighting} lights={lighting === CUSTOM ? customLights.map(customToLight) : undefined} colors={{ gelLeft: gelColorLeft, gelRight: gelColorRight, gelBack: gelColorBack }} className="w-full max-w-[200px] mx-auto aspect-square" />
+                      <LightDiagram setup={lighting} lights={lighting === CUSTOM ? customLights.map(customToLight) : undefined} colors={{ gelLeft: gelColorLeft, gelRight: gelColorRight, gelBack: gelColorBack }} labels={t.diagramLabels} className="w-full max-w-[200px] mx-auto aspect-square" />
                     </div>
                   </div>
 
@@ -381,7 +381,7 @@ const App: React.FC = () => {
                   <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2 mb-2"><HardDrive size={14} className="text-red-500" /> {t.labels.opticalLab}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <SelectorComponent label={t.labels.camera} icon={<Camera size={12} />} value={camera} options={options.cameras} translations={withKeep(options.cameras)} onChange={update('camera')} helpTexts={t.helpDescriptions} />
-                    <SelectorComponent label={t.labels.lensOptics} icon={<Telescope size={12} />} value={lens} options={options.lenses} translations={withKeep(options.lenses)} onChange={update('lens')} helpTexts={t.helpDescriptions} />
+                    <SelectorComponent label={t.labels.lensOptics} icon={<Telescope size={12} />} value={lens} options={options.lenses} translations={{ ...withKeep(options.lenses), ...t.options.lenses }} onChange={update('lens')} helpTexts={t.helpDescriptions} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <SelectorComponent label={t.labels.aperture} icon={<Gauge size={12} />} value={aperture} options={options.apertures} translations={withKeep(options.apertures)} onChange={update('aperture')} helpTexts={t.helpDescriptions} />
@@ -425,7 +425,7 @@ const App: React.FC = () => {
                   helpTexts={t.helpDescriptions}
                 />
                 <div className="flex flex-col">
-                  <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 px-1 text-white font-bold flex items-center gap-2">{t.labels.bgHex} <HelpTooltip text={t.helpDescriptions['Bg HEX'] || t.helpDescriptions['Bg HEX']} /></span>
+                  <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 px-1 text-white font-bold flex items-center gap-2">{t.labels.bgHex} <HelpTooltip text={(t.helpDescriptions as Record<string, string>)[t.labels.bgHex]} /></span>
                   <div className="relative flex items-center"><Pipette className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="text" value={studioBgColor} onChange={(e) => update('studioBgColor')(e.target.value)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-[10px] font-bold uppercase" /></div>
                 </div>
                 <SelectorComponent
@@ -484,7 +484,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </div>
-      <LightingEditor isOpen={isLightEditorOpen} onClose={() => setIsLightEditorOpen(false)} lights={customLights} onChange={update('customLights')} t={t as unknown as { labels: Record<string, string>; options: Record<string, Record<string, string>> }} />
+      <LightingEditor isOpen={isLightEditorOpen} onClose={() => setIsLightEditorOpen(false)} lights={customLights} onChange={update('customLights')} t={t as unknown as { labels: Record<string, string>; options: Record<string, Record<string, string>>; diagramLabels: Record<string, string> }} />
       <HowItWorksModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} title={t.labels.history} body={history.length ? '' : t.labels.historyEmpty}>
         <div className="mt-4 space-y-3">
           {history.map(h => (
@@ -515,8 +515,8 @@ const App: React.FC = () => {
         <div className="space-y-3">
           {(lightingMode === 'basic' ? options.lightsBasic : options.lightsAdvanced).filter(k => lightingPrompts[k]).map(k => (
             <button key={k} onClick={() => { update('lighting')(k); setIsLightingHelpOpen(false); }} className={`w-full flex items-center gap-3 text-left p-2 rounded-2xl border transition-colors ${lighting === k ? 'border-pink-500/60 bg-pink-500/10' : 'border-white/10 bg-white/5 hover:border-pink-500/40'}`}>
-              <LightDiagram setup={k} colors={{ gelLeft: gelColorLeft, gelRight: gelColorRight, gelBack: gelColorBack }} className="w-24 h-24 shrink-0" />
-              <span className="text-[11px] text-zinc-300 leading-relaxed"><strong className="text-white block">{(t.options.lights as Record<string, string>)[k]}</strong>{lightingPrompts[k]}</span>
+              <LightDiagram setup={k} colors={{ gelLeft: gelColorLeft, gelRight: gelColorRight, gelBack: gelColorBack }} labels={t.diagramLabels} className="w-24 h-24 shrink-0" />
+              <span className="text-[11px] text-zinc-300 leading-relaxed"><strong className="text-white block">{(t.options.lights as Record<string, string>)[k]}</strong>{(t.lightDescriptions as Record<string, string>)[k] || lightingPrompts[k]}</span>
             </button>
           ))}
         </div>

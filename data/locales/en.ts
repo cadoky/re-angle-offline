@@ -96,7 +96,10 @@ export const en = {
         'Floor HEX': 'Custom color code (HEX) for the floor.',
         'Camera Angle': 'Drag on the pad: the horizontal axis orbits the camera around the subject (middle = head-on, edges = behind), the vertical axis sets camera height (top = overhead, bottom = ground). Maintain Original keeps the reference angle.'
     },
+    diagramLabels: {},
+    lightDescriptions: {},
     options: {
+        lenses: {},
         angles: { 'Maintain Original': 'Maintain Original', 'Eye Level': 'Eye Level', 'Low Angle': 'Low Angle', 'High Angle': 'High Angle', 'Worm\'s Eye': 'Worm\'s Eye', 'Bird\'s Eye': 'Bird\'s Eye', 'Overhead': 'Overhead' },
         scales: { 'Maintain Original': 'Maintain Original', 'Extreme Close-up (Eye/Mouth)': 'Extreme Close-up', 'Close-up (Head/Shoulder)': 'Close-up', 'Medium Shot (Chest)': 'Medium Shot', 'Medium Long Shot (Waist)': 'Medium Long Shot', 'Full Shot (Full Body)': 'Full Shot', 'Wide Shot (General)': 'Wide Shot', 'Extreme Wide Shot': 'Extreme Wide Shot', 'Long Distance': 'Long Distance' },
         poses: { 'Maintain Original': 'Maintain Original', 'Frontal Standing': 'Frontal Standing', '90 Profile View': 'Profile View', 'Three-Quarter Turn': 'Three-Quarter Turn', 'Sitting / Crouching': 'Sitting / Crouching', 'Dynamic Movement': 'Dynamic Movement', 'Over the Shoulder': 'Over the Shoulder' },
