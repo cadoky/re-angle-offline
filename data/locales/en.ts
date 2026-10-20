@@ -27,13 +27,15 @@ export const en = {
         floorMat: 'Floor Mat.',
         floorHex: 'Floor HEX',
         jsonPrompt: 'JSON Prompt',
+        prompt: 'Prompt',
+        targetModel: 'Target Model',
         copied: 'COPIED',
         copy: 'COPY',
         view: 'View',
         created_by: 'Created by Ulaş Çolaker',
         howItWorks: 'How It Works?',
         howItWorksTitle: 'How Algorithm Works?',
-        howItWorksBody: 'Re-angle analyzes your selected cinematic parameters (angle, lens, lighting, etc.) to generate an advanced JSON prompt output optimized for AI models.\n\nThe Algorithm;\n1. **Scene Analysis**: Scans your manual input or random scenario.\n2. **Technical Matching**: Simulates the physical characteristics of the selected camera and lens combination (e.g., depth of field at f/1.8).\n3. **Consistency Protocol**: Locks floor and background textures if Studio Mode is active, otherwise preserves the selected atmosphere.\n4. **JSON Construction**: Compiles all this data into a "Camera Override Protocol" format, presenting it in a language understood by models like Gemini, Stable Diffusion.',
+        howItWorksBody: 'Re-angle turns your selected parameters (angle, lens, lighting, etc.) into a prompt that image-editing models understand. Nothing is sent anywhere; everything runs in your browser.\n\nThe Algorithm;\n1. **Only what changes**: Fields left on "Maintain Original" stay out of the prompt and go to the preserve list (face, hair, outfit, lighting...).\n2. **Clear camera language**: The orbit degree becomes an explicit sentence such as "the camera moves to the subject\'s left, showing their left profile".\n3. **Per-model format**: JSON for Gemini (Nano Banana), an edit instruction for Flux Kontext, tags plus negative prompt for SD/ComfyUI, or plain text.\n4. **Conflict warnings**: Flags contradicting choices such as Wide Shot + 200mm.',
         gelLeft: 'Left Gel',
         gelRight: 'Right Gel',
         gelBack: 'Back Gel',
@@ -44,6 +46,11 @@ export const en = {
     placeholders: {
         manualPrompt: 'Optional prompt (English only). E.g: ',
         studioModeLocked: 'Studio Mode Active: Manual prompt locked.'
+    },
+    targets: { gemini: 'Gemini', flux: 'Flux', sd: 'SD', text: 'Text' },
+    warnings: {
+        teleWide: '200mm is too tight for a wide shot: the model will ignore either the framing or the lens. Try 24–35mm.',
+        ultraWideClose: 'An ultra-wide lens distorts faces in a close-up. Try 50–85mm.'
     },
     helpDescriptions: {
         'Technical Angle': 'Determines the camera\'s angle relative to the subject (Eye level, Bird\'s eye, etc.).',
@@ -107,7 +114,7 @@ export const en = {
             'Balanced Light': 'Balanced Light',
             'Soft Light': 'Soft Light'
         },
-        styles: { 'Maintain Original': 'Maintain Original', 'Editorial': 'Editorial', 'Cinematic': 'Cinematic', 'Belgesel': 'Documentary', 'Sokak Fotoğrafçılığı': 'Street Photography', 'Minimalist': 'Minimalist', 'Avant-garde': 'Avant-garde' },
+        styles: { 'Maintain Original': 'Maintain Original', 'Editorial': 'Editorial', 'Cinematic': 'Cinematic', 'Documentary': 'Documentary', 'Street Photography': 'Street Photography', 'Minimalist': 'Minimalist', 'Avant-garde': 'Avant-garde' },
         films: { 'Maintain Original': 'Maintain Original', 'Kodak Portra 400': 'Kodak Portra 400', 'Fujifilm Superia': 'Fujifilm Superia', 'B&W High Grain': 'B&W High Grain', 'Cinestill 800T': 'Cinestill 800T', 'Digital Sharp': 'Digital Sharp' },
         texture: { 'Maintain Original': 'Maintain Original', 'Ultra-Detailed Pores': 'Ultra-Detailed Pores', 'Soft Skin Gloss': 'Soft Skin Gloss', 'Raw Skin Texture': 'Raw Skin Texture', 'Matte Finish': 'Matte Finish' },
         grading: { 'Maintain Original': 'Maintain Original', 'Teal & Orange': 'Teal & Orange', 'Warm Vintage': 'Warm Vintage', 'Muted Tones': 'Muted Tones', 'High Saturation': 'High Saturation', 'Monochrome': 'Monochrome' },

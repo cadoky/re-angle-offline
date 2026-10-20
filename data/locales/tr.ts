@@ -27,13 +27,15 @@ export const tr = {
         floorMat: 'Zemin Mat.',
         floorHex: 'Zemin HEX',
         jsonPrompt: 'JSON Prompt',
+        prompt: 'Prompt',
+        targetModel: 'Hedef Model',
         copied: 'KOPYALANDI',
         copy: 'KOPYALA',
         view: 'Bakış',
         created_by: 'Created by Ulaş Çolaker',
         howItWorks: 'Nasıl Çalışır?',
         howItWorksTitle: 'Algoritma Nasıl Çalışır?',
-        howItWorksBody: 'Re-angle, seçtiğiniz sinematik parametreleri (açı, lens, ışık vb.) analiz ederek yapay zeka modelleri için optimize edilmiş, gelişmiş bir JSON prompt çıktısı üretir.\n\nAlgoritma;\n1. **Sahne Analizi**: Manuel girdiğiniz fikri veya rastgele senaryoyu tarar.\n2. **Teknik Eşleşme**: Seçili kamera ve lens kombinasyonunun fiziksel özelliklerini (örn. f/1.8 alan derinliği) simüle eder.\n3. **Tutarlılık Protokolü**: Stüdyo modu aktifse zemin ve arka plan dokularını kilitler, değilse seçili atmosferi korur.\n4. **JSON İnşası**: Tüm bu verileri "Camera Override Protocol" formatında derleyerek Gemini, Stable Diffusion gibi modellerin anlayacağı dilde sunar.',
+        howItWorksBody: 'Re-angle, seçtiğiniz parametreleri (açı, lens, ışık vb.) görsel düzenleme modellerinin anlayacağı bir prompt\'a çevirir. Hiçbir yere istek atmaz, her şey tarayıcıda çalışır.\n\nAlgoritma;\n1. **Sadece değişeni yazar**: "Değiştirme" seçili alanlar prompt\'a girmez, korunacaklar listesine eklenir (yüz, saç, kıyafet, ışık...).\n2. **Net kamera dili**: Yön derecesini "kamera öznenin soluna geçer, sol profilini gösterir" gibi açık bir cümleye çevirir.\n3. **Hedefe göre format**: Gemini (Nano Banana) için JSON, Flux Kontext için düzenleme talimatı, SD/ComfyUI için tag dizisi ve negative prompt, ya da düz metin.\n4. **Çakışma uyarısı**: Genel plan + 200mm gibi birbiriyle çelişen seçimlerde uyarır.',
         gelLeft: 'Sol Gel',
         gelRight: 'Sağ Gel',
         gelBack: 'Arka Gel',
@@ -44,6 +46,11 @@ export const tr = {
     placeholders: {
         manualPrompt: 'İsteğe bağlı prompt (Sadece İngilizce). Örn: ',
         studioModeLocked: 'Studio Mode Aktif: Manuel prompt kilitlendi.'
+    },
+    targets: { gemini: 'Gemini', flux: 'Flux', sd: 'SD', text: 'Metin' },
+    warnings: {
+        teleWide: 'Genel plan için 200mm çok dar: model ya kadrajı ya da lensi yok sayar. 24–35mm deneyin.',
+        ultraWideClose: 'Yakın planda çok geniş açı lens yüzü bozar. 50–85mm deneyin.'
     },
     helpDescriptions: {
         'Teknik Açı': 'Kameranın konuya bakış açısını belirler (Göz hizası, kuş bakışı vb.).',
@@ -107,7 +114,7 @@ export const tr = {
             'Balanced Light': 'Dengeli Işık',
             'Soft Light': 'Yumuşak Işık'
         },
-        styles: { 'Maintain Original': 'Değiştirme', 'Editorial': 'Editöryal', 'Cinematic': 'Sinematik', 'Belgesel': 'Belgesel', 'Sokak Fotoğrafçılığı': 'Sokak Fotoğrafçılığı', 'Minimalist': 'Minimalist', 'Avant-garde': 'Avangart' },
+        styles: { 'Maintain Original': 'Değiştirme', 'Editorial': 'Editöryal', 'Cinematic': 'Sinematik', 'Documentary': 'Belgesel', 'Street Photography': 'Sokak Fotoğrafçılığı', 'Minimalist': 'Minimalist', 'Avant-garde': 'Avangart' },
         films: { 'Maintain Original': 'Değiştirme', 'Kodak Portra 400': 'Kodak Portra 400', 'Fujifilm Superia': 'Fujifilm Superia', 'B&W High Grain': 'Siyah Beyaz (Yüksek Gren)', 'Cinestill 800T': 'Cinestill 800T', 'Digital Sharp': 'Dijital Keskin' },
         texture: { 'Maintain Original': 'Değiştirme', 'Ultra-Detailed Pores': 'Gözenek Detaylı', 'Soft Skin Gloss': 'Yumuşak Cilt Parlaması', 'Raw Skin Texture': 'Ham Cilt Dokusu', 'Matte Finish': 'Mat Görünüm' },
         grading: { 'Maintain Original': 'Değiştirme', 'Teal & Orange': 'Teal & Orange', 'Warm Vintage': 'Sıcak Nostalji', 'Muted Tones': 'Soluk Tonlar', 'High Saturation': 'Yüksek Doygunluk', 'Monochrome': 'Siyah Beyaz' },

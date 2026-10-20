@@ -1,20 +1,33 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Re-angle!
 
-# Run and deploy your AI Studio app
+Prompt generator for AI photo editing. Pick a new camera angle, lens, light and look for a reference photo, and Re-angle writes the prompt for your target model. Everything runs in the browser; nothing is sent anywhere.
 
-This contains everything you need to run your app locally.
+Live: https://re-angle.vercel.app
 
-View your app in AI Studio: https://ai.studio/apps/drive/1NNkDJ3BlNuOgM744fbHFnXPHiI9ICbIw
+## Targets
 
-## Run Locally
+| Target | Output |
+|---|---|
+| Gemini (Nano Banana) | `re-angle/v2` JSON with a narrative `prompt` field |
+| Flux Kontext | One edit instruction paragraph |
+| SD / ComfyUI | Tag list + `Negative prompt:` line |
+| Text | Plain narrative paragraph |
 
-**Prerequisites:**  Node.js
+Fields left on "Maintain Original" are not written; they go to the `preserve` list instead.
 
+## Develop
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+npm run dev     # http://localhost:3000
+npm test        # prompt engine checks (engine/buildPrompt.test.ts)
+npm run build
+```
+
+## Layout
+
+- `engine/buildPrompt.ts`: pure `buildPrompt(settings, target)` and `getWarnings(settings)`
+- `data/`: option lists, locales (option keys are the English values the engine reads), lighting texts, random scenarios
+- `App.tsx`: UI; all prompt settings live in one `settings` object
+
+Pushing to `main` deploys to Vercel.
