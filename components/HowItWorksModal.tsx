@@ -5,10 +5,11 @@ interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
     title: string;
-    body: string;
+    body?: string;
+    children?: React.ReactNode;
 }
 
-const HowItWorksModal: React.FC<ModalProps> = ({ isOpen, onClose, title, body }) => {
+const HowItWorksModal: React.FC<ModalProps> = ({ isOpen, onClose, title, body = '', children }) => {
     if (!isOpen) return null;
 
     return (
@@ -30,6 +31,7 @@ const HowItWorksModal: React.FC<ModalProps> = ({ isOpen, onClose, title, body })
                         </p>
                     ))}
                 </div>
+                {children}
             </div>
         </div>
     );

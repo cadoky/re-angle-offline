@@ -41,7 +41,16 @@ export const tr = {
         gelBack: 'Arka Gel',
         lightHelp: 'Işık Yardımı',
         basic: 'Basit',
-        advanced: 'Gelişmiş'
+        advanced: 'Gelişmiş',
+        padBack: 'Arka',
+        padRight: 'Sağ',
+        padFront: 'Ön',
+        padLeft: 'Sol',
+        contactSheet: 'Contact Sheet',
+        contactSheetBody: 'Aynı ayarlarla 0°, 45°, 90° ve 180° için 4 prompt. Her birini ayrı kopyala.',
+        history: 'Geçmiş',
+        historyEmpty: 'Henüz kopyalanan prompt yok. Kopyaladığın son 10 prompt burada durur (sadece bu tarayıcıda).',
+        restore: 'Ayarları Yükle'
     },
     placeholders: {
         manualPrompt: 'İsteğe bağlı prompt (Sadece İngilizce). Örn: ',
@@ -71,7 +80,7 @@ export const tr = {
         'En-Boy Oranı': 'Görselin genişlik ve yükseklik oranını belirler.',
         'Bg HEX': 'Arka plan için özel renk kodu (HEX).',
         'Zemin HEX': 'Zemin için özel renk kodu (HEX).',
-        'Kamera Açısı': 'Kameranın yatay düzlemdeki konumu.'
+        'Kamera Açısı': 'Pad üzerinde sürükle: yatay eksen kameranın model etrafındaki dönüşü (orta = tam karşı, kenarlar = arka), dikey eksen kamera yüksekliği (üst = tepeden, alt = yerden). Değiştirme butonu referanstaki açıyı korur.'
     },
     options: {
         angles: { 'Maintain Original': 'Değiştirme', 'Eye Level': 'Göz Hizası', 'Low Angle': 'Düşük Açı', 'High Angle': 'Yüksek Açı', 'Worm\'s Eye': 'Kurbağa Bakışı', 'Bird\'s Eye': 'Kuş Bakışı', 'Overhead': 'Üst Açı' },

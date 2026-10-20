@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node engine/buildPrompt.test.ts"
+    "test": "node engine/buildPrompt.test.ts && node data/scenarios.test.ts && node data/lightingSetups.test.ts"
   },
   "dependencies": {
     "lucide-react": "^0.562.0",

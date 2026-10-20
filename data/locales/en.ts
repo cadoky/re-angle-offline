@@ -41,7 +41,16 @@ export const en = {
         gelBack: 'Back Gel',
         lightHelp: 'Light Help',
         basic: 'Basic',
-        advanced: 'Advanced'
+        advanced: 'Advanced',
+        padBack: 'Back',
+        padRight: 'Right',
+        padFront: 'Front',
+        padLeft: 'Left',
+        contactSheet: 'Contact Sheet',
+        contactSheetBody: 'Four prompts with the same settings at 0°, 45°, 90° and 180°. Copy each one separately.',
+        history: 'History',
+        historyEmpty: 'No copied prompts yet. Your last 10 copied prompts are kept here (this browser only).',
+        restore: 'Load Settings'
     },
     placeholders: {
         manualPrompt: 'Optional prompt (English only). E.g: ',
@@ -71,7 +80,7 @@ export const en = {
         'Aspect Ratio': 'Determines the aspect ratio (width:height) of the image.',
         'Bg HEX': 'Custom color code (HEX) for the background.',
         'Floor HEX': 'Custom color code (HEX) for the floor.',
-        'Camera Angle': 'Camera position in the horizontal plane.'
+        'Camera Angle': 'Drag on the pad: the horizontal axis orbits the camera around the subject (middle = head-on, edges = behind), the vertical axis sets camera height (top = overhead, bottom = ground). Maintain Original keeps the reference angle.'
     },
     options: {
         angles: { 'Maintain Original': 'Maintain Original', 'Eye Level': 'Eye Level', 'Low Angle': 'Low Angle', 'High Angle': 'High Angle', 'Worm\'s Eye': 'Worm\'s Eye', 'Bird\'s Eye': 'Bird\'s Eye', 'Overhead': 'Overhead' },

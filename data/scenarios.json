@@ -1,0 +1,512 @@
+[
+  {
+    "text": "leaning against a neon-lit cyberpunk garage door, looking sneaky",
+    "settings": {
+      "lighting": "Coloured Gels",
+      "style": "Cinematic",
+      "grading": "Teal & Orange",
+      "filmStock": "Cinestill 800T",
+      "lens": "35mm Street",
+      "camera": "Sony A7R V",
+      "aperture": "f/1.2",
+      "texture": "Soft Skin Gloss",
+      "scale": "Medium Long Shot (Waist)",
+      "pose": "Dynamic Movement",
+      "angle": "Low Angle",
+      "ratio": "21:9"
+    }
+  },
+  {
+    "text": "rain-soaked noir detective standing under a flickering street lamp, moody atmosphere",
+    "settings": {
+      "lighting": "Hard Key with Kickers",
+      "style": "Street Photography",
+      "grading": "Monochrome",
+      "filmStock": "B&W High Grain",
+      "lens": "50mm Prime",
+      "camera": "Leica M11",
+      "aperture": "f/1.8",
+      "texture": "Raw Skin Texture",
+      "scale": "Medium Shot (Chest)",
+      "pose": "Frontal Standing",
+      "angle": "Eye Level",
+      "ratio": "4:3"
+    }
+  },
+  {
+    "text": "hacker sitting in a dark server room illuminated by blue LED lights, intense focus",
+    "settings": {
+      "lighting": "Coloured Gels",
+      "style": "Cinematic",
+      "grading": "High Saturation",
+      "filmStock": "Digital Sharp",
+      "lens": "24mm Wide",
+      "camera": "Sony A7R V",
+      "aperture": "f/2.8",
+      "texture": "Matte Finish",
+      "scale": "Close-up (Head/Shoulder)",
+      "pose": "Sitting / Crouching",
+      "angle": "High Angle",
+      "ratio": "16:9"
+    }
+  },
+  {
+    "text": "striding down a high-fashion runway, photographers flashing at the edge of the catwalk",
+    "settings": {
+      "lighting": "Hard Light",
+      "style": "Editorial",
+      "grading": "Muted Tones",
+      "filmStock": "Digital Sharp",
+      "lens": "200mm Telephoto",
+      "camera": "Canon EOS R5",
+      "aperture": "f/2.8",
+      "texture": "Ultra-Detailed Pores",
+      "scale": "Full Shot (Full Body)",
+      "pose": "Dynamic Movement",
+      "angle": "Low Angle",
+      "ratio": "2:3"
+    }
+  },
+  {
+    "text": "backstage before a concert, guitar in hand, haze lit by warm stage lights",
+    "settings": {
+      "lighting": "Backlight",
+      "style": "Documentary",
+      "grading": "Warm Vintage",
+      "filmStock": "Kodak Portra 400",
+      "lens": "35mm Street",
+      "camera": "Nikon Z9",
+      "aperture": "f/1.8",
+      "texture": "Raw Skin Texture",
+      "scale": "Medium Shot (Chest)",
+      "pose": "Over the Shoulder",
+      "angle": "Eye Level",
+      "ratio": "3:2"
+    }
+  },
+  {
+    "text": "walking through a wheat field at golden hour, wind in the hair",
+    "settings": {
+      "lighting": "Golden Hour",
+      "style": "Minimalist",
+      "grading": "Warm Vintage",
+      "filmStock": "Fujifilm Superia",
+      "lens": "85mm Portrait",
+      "camera": "Fujifilm GFX100 II",
+      "aperture": "f/1.8",
+      "texture": "Soft Skin Gloss",
+      "scale": "Medium Long Shot (Waist)",
+      "pose": "Three-Quarter Turn",
+      "angle": "Eye Level",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "singing into the microphone at the edge of a festival stage, sweat catching the spotlight",
+    "settings": {
+      "lighting": "Hard Key with Kickers",
+      "style": "Documentary",
+      "grading": "High Saturation",
+      "filmStock": "Digital Sharp",
+      "lens": "85mm Portrait",
+      "camera": "Nikon Z9",
+      "aperture": "f/1.8",
+      "texture": "Raw Skin Texture",
+      "scale": "Medium Shot (Chest)",
+      "pose": "Dynamic Movement",
+      "angle": "Low Angle",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "shredding a guitar solo under purple and red stage beams, smoke rolling across the stage",
+    "settings": {
+      "lighting": "Coloured Gels",
+      "style": "Cinematic",
+      "grading": "High Saturation",
+      "filmStock": "Cinestill 800T",
+      "lens": "35mm Street",
+      "camera": "Sony A7R V",
+      "aperture": "f/1.8",
+      "texture": "Raw Skin Texture",
+      "scale": "Medium Long Shot (Waist)",
+      "pose": "Dynamic Movement",
+      "angle": "Worm's Eye",
+      "ratio": "16:9"
+    }
+  },
+  {
+    "text": "seen from the photo pit, arms raised to a roaring crowd, confetti in the air",
+    "settings": {
+      "lighting": "Backlight",
+      "style": "Documentary",
+      "grading": "Teal & Orange",
+      "filmStock": "Digital Sharp",
+      "lens": "24mm Wide",
+      "camera": "Canon EOS R5",
+      "aperture": "f/2.8",
+      "texture": "Raw Skin Texture",
+      "scale": "Full Shot (Full Body)",
+      "pose": "Frontal Standing",
+      "angle": "Worm's Eye",
+      "ratio": "3:2"
+    }
+  },
+  {
+    "text": "crowd surfing over a packed club audience, hands reaching up from every side",
+    "settings": {
+      "lighting": "Hard Light",
+      "style": "Documentary",
+      "grading": "Monochrome",
+      "filmStock": "B&W High Grain",
+      "lens": "14mm Ultra-Wide",
+      "camera": "Sony A7R V",
+      "aperture": "f/2.8",
+      "texture": "Raw Skin Texture",
+      "scale": "Wide Shot (General)",
+      "pose": "Dynamic Movement",
+      "angle": "High Angle",
+      "ratio": "16:9"
+    }
+  },
+  {
+    "text": "silhouetted against a wall of white stage strobes, the arena lights flaring behind",
+    "settings": {
+      "lighting": "Backlight",
+      "style": "Cinematic",
+      "grading": "Muted Tones",
+      "filmStock": "Digital Sharp",
+      "lens": "50mm Prime",
+      "camera": "Nikon Z9",
+      "aperture": "f/2.8",
+      "texture": "Matte Finish",
+      "scale": "Full Shot (Full Body)",
+      "pose": "90 Profile View",
+      "angle": "Low Angle",
+      "ratio": "21:9"
+    }
+  },
+  {
+    "text": "playing a grand piano alone on a dark stage, a single spotlight from above",
+    "settings": {
+      "lighting": "Shadowy Light",
+      "style": "Minimalist",
+      "grading": "Monochrome",
+      "filmStock": "B&W High Grain",
+      "lens": "85mm Portrait",
+      "camera": "Leica M11",
+      "aperture": "f/1.8",
+      "texture": "Soft Skin Gloss",
+      "scale": "Medium Shot (Chest)",
+      "pose": "Sitting / Crouching",
+      "angle": "High Angle",
+      "ratio": "3:2"
+    }
+  },
+  {
+    "text": "singing in the front row of the crowd, face lit by phone screens and laser beams",
+    "settings": {
+      "lighting": "Neon Lights",
+      "style": "Street Photography",
+      "grading": "High Saturation",
+      "filmStock": "Cinestill 800T",
+      "lens": "35mm Street",
+      "camera": "Sony A7R V",
+      "aperture": "f/1.2",
+      "texture": "Soft Skin Gloss",
+      "scale": "Close-up (Head/Shoulder)",
+      "pose": "Three-Quarter Turn",
+      "angle": "Eye Level",
+      "ratio": "9:16"
+    }
+  },
+  {
+    "text": "sitting in front of a bulb-lit dressing room mirror, getting final touches of makeup",
+    "settings": {
+      "lighting": "Butterfly",
+      "style": "Documentary",
+      "grading": "Warm Vintage",
+      "filmStock": "Kodak Portra 400",
+      "lens": "50mm Prime",
+      "camera": "Leica M11",
+      "aperture": "f/1.8",
+      "texture": "Ultra-Detailed Pores",
+      "scale": "Close-up (Head/Shoulder)",
+      "pose": "Sitting / Crouching",
+      "angle": "Eye Level",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "waiting in a narrow backstage corridor, crew cases and cables stacked against the wall",
+    "settings": {
+      "lighting": "Hard Light",
+      "style": "Street Photography",
+      "grading": "Muted Tones",
+      "filmStock": "B&W High Grain",
+      "lens": "24mm Wide",
+      "camera": "Leica M11",
+      "aperture": "f/2.8",
+      "texture": "Raw Skin Texture",
+      "scale": "Medium Long Shot (Waist)",
+      "pose": "Over the Shoulder",
+      "angle": "Eye Level",
+      "ratio": "3:2"
+    }
+  },
+  {
+    "text": "catching a breath behind the stage curtain, crowd noise glowing through the gap",
+    "settings": {
+      "lighting": "Split",
+      "style": "Cinematic",
+      "grading": "Teal & Orange",
+      "filmStock": "Cinestill 800T",
+      "lens": "50mm Prime",
+      "camera": "Arri Alexa Mini",
+      "aperture": "f/1.2",
+      "texture": "Raw Skin Texture",
+      "scale": "Medium Shot (Chest)",
+      "pose": "90 Profile View",
+      "angle": "Eye Level",
+      "ratio": "21:9"
+    }
+  },
+  {
+    "text": "being fitted by a designer backstage at fashion week, racks of garments all around",
+    "settings": {
+      "lighting": "Soft Light",
+      "style": "Documentary",
+      "grading": "Muted Tones",
+      "filmStock": "Kodak Portra 400",
+      "lens": "35mm Street",
+      "camera": "Fujifilm GFX100 II",
+      "aperture": "f/2.8",
+      "texture": "Soft Skin Gloss",
+      "scale": "Medium Long Shot (Waist)",
+      "pose": "Frontal Standing",
+      "angle": "High Angle",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "pausing at the end of the runway for the final pose, wall of photographers below",
+    "settings": {
+      "lighting": "Hard Key with Kickers",
+      "style": "Editorial",
+      "grading": "High Saturation",
+      "filmStock": "Digital Sharp",
+      "lens": "200mm Telephoto",
+      "camera": "Sony A7R V",
+      "aperture": "f/2.8",
+      "texture": "Ultra-Detailed Pores",
+      "scale": "Full Shot (Full Body)",
+      "pose": "Frontal Standing",
+      "angle": "Low Angle",
+      "ratio": "2:3"
+    }
+  },
+  {
+    "text": "walking an outdoor runway set on a misty concrete rooftop at dusk",
+    "settings": {
+      "lighting": "Sunset",
+      "style": "Editorial",
+      "grading": "Muted Tones",
+      "filmStock": "Fujifilm Superia",
+      "lens": "85mm Portrait",
+      "camera": "Canon EOS R5",
+      "aperture": "f/2.8",
+      "texture": "Matte Finish",
+      "scale": "Full Shot (Full Body)",
+      "pose": "Dynamic Movement",
+      "angle": "Eye Level",
+      "ratio": "2:3"
+    }
+  },
+  {
+    "text": "turning sharply on a mirrored catwalk, reflections of spotlights in the floor",
+    "settings": {
+      "lighting": "Hard Light",
+      "style": "Avant-garde",
+      "grading": "Monochrome",
+      "filmStock": "Digital Sharp",
+      "lens": "85mm Portrait",
+      "camera": "Nikon Z9",
+      "aperture": "f/4",
+      "texture": "Matte Finish",
+      "scale": "Full Shot (Full Body)",
+      "pose": "Three-Quarter Turn",
+      "angle": "Low Angle",
+      "ratio": "9:16"
+    }
+  },
+  {
+    "text": "standing on a winner's podium under arena lights, medal raised high",
+    "settings": {
+      "lighting": "Key, Fill and Hair Light",
+      "style": "Documentary",
+      "grading": "High Saturation",
+      "filmStock": "Digital Sharp",
+      "lens": "85mm Portrait",
+      "camera": "Canon EOS R5",
+      "aperture": "f/2.8",
+      "texture": "Ultra-Detailed Pores",
+      "scale": "Medium Long Shot (Waist)",
+      "pose": "Frontal Standing",
+      "angle": "Low Angle",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "posed on a sculptural plinth in an empty gallery, wearing an oversized tailored coat",
+    "settings": {
+      "lighting": "Rembrandt with a Softbox",
+      "style": "Editorial",
+      "grading": "Muted Tones",
+      "filmStock": "Digital Sharp",
+      "lens": "50mm Prime",
+      "camera": "Fujifilm GFX100 II",
+      "aperture": "f/8",
+      "texture": "Matte Finish",
+      "scale": "Full Shot (Full Body)",
+      "pose": "Three-Quarter Turn",
+      "angle": "Eye Level",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "magazine cover portrait with wet-look hair and bold graphic makeup",
+    "settings": {
+      "lighting": "Clamshell",
+      "style": "Editorial",
+      "grading": "High Saturation",
+      "filmStock": "Digital Sharp",
+      "lens": "85mm Portrait",
+      "camera": "Fujifilm GFX100 II",
+      "aperture": "f/8",
+      "texture": "Ultra-Detailed Pores",
+      "scale": "Close-up (Head/Shoulder)",
+      "pose": "Frontal Standing",
+      "angle": "Eye Level",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "reclining on a velvet chaise in a baroque salon, heavy drapes and candlelight",
+    "settings": {
+      "lighting": "Rembrandt Short",
+      "style": "Editorial",
+      "grading": "Warm Vintage",
+      "filmStock": "Kodak Portra 400",
+      "lens": "85mm Portrait",
+      "camera": "Canon EOS R5",
+      "aperture": "f/1.8",
+      "texture": "Soft Skin Gloss",
+      "scale": "Medium Long Shot (Waist)",
+      "pose": "Sitting / Crouching",
+      "angle": "High Angle",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "high-fashion beauty close-up, a sculptural metallic collar framing the face",
+    "settings": {
+      "lighting": "Butterfly",
+      "style": "Avant-garde",
+      "grading": "Monochrome",
+      "filmStock": "Digital Sharp",
+      "lens": "85mm Portrait",
+      "camera": "Fujifilm GFX100 II",
+      "aperture": "f/11",
+      "texture": "Ultra-Detailed Pores",
+      "scale": "Extreme Close-up (Eye/Mouth)",
+      "pose": "Frontal Standing",
+      "angle": "Eye Level",
+      "ratio": "1:1"
+    }
+  },
+  {
+    "text": "standing in a desert of white salt flats in a flowing red gown, wind pulling the fabric",
+    "settings": {
+      "lighting": "Hard Light",
+      "style": "Editorial",
+      "grading": "Teal & Orange",
+      "filmStock": "Fujifilm Superia",
+      "lens": "24mm Wide",
+      "camera": "Fujifilm GFX100 II",
+      "aperture": "f/8",
+      "texture": "Matte Finish",
+      "scale": "Wide Shot (General)",
+      "pose": "Dynamic Movement",
+      "angle": "Low Angle",
+      "ratio": "16:9"
+    }
+  },
+  {
+    "text": "crossing a crowded Tokyo intersection at night, signs reflecting in the wet asphalt",
+    "settings": {
+      "lighting": "Neon Lights",
+      "style": "Street Photography",
+      "grading": "Teal & Orange",
+      "filmStock": "Cinestill 800T",
+      "lens": "35mm Street",
+      "camera": "Leica M11",
+      "aperture": "f/1.8",
+      "texture": "Raw Skin Texture",
+      "scale": "Medium Long Shot (Waist)",
+      "pose": "Dynamic Movement",
+      "angle": "Eye Level",
+      "ratio": "3:2"
+    }
+  },
+  {
+    "text": "clean studio portrait against seamless grey paper, arms folded, calm expression",
+    "settings": {
+      "lighting": "Loop with a Background Light",
+      "style": "Minimalist",
+      "grading": "Muted Tones",
+      "filmStock": "Digital Sharp",
+      "lens": "85mm Portrait",
+      "camera": "Canon EOS R5",
+      "aperture": "f/4",
+      "texture": "Soft Skin Gloss",
+      "scale": "Medium Shot (Chest)",
+      "pose": "Three-Quarter Turn",
+      "angle": "Eye Level",
+      "ratio": "4:5"
+    }
+  },
+  {
+    "text": "standing on a cliff edge above a stormy sea, coat whipping in the wind",
+    "settings": {
+      "lighting": "Dramatic Light",
+      "style": "Cinematic",
+      "grading": "Muted Tones",
+      "filmStock": "Kodak Portra 400",
+      "lens": "24mm Wide",
+      "camera": "Arri Alexa Mini",
+      "aperture": "f/8",
+      "texture": "Raw Skin Texture",
+      "scale": "Extreme Wide Shot",
+      "pose": "90 Profile View",
+      "angle": "Low Angle",
+      "ratio": "21:9"
+    }
+  },
+  {
+    "text": "reading on a sunlit café terrace, morning light through the striped awning",
+    "settings": {
+      "lighting": "Soft Light",
+      "style": "Street Photography",
+      "grading": "Warm Vintage",
+      "filmStock": "Fujifilm Superia",
+      "lens": "50mm Prime",
+      "camera": "Leica M11",
+      "aperture": "f/1.8",
+      "texture": "Soft Skin Gloss",
+      "scale": "Medium Shot (Chest)",
+      "pose": "Sitting / Crouching",
+      "angle": "Eye Level",
+      "ratio": "4:5"
+    }
+  }
+]

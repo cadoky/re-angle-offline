@@ -27,7 +27,7 @@ npm run build
 ## Layout
 
 - `engine/buildPrompt.ts`: pure `buildPrompt(settings, target)` and `getWarnings(settings)`
-- `data/`: option lists, locales (option keys are the English values the engine reads), lighting texts, random scenarios
+- `data/`: option lists, locales (option keys are the English values the engine reads), lighting texts, random scenario pool (`scenarios.json`), top-down lighting diagram data (`lightingSetups.ts`)
 - `App.tsx`: UI; all prompt settings live in one `settings` object
 
 Pushing to `main` deploys to Vercel.
