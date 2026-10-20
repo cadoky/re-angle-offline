@@ -85,10 +85,12 @@ const AnglePad: React.FC<AnglePadProps> = ({ orbit, elevation, onChange, elevati
                 tabIndex={0}
                 aria-label={readout}
                 onPointerDown={e => {
+                    e.preventDefault(); // no text selection or native drag while orbiting
                     e.currentTarget.setPointerCapture(e.pointerId);
                     drag.current = { x: e.clientX, y: e.clientY, orbit: orbit ?? 0, row: row < 0 ? EYE : row, moved: false };
                 }}
                 onPointerMove={onPointerMove}
+                onDragStart={e => e.preventDefault()}
                 onPointerUp={() => { drag.current = null; }}
                 onPointerCancel={() => { drag.current = null; }}
                 onKeyDown={onKeyDown}

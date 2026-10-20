@@ -67,18 +67,20 @@ const LightingEditor: React.FC<LightingEditorProps> = ({ isOpen, onClose, lights
                 <p className="text-[11px] text-zinc-400 mb-4">{L.customLightHint}</p>
                 <div className="flex flex-col md:flex-row gap-6">
                     {/* Stage: preset-diagram drawing underneath, drag handles on top in the same viewBox. */}
-                    <div className="relative w-full max-w-[420px] mx-auto md:mx-0 aspect-square shrink-0 rounded-2xl border border-white/10 bg-black/50">
+                    <div className="relative w-full max-w-[420px] mx-auto md:mx-0 aspect-square shrink-0 rounded-2xl border border-white/10 bg-black/50 select-none">
                         <LightDiagram setup="" lights={lights.map(customToLight)} className="absolute inset-0 w-full h-full" />
                         <svg
                             viewBox="-100 -100 200 200"
-                            className="absolute inset-0 w-full h-full"
+                            className="absolute inset-0 w-full h-full select-none"
                             style={{ touchAction: 'none' }}
+                            // Without this the browser can start a native drag of the selected SVG text and swallow the pointer moves.
+                            onDragStart={e => e.preventDefault()}
                             onPointerMove={e => { if (dragging !== null) onChange(lights.map((l, i) => (i === dragging ? { ...l, ...svgPoint(e) } : l))); }}
                             onPointerUp={() => setDragging(null)}
                             onPointerCancel={() => setDragging(null)}
                         >
                             {lights.map((l, i) => (
-                                <g key={i} className="cursor-grab" onPointerDown={e => { (e.currentTarget.ownerSVGElement as SVGSVGElement).setPointerCapture(e.pointerId); setSel(i); setDragging(i); }}>
+                                <g key={i} className="cursor-grab" onPointerDown={e => { e.preventDefault(); (e.currentTarget.ownerSVGElement as SVGSVGElement).setPointerCapture(e.pointerId); setSel(i); setDragging(i); }}>
                                     <circle cx={l.x * R} cy={l.y * R} r={15} fill="transparent" stroke={i === idx ? '#ec4899' : 'transparent'} strokeWidth={2} strokeDasharray="4 3" />
                                 </g>
                             ))}
