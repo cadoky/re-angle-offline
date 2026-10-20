@@ -1,6 +1,6 @@
 // Run: npm test
 import assert from 'node:assert/strict';
-import { buildPrompt, colorName, defaultSettings, describeOrbit, getWarnings, targets } from './buildPrompt.ts';
+import { buildPrompt, colorName, CUSTOM, defaultSettings, describeCustomLight, describeOrbit, getWarnings, targets } from './buildPrompt.ts';
 
 const s = (over = {}) => ({ ...defaultSettings, ...over });
 
@@ -64,5 +64,15 @@ assert.equal(colorName('nope'), 'nope');
 assert.deepEqual(getWarnings(s({ lens: '200mm Telephoto', scale: 'Wide Shot (General)' })), ['teleWide']);
 assert.deepEqual(getWarnings(s({ lens: '8mm Fisheye', scale: 'Close-up (Head/Shoulder)' })), ['ultraWideClose']);
 assert.deepEqual(getWarnings(s()), []);
+
+// Custom light plot: positions and roles become explicit sentences; an empty plot changes nothing.
+const key = { x: -0.7, y: 0.7, role: 'Key', type: 'Strobe', modifier: 'Octabox', color: '#ffffff', height: 'High' };
+assert.equal(describeCustomLight(key), 'key light: strobe with an octabox, camera-left, 45° from the camera axis, far, above head height, angled down, white (#ffffff)');
+assert.match(describeCustomLight({ ...key, x: 0.3, y: -0.6, role: 'Background', modifier: 'Bare Bulb' }), /^background light aimed at the backdrop: bare-bulb strobe, camera-right, 153° .*behind the subject/);
+const plot = JSON.parse(buildPrompt(s({ lighting: CUSTOM, customLights: [key, { ...key, x: 0.6, role: 'Fill', color: '#ff004c' }] }), 'gemini'));
+assert.match(plot.lighting, /^custom 2-light setup: 1\) key light.*; 2\) fill light.*crimson/);
+assert.ok(!plot.preserve.includes('lighting'));
+assert.ok(JSON.parse(buildPrompt(s({ lighting: CUSTOM }), 'gemini')).preserve.includes('lighting'));
+assert.match(buildPrompt(s({ lighting: CUSTOM, customLights: [key] }), 'sd'), /custom 1-light setup/);
 
 console.log('engine tests passed');

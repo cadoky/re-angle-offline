@@ -2,6 +2,16 @@ import { lightingPrompts, materialEngMapping } from '../data/promptText.ts';
 
 // Option values (keys from data/locales) are what the engine reads; 'Maintain Original' means "leave as in the reference".
 export const KEEP = 'Maintain Original';
+// Lighting value that reads the light plot in settings.customLights instead of a preset.
+export const CUSTOM = 'Custom Setup';
+
+export const lightRoles = ['Key', 'Fill', 'Rim', 'Hair', 'Accent', 'Background'];
+export const lightTypes = ['Strobe', 'Continuous LED', 'Tungsten', 'Daylight / Sun', 'Neon Tube', 'Practical Lamp'];
+export const lightModifiers = ['Bare Bulb', 'Softbox', 'Octabox', 'Stripbox', 'Umbrella', 'Beauty Dish', 'Honeycomb Grid', 'Snoot', 'Fresnel', 'Gobo'];
+export const lightHeights = ['Floor', 'Low', 'Eye Level', 'High', 'Overhead'];
+export const MAX_LIGHTS = 5;
+// Top-down position, same plot as the lighting diagrams: x -1 camera-left … 1 camera-right, y -1 behind the subject … 1 at the camera.
+export type CustomLight = { x: number; y: number; role: string; type: string; modifier: string; color: string; height: string };
 
 export const defaultSettings = {
   manualDirectives: '',
@@ -28,6 +38,7 @@ export const defaultSettings = {
   gelColorLeft: '#ff004c',
   gelColorRight: '#00eaff',
   gelColorBack: '#9d00ff',
+  customLights: [] as CustomLight[],
 };
 
 export type Settings = typeof defaultSettings;
@@ -88,6 +99,28 @@ export function describeOrbit(deg: number | null): { text: string; tag: string }
   return { text: `${d}° — camera moves around to the subject's ${side}, showing ${view}`, tag };
 }
 
+const heights: Record<string, string> = {
+  'Floor': 'at floor level, pointing up',
+  'Low': 'below face height, angled up',
+  'Eye Level': 'at face height',
+  'High': 'above head height, angled down',
+  'Overhead': 'directly overhead, pointing down',
+};
+
+// 0° = from the camera axis, 90° = beside the subject, 180° = directly behind them.
+export function describeCustomLight(l: CustomLight): string {
+  const deg = Math.round((Math.atan2(l.x, l.y) * 180) / Math.PI);
+  const a = Math.abs(deg);
+  const side = deg < 0 ? 'camera-left' : 'camera-right';
+  const where = a <= 10 ? 'frontal, on the camera axis' : a >= 170 ? 'directly behind the subject' : `${side}, ${a}° from the camera axis${a > 100 ? ' (behind the subject)' : ''}`;
+  const r = Math.hypot(l.x, l.y);
+  const distance = r < 0.5 ? 'close' : r < 0.95 ? 'medium distance' : 'far';
+  const mod = l.modifier.toLowerCase();
+  const source = l.modifier === 'Bare Bulb' ? `bare-bulb ${l.type.toLowerCase()}` : `${l.type.toLowerCase()} with ${/^[aeiou]/.test(mod) ? 'an' : 'a'} ${mod}`;
+  const role = l.role === 'Background' ? 'background light aimed at the backdrop' : `${l.role.toLowerCase()} light`;
+  return `${role}: ${source}, ${where}, ${distance}, ${heights[l.height] || l.height}, ${colorName(l.color)}`;
+}
+
 const namedColors: [string, number, number, number][] = [
   ['white', 255, 255, 255], ['light grey', 200, 200, 200], ['grey', 128, 128, 128], ['charcoal', 54, 54, 54], ['black', 0, 0, 0],
   ['red', 230, 20, 20], ['crimson', 220, 20, 60], ['orange', 255, 140, 0], ['amber', 255, 191, 0], ['yellow', 255, 235, 0],
@@ -133,7 +166,10 @@ function resolve(s: Settings) {
   const scene = studio ? '' : s.manualDirectives.trim();
   const roll = parseFloat(s.cameraSlant) || 0;
 
-  let lighting = set(s.lighting) ? (lightingPrompts[s.lighting] || s.lighting) : undefined;
+  const custom = s.lighting === CUSTOM ? (s.customLights || []).slice(0, MAX_LIGHTS) : [];
+  let lighting = s.lighting === CUSTOM
+    ? (custom.length ? `custom ${custom.length}-light setup: ${custom.map((l, i) => `${i + 1}) ${describeCustomLight(l)}`).join('; ')}` : undefined)
+    : set(s.lighting) ? (lightingPrompts[s.lighting] || s.lighting) : undefined;
   if (s.lighting === 'Coloured Gels') {
     const gels = [['left', s.gelColorLeft], ['right', s.gelColorRight], ['behind the subject', s.gelColorBack]]
       .filter(([, c]) => c).map(([where, c]) => `${colorName(c)} ${where === 'behind the subject' ? where : `from the ${where}`}`);
@@ -218,7 +254,7 @@ function tags(r: Resolved, s: Settings): string {
     r.scene || undefined,
     r.studio && `studio, ${r.studio.background} backdrop, ${r.studio.floor} floor`,
     r.body && `shot on ${r.body}`, optics(r),
-    set(s.lighting) ? `${s.lighting.toLowerCase()} lighting` : undefined,
+    s.lighting === CUSTOM ? r.lighting : set(s.lighting) ? `${s.lighting.toLowerCase()} lighting` : undefined,
     ...Object.values(r.look),
   ].filter(Boolean);
   return `${t.join(', ')}\n\nNegative prompt: ${s.negativePrompt.trim()}`;

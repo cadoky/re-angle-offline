@@ -40,10 +40,12 @@ import DropdownComponent from './components/DropdownComponent';
 import HowItWorksModal from './components/HowItWorksModal';
 import AnglePad from './components/AnglePad';
 import LightDiagram from './components/LightDiagram';
+import LightingEditor, { presets as lightPresets } from './components/LightingEditor';
+import { customToLight } from './data/lightingSetups';
 import { angleDirections, locales, options } from './data/constants';
 import { lightingPrompts } from './data/promptText';
 import scenarios from './data/scenarios.json';
-import { buildPrompt, defaultSettings, KEEP, getWarnings, targets, type Settings, type Target } from './engine/buildPrompt';
+import { buildPrompt, CUSTOM, defaultSettings, KEEP, getWarnings, targets, type Settings, type Target } from './engine/buildPrompt';
 
 type HistoryItem = { prompt: string; target: Target; settings: Settings; at: number };
 const HISTORY_KEY = 're-angle-history';
@@ -63,6 +65,11 @@ const App: React.FC = () => {
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [isLightingHelpOpen, setIsLightingHelpOpen] = useState(false);
   const [isContactSheetOpen, setIsContactSheetOpen] = useState(false);
+  const [isLightEditorOpen, setIsLightEditorOpen] = useState(false);
+  const openLightEditor = () => {
+    setSettings(prev => ({ ...prev, lighting: CUSTOM, customLights: prev.customLights.length ? prev.customLights : [{ ...lightPresets[0], color: '#ffffff' }] }));
+    setIsLightEditorOpen(true);
+  };
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     try {
@@ -76,7 +83,7 @@ const App: React.FC = () => {
   const {
     manualDirectives, angle, angleDegree, cameraSlant, lens, scale, pose, ratio, lighting, filmStock, camera, aperture,
     style, grading, texture, negativePrompt, isStudioMode, studioBgColor, studioBgTexture, studioFloorColor, studioFloorTexture,
-    gelColorLeft, gelColorRight, gelColorBack
+    gelColorLeft, gelColorRight, gelColorBack, customLights
   } = settings;
   const [target, setTarget] = useState<Target>('gemini');
   const keepLabel = t.options.angles[KEEP];
@@ -322,11 +329,12 @@ const App: React.FC = () => {
                         icon={<Sun size={12} />}
                         value={lighting}
                         options={lightingMode === 'basic' ? options.lightsBasic : options.lightsAdvanced}
-                        onChange={update('lighting')}
+                        onChange={(v: string) => (v === CUSTOM ? openLightEditor() : update('lighting')(v))}
                         translations={t.options.lights as Record<string, string>}
                         helpTexts={t.helpDescriptions}
                       />
-                      <LightDiagram setup={lighting} colors={{ gelLeft: gelColorLeft, gelRight: gelColorRight, gelBack: gelColorBack }} className="w-full max-w-[200px] mx-auto aspect-square" />
+                      <button onClick={openLightEditor} className={`w-full h-10 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-colors ${lighting === CUSTOM ? 'bg-pink-600 border-pink-500 text-white hover:bg-pink-500' : 'bg-white/5 border-dashed border-white/20 text-pink-500 hover:bg-pink-500/10'}`}>{t.labels.customLightEdit}{lighting === CUSTOM ? ` (${customLights.length})` : ''}</button>
+                      <LightDiagram setup={lighting} lights={lighting === CUSTOM ? customLights.map(customToLight) : undefined} colors={{ gelLeft: gelColorLeft, gelRight: gelColorRight, gelBack: gelColorBack }} className="w-full max-w-[200px] mx-auto aspect-square" />
                     </div>
                   </div>
 
@@ -480,6 +488,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </div>
+      <LightingEditor isOpen={isLightEditorOpen} onClose={() => setIsLightEditorOpen(false)} lights={customLights} onChange={update('customLights')} t={t as unknown as { labels: Record<string, string>; options: Record<string, Record<string, string>> }} />
       <HowItWorksModal isOpen={isContactSheetOpen} onClose={() => setIsContactSheetOpen(false)} title={t.labels.contactSheet} body={t.labels.contactSheetBody}>
         <div className="mt-4 space-y-3">
           {contactSheet.map(({ deg, prompt }) => (

@@ -12,6 +12,24 @@ export type Light = {
 // face: degrees the subject's head turns from the camera; negative = towards camera-left.
 export type LightSetup = { lights: Light[]; face?: number };
 
+import type { CustomLight } from '../engine/buildPrompt.ts';
+
+const roleLabels: Record<string, string> = { Key: 'Key', Fill: 'Fill', Rim: 'Rim', Hair: 'Hair', Accent: 'Accent', Background: 'BG' };
+// A custom plot light drawn with the same shapes as the preset diagrams.
+export const customToLight = (c: CustomLight): Light => ({
+  x: c.x,
+  y: c.y,
+  label: roleLabels[c.role] || c.role,
+  color: c.color,
+  aim: c.role === 'Background' ? 'bg' : undefined,
+  size: c.modifier === 'Octabox' ? 1.3 : c.modifier === 'Beauty Dish' ? 0.7 : undefined,
+  kind: c.type === 'Daylight / Sun' ? 'sun'
+    : c.type === 'Neon Tube' || c.modifier === 'Stripbox' ? 'strip'
+    : c.modifier === 'Umbrella' ? 'umbrella'
+    : ['Softbox', 'Octabox', 'Beauty Dish'].includes(c.modifier) ? 'box'
+    : 'spot',
+});
+
 const key45: Light = { x: -0.64, y: 0.64, kind: 'box', label: 'Key' };
 const loopKey: Light = { x: -0.45, y: 0.78, kind: 'box', label: 'Key' };
 const warm = '#fbbf24';

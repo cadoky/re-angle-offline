@@ -4,7 +4,7 @@ import { tr } from './locales/tr.ts';
 import { lightingSetups } from './lightingSetups.ts';
 
 for (const key of Object.keys(tr.options.lights)) {
-  if (key === 'Maintain Original') continue;
+  if (key === 'Maintain Original' || key === 'Custom Setup') continue; // custom draws settings.customLights
   assert.ok(lightingSetups[key]?.lights.length, `missing lighting setup: ${key}`);
 }
 for (const [key, s] of Object.entries(lightingSetups)) {

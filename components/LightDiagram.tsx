@@ -1,7 +1,7 @@
 import React from 'react';
-import { lightingSetups, type Light } from '../data/lightingSetups';
+import { lightingSetups, type Light, type LightSetup } from '../data/lightingSetups';
 
-const R = 78; // plot radius in viewBox units
+export const R = 78; // plot radius in viewBox units
 const BACKDROP = -94;
 const clamp = (v: number) => Math.max(-90, Math.min(90, v));
 
@@ -18,8 +18,8 @@ const shape = (l: Light, fill: string) => {
   }
 };
 
-const LightDiagram: React.FC<{ setup: string; colors?: Record<string, string>; className?: string }> = ({ setup, colors, className }) => {
-  const s = lightingSetups[setup];
+const LightDiagram: React.FC<{ setup: string; colors?: Record<string, string>; className?: string; lights?: Light[] }> = ({ setup, colors, className, lights }) => {
+  const s: LightSetup | undefined = lights ? { lights } : lightingSetups[setup];
   if (!s) return null;
   return (
     <svg viewBox="-100 -100 200 200" className={className} role="img" aria-label={setup}>
