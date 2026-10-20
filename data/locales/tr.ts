@@ -46,6 +46,7 @@ export const tr = {
         padRight: 'Sağ',
         padFront: 'Ön',
         padLeft: 'Sol',
+        padHint: 'Kamerayı sürükle',
         contactSheet: 'Contact Sheet',
         contactSheetBody: 'Aynı ayarlarla 0°, 45°, 90° ve 180° için 4 prompt. Her birini ayrı kopyala.',
         history: 'Geçmiş',

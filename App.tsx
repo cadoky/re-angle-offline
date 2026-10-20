@@ -265,6 +265,7 @@ const App: React.FC = () => {
                     elevationLabels={t.options.angles as Record<string, string>}
                     sideLabels={{ back: t.labels.padBack, right: t.labels.padRight, front: t.labels.padFront, left: t.labels.padLeft }}
                     keepLabel={keepLabel}
+                    hint={t.labels.padHint}
                   />
                   <span className="text-[10px] font-black text-pink-500 uppercase tracking-[0.2em] flex items-center">{t.labels.angle}<HelpTooltip text={t.helpDescriptions['Kamera Açısı'] || t.helpDescriptions['Camera Angle']} /></span>
                 </div>

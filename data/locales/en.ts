@@ -46,6 +46,7 @@ export const en = {
         padRight: 'Right',
         padFront: 'Front',
         padLeft: 'Left',
+        padHint: 'Drag to move the camera',
         contactSheet: 'Contact Sheet',
         contactSheetBody: 'Four prompts with the same settings at 0°, 45°, 90° and 180°. Copy each one separately.',
         history: 'History',
