@@ -47,6 +47,8 @@ export const en = {
         padFront: 'Front',
         padLeft: 'Left',
         padHint: 'Drag to move the camera',
+        camPosition: 'Camera Position',
+        camSectors: ['Front of model', 'Front-left', 'Model\'s left', 'Back-left', 'Behind model', 'Back-right', 'Model\'s right', 'Front-right'],
         contactSheet: 'Contact Sheet',
         contactSheetBody: 'Four prompts with the same settings at 0°, 45°, 90° and 180°. Copy each one separately.',
         history: 'History',

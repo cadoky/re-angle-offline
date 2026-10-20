@@ -17,6 +17,8 @@ interface AnglePadProps {
     sideLabels: { back: string; right: string; front: string; left: string };
     keepLabel: string;
     hint: string;
+    positionLabel: string;
+    sectors: string[]; // 8 names, one per 45° from 0° (in front of the model)
 }
 
 const norm = (d: number) => ((d % 360) + 360) % 360;
@@ -31,7 +33,7 @@ const project = (x: number, y: number, z: number) => ({
 });
 
 // Pseudo-3D scene: a figure on a ground ring and a camera on a sphere around them. Drag left/right orbits, up/down changes height.
-const AnglePad: React.FC<AnglePadProps> = ({ orbit, elevation, onChange, elevationLabels, sideLabels, keepLabel, hint }) => {
+const AnglePad: React.FC<AnglePadProps> = ({ orbit, elevation, onChange, elevationLabels, sideLabels, keepLabel, hint, positionLabel, sectors }) => {
     const row = rows.findIndex(([k]) => k === elevation);
     const isKeep = orbit === null && row < 0;
     const drag = useRef<{ x: number; y: number; orbit: number; row: number; moved: boolean } | null>(null);
@@ -62,6 +64,7 @@ const AnglePad: React.FC<AnglePadProps> = ({ orbit, elevation, onChange, elevati
     const orbitRing = project(0, R * Math.sin(phi), 0);
     const camAngle = (Math.atan2(-cam.sy, -cam.sx) * 180) / Math.PI;
     const camScale = 1 + cam.depth / (R * 2.5);
+    const sector = orbit === null ? null : sectors[Math.round(orbit / 45) % 8];
     const readout = isKeep ? keepLabel : [orbit === null ? null : `${orbit}°`, row < 0 ? null : elevationLabels[elevation]].filter(Boolean).join(' · ');
     const dim = orbit === null || row < 0;
 
@@ -113,11 +116,30 @@ const AnglePad: React.FC<AnglePadProps> = ({ orbit, elevation, onChange, elevati
                     <circle cx={3} cy={-37} r={1.1} fill="#ec4899" />
                     {/* a camera behind the figure shows through as a ghost */}
                     {!isKeep && camera(cam.depth >= 0 ? 1 : 0.4)}
+                    {/* top-down mini map: removes the front/back ambiguity of the 3D view, front is down */}
+                    <g transform="translate(76 -76)">
+                        <circle r={18} fill="rgba(0,0,0,0.6)" stroke="rgba(255,255,255,0.2)" />
+                        <path d="M -3 4 L 0 9 L 3 4 Z" fill="#ec4899" />
+                        <circle r={4.5} fill="#3f3f46" stroke="#a1a1aa" />
+                        {orbit !== null && <circle cx={13 * Math.sin(theta)} cy={13 * Math.cos(theta)} r={3.5} fill="#ec4899" stroke="#fff" strokeWidth={1} />}
+                    </g>
                 </svg>
             </div>
             <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest -mt-1">{hint}</span>
-            <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="flex flex-col items-center text-center">
+                {sector && <span className="text-[11px] font-black text-pink-500 uppercase tracking-widest">{sector}</span>}
                 <span className="text-[10px] font-black text-white uppercase tracking-widest whitespace-nowrap">{readout}</span>
+            </div>
+            <div className="w-full">
+                <span className="block text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-1 text-center">{positionLabel}</span>
+                {/* screen order: the model's right is on the viewer's left */}
+                <div className="grid grid-cols-2 gap-1">
+                    {[0, 180, 270, 90].map(d => (
+                        <button key={d} type="button" onClick={() => onChange(d, row < 0 ? KEEP : elevation)} className={`h-8 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-colors ${orbit === d ? 'bg-pink-600 border-pink-500 text-white' : 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10'}`}>{sectors[d / 45]}</button>
+                    ))}
+                </div>
+            </div>
+            <div className="flex items-center justify-center">
                 {!isKeep && (
                     <button type="button" onClick={() => onChange(null, KEEP)} className="px-2 py-1 bg-white/5 border border-white/10 rounded-md hover:bg-white/10 text-zinc-400 font-bold text-[8px] uppercase tracking-widest">{keepLabel}</button>
                 )}

@@ -266,6 +266,8 @@ const App: React.FC = () => {
                     sideLabels={{ back: t.labels.padBack, right: t.labels.padRight, front: t.labels.padFront, left: t.labels.padLeft }}
                     keepLabel={keepLabel}
                     hint={t.labels.padHint}
+                    positionLabel={t.labels.camPosition}
+                    sectors={t.labels.camSectors}
                   />
                   <span className="text-[10px] font-black text-pink-500 uppercase tracking-[0.2em] flex items-center">{t.labels.angle}<HelpTooltip text={t.helpDescriptions['Kamera Açısı'] || t.helpDescriptions['Camera Angle']} /></span>
                 </div>
