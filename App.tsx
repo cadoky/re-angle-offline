@@ -29,8 +29,7 @@ import {
   Telescope,
   Globe,
   TriangleAlert,
-  History,
-  LayoutGrid
+  History
 } from 'lucide-react';
 
 import HelpTooltip from './components/HelpTooltip';
@@ -64,7 +63,6 @@ const App: React.FC = () => {
   // --- STATE ---
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [isLightingHelpOpen, setIsLightingHelpOpen] = useState(false);
-  const [isContactSheetOpen, setIsContactSheetOpen] = useState(false);
   const [isLightEditorOpen, setIsLightEditorOpen] = useState(false);
   const openLightEditor = () => {
     setSettings(prev => ({ ...prev, lighting: CUSTOM, customLights: prev.customLights.length ? prev.customLights : [{ ...lightPresets[0], color: '#ffffff' }] }));
@@ -85,7 +83,7 @@ const App: React.FC = () => {
     style, grading, texture, negativePrompt, isStudioMode, studioBgColor, studioBgTexture, studioFloorColor, studioFloorTexture,
     gelColorLeft, gelColorRight, gelColorBack, customLights
   } = settings;
-  const [target, setTarget] = useState<Target>('gemini');
+  const [target, setTarget] = useState<Target>('json');
   const keepLabel = t.options.angles[KEEP];
   // Camera/lens/aperture values are proper names; only "Maintain Original" needs translating.
   const withKeep = (opts: string[]) => Object.fromEntries(opts.map(o => [o, o === KEEP ? keepLabel : o]));
@@ -138,7 +136,6 @@ const App: React.FC = () => {
 
   const handleCopy = () => copyPrompt(generatedPrompt, settings, target, 'main');
   const copied = copiedKey === 'main';
-  const contactSheet = [0, 45, 90, 180].map(deg => ({ deg, prompt: buildPrompt({ ...settings, angleDegree: deg }, target) }));
 
   const enhanceDirectives = () => {
     if (isStudioMode) return;
@@ -289,7 +286,7 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   <textarea value={manualDirectives} onChange={(e) => update('manualDirectives')(e.target.value)} disabled={isStudioMode} rows={3} className="w-full glass-input !h-32 rounded-2xl px-6 py-4 text-sm text-zinc-100 outline-hidden resize-none focus:ring-2 focus:ring-pink-500/40 placeholder:text-zinc-600 transition-all shadow-inner font-medium" placeholder={isStudioMode ? t.placeholders.studioModeLocked : dynamicPlaceholder} />
-                  {target === 'sd' && (
+                  {(target === 'sd' || target === 'midjourney') && (
                     <div className="space-y-2 pt-2 border-t border-white/5">
                       <div className="flex items-center gap-2 px-1"><EyeOff size={14} className="text-red-500" /><span className="text-[10px] font-black uppercase text-zinc-400 font-bold">{t.labels.negativePrompt}</span></div>
                       <textarea value={negativePrompt} onChange={(e) => update('negativePrompt')(e.target.value)} rows={2} className="w-full glass-input !h-16 rounded-xl px-3 py-2 text-[10px] text-zinc-400 select-all leading-relaxed" />
@@ -454,12 +451,12 @@ const App: React.FC = () => {
 
             <div className="glass-panel p-6 rounded-[2.5rem] flex flex-col h-full relative justify-between">
               <div className="flex items-center justify-between mb-4 px-2 shrink-0">
-                <div className="flex items-center gap-2"><Code size={16} className="text-pink-500" /><span className="text-[11px] font-black uppercase tracking-widest text-white font-bold">{target === 'gemini' ? t.labels.jsonPrompt : t.labels.prompt}</span></div>
+                <div className="flex items-center gap-2"><Code size={16} className="text-pink-500" /><span className="text-[11px] font-black uppercase tracking-widest text-white font-bold">{target === 'json' ? t.labels.jsonPrompt : t.labels.prompt}</span></div>
                 {copied && <span className="text-[10px] font-black text-green-500 uppercase animate-pulse font-bold">{t.labels.copied}</span>}
               </div>
               <div className="flex flex-col gap-1.5 mb-4 px-2 shrink-0">
                 <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">{t.labels.targetModel}</span>
-                <div className="grid grid-cols-4 bg-black/40 rounded-lg p-0.5 border border-white/10">
+                <div className="grid grid-cols-4 gap-0.5 bg-black/40 rounded-lg p-0.5 border border-white/10">
                   {targets.map(tg => (
                     <button key={tg} onClick={() => setTarget(tg)} className={`px-1 py-1.5 rounded-md text-[8px] font-black uppercase transition-all ${target === tg ? 'bg-pink-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>{t.targets[tg]}</button>
                   ))}
@@ -479,9 +476,8 @@ const App: React.FC = () => {
                     <h2 className="text-[12px] font-black uppercase italic tracking-widest text-white">{copied ? t.labels.copied : t.labels.copy}</h2>
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-2 w-full mt-6">
-                  <button onClick={() => setIsContactSheetOpen(true)} className="flex items-center justify-center gap-2 h-11 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 text-white font-black text-[9px] uppercase tracking-widest"><LayoutGrid size={14} className="text-pink-500" />{t.labels.contactSheet}</button>
-                  <button onClick={() => setIsHistoryOpen(true)} className="flex items-center justify-center gap-2 h-11 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 text-white font-black text-[9px] uppercase tracking-widest"><History size={14} className="text-pink-500" />{t.labels.history} ({history.length})</button>
+                <div className="w-full mt-6">
+                  <button onClick={() => setIsHistoryOpen(true)} className="flex items-center justify-center gap-2 h-11 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 text-white font-black text-[9px] uppercase tracking-widest w-full"><History size={14} className="text-pink-500" />{t.labels.history} ({history.length})</button>
                 </div>
               </div>
             </div>
@@ -489,19 +485,6 @@ const App: React.FC = () => {
         </div>
       </div>
       <LightingEditor isOpen={isLightEditorOpen} onClose={() => setIsLightEditorOpen(false)} lights={customLights} onChange={update('customLights')} t={t as unknown as { labels: Record<string, string>; options: Record<string, Record<string, string>> }} />
-      <HowItWorksModal isOpen={isContactSheetOpen} onClose={() => setIsContactSheetOpen(false)} title={t.labels.contactSheet} body={t.labels.contactSheetBody}>
-        <div className="mt-4 space-y-3">
-          {contactSheet.map(({ deg, prompt }) => (
-            <div key={deg} className="bg-white/5 border border-white/10 rounded-2xl p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-black text-pink-500 uppercase tracking-widest">{deg}°</span>
-                <button onClick={() => copyPrompt(prompt, { ...settings, angleDegree: deg }, target, `sheet-${deg}`)} className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${copiedKey === `sheet-${deg}` ? 'bg-green-600 text-white' : 'bg-pink-600 hover:bg-pink-500 text-white'}`}>{copiedKey === `sheet-${deg}` ? t.labels.copied : t.labels.copy}</button>
-              </div>
-              <pre className="whitespace-pre-wrap font-mono text-[10px] text-zinc-400 max-h-40 overflow-auto custom-scrollbar">{prompt}</pre>
-            </div>
-          ))}
-        </div>
-      </HowItWorksModal>
       <HowItWorksModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} title={t.labels.history} body={history.length ? '' : t.labels.historyEmpty}>
         <div className="mt-4 space-y-3">
           {history.map(h => (

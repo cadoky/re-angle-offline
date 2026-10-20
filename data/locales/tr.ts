@@ -35,7 +35,7 @@ export const tr = {
         created_by: 'Created by Ulaş Çolaker',
         howItWorks: 'Nasıl Çalışır?',
         howItWorksTitle: 'Algoritma Nasıl Çalışır?',
-        howItWorksBody: 'Re-angle, seçtiğiniz parametreleri (açı, lens, ışık vb.) görsel düzenleme modellerinin anlayacağı bir prompt\'a çevirir. Hiçbir yere istek atmaz, her şey tarayıcıda çalışır.\n\nAlgoritma;\n1. **Sadece değişeni yazar**: "Değiştirme" seçili alanlar prompt\'a girmez, korunacaklar listesine eklenir (yüz, saç, kıyafet, ışık...).\n2. **Net kamera dili**: Yön derecesini "kamera öznenin soluna geçer, sol profilini gösterir" gibi açık bir cümleye çevirir.\n3. **Hedefe göre format**: Gemini (Nano Banana) için JSON, Flux Kontext için düzenleme talimatı, SD/ComfyUI için tag dizisi ve negative prompt, ya da düz metin.\n4. **Çakışma uyarısı**: Genel plan + 200mm gibi birbiriyle çelişen seçimlerde uyarır.',
+        howItWorksBody: 'Re-angle, seçtiğiniz parametreleri (açı, lens, ışık vb.) görsel düzenleme modellerinin anlayacağı bir prompt\'a çevirir. Hiçbir yere istek atmaz, her şey tarayıcıda çalışır.\n\nAlgoritma;\n1. **Sadece değişeni yazar**: "Değiştirme" seçili alanlar prompt\'a girmez, korunacaklar listesine eklenir (yüz, saç, kıyafet, ışık...).\n2. **Net kamera dili**: Yön derecesini "kamera öznenin soluna geçer, sol profilini gösterir" gibi açık bir cümleye çevirir.\n3. **Hedefe göre format**: Yapılandırılmış JSON, Gemini (Nano Banana) için "Using the provided photo..." kalıbı, ChatGPT için başlıklı madde listesi, Midjourney için --oref referanslı parametreli prompt, Flux Kontext ve Seedream için kısa düzenleme talimatı, SD/ComfyUI için tag dizisi ve negative prompt, ya da düz metin.\n4. **Çakışma uyarısı**: Genel plan + 200mm gibi birbiriyle çelişen seçimlerde uyarır.',
         gelLeft: 'Sol Gel',
         gelRight: 'Sağ Gel',
         gelBack: 'Arka Gel',
@@ -62,8 +62,6 @@ export const tr = {
         lightDistance: 'Mesafe',
         done: 'Tamam',
         camSectors: ['Model önü', 'Ön-sol çapraz', 'Model solu', 'Arka-sol çapraz', 'Model arkası', 'Arka-sağ çapraz', 'Model sağı', 'Ön-sağ çapraz'],
-        contactSheet: 'Contact Sheet',
-        contactSheetBody: 'Aynı ayarlarla 0°, 45°, 90° ve 180° için 4 prompt. Her birini ayrı kopyala.',
         history: 'Geçmiş',
         historyEmpty: 'Henüz kopyalanan prompt yok. Kopyaladığın son 10 prompt burada durur (sadece bu tarayıcıda).',
         restore: 'Ayarları Yükle'
@@ -72,7 +70,7 @@ export const tr = {
         manualPrompt: 'İsteğe bağlı prompt (Sadece İngilizce). Örn: ',
         studioModeLocked: 'Studio Mode Aktif: Manuel prompt kilitlendi.'
     },
-    targets: { gemini: 'Gemini', flux: 'Flux', sd: 'SD', text: 'Metin' },
+    targets: { json: 'JSON', gemini: 'Gemini', chatgpt: 'ChatGPT', midjourney: 'Midjourney', flux: 'Flux', seedream: 'Seedream', sd: 'SD', text: 'Metin' },
     warnings: {
         teleWide: 'Genel plan için 200mm çok dar: model ya kadrajı ya da lensi yok sayar. 24–35mm deneyin.',
         ultraWideClose: 'Yakın planda çok geniş açı lens yüzü bozar. 50–85mm deneyin.'

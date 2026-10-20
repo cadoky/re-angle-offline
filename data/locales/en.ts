@@ -35,7 +35,7 @@ export const en = {
         created_by: 'Created by Ulaş Çolaker',
         howItWorks: 'How It Works?',
         howItWorksTitle: 'How Algorithm Works?',
-        howItWorksBody: 'Re-angle turns your selected parameters (angle, lens, lighting, etc.) into a prompt that image-editing models understand. Nothing is sent anywhere; everything runs in your browser.\n\nThe Algorithm;\n1. **Only what changes**: Fields left on "Maintain Original" stay out of the prompt and go to the preserve list (face, hair, outfit, lighting...).\n2. **Clear camera language**: The orbit degree becomes an explicit sentence such as "the camera moves to the subject\'s left, showing their left profile".\n3. **Per-model format**: JSON for Gemini (Nano Banana), an edit instruction for Flux Kontext, tags plus negative prompt for SD/ComfyUI, or plain text.\n4. **Conflict warnings**: Flags contradicting choices such as Wide Shot + 200mm.',
+        howItWorksBody: 'Re-angle turns your selected parameters (angle, lens, lighting, etc.) into a prompt that image-editing models understand. Nothing is sent anywhere; everything runs in your browser.\n\nThe Algorithm;\n1. **Only what changes**: Fields left on "Maintain Original" stay out of the prompt and go to the preserve list (face, hair, outfit, lighting...).\n2. **Clear camera language**: The orbit degree becomes an explicit sentence such as "the camera moves to the subject\'s left, showing their left profile".\n3. **Per-model format**: structured JSON, Google\'s "Using the provided photo..." template for Gemini (Nano Banana), sectioned bullet instructions for ChatGPT, a parameter prompt with --oref for Midjourney, short edit directives for Flux Kontext and Seedream, tags plus negative prompt for SD/ComfyUI, or plain text.\n4. **Conflict warnings**: Flags contradicting choices such as Wide Shot + 200mm.',
         gelLeft: 'Left Gel',
         gelRight: 'Right Gel',
         gelBack: 'Back Gel',
@@ -62,8 +62,6 @@ export const en = {
         lightDistance: 'Distance',
         done: 'Done',
         camSectors: ['Front of model', 'Front-left', 'Model\'s left', 'Back-left', 'Behind model', 'Back-right', 'Model\'s right', 'Front-right'],
-        contactSheet: 'Contact Sheet',
-        contactSheetBody: 'Four prompts with the same settings at 0°, 45°, 90° and 180°. Copy each one separately.',
         history: 'History',
         historyEmpty: 'No copied prompts yet. Your last 10 copied prompts are kept here (this browser only).',
         restore: 'Load Settings'
@@ -72,7 +70,7 @@ export const en = {
         manualPrompt: 'Optional prompt (English only). E.g: ',
         studioModeLocked: 'Studio Mode Active: Manual prompt locked.'
     },
-    targets: { gemini: 'Gemini', flux: 'Flux', sd: 'SD', text: 'Text' },
+    targets: { json: 'JSON', gemini: 'Gemini', chatgpt: 'ChatGPT', midjourney: 'Midjourney', flux: 'Flux', seedream: 'Seedream', sd: 'SD', text: 'Text' },
     warnings: {
         teleWide: '200mm is too tight for a wide shot: the model will ignore either the framing or the lens. Try 24–35mm.',
         ultraWideClose: 'An ultra-wide lens distorts faces in a close-up. Try 50–85mm.'
