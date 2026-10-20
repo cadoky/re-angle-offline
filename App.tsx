@@ -11,6 +11,8 @@ import {
   Check,
   Sparkles,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   User,
   Gauge,
   PersonStanding,
@@ -133,6 +135,17 @@ const App: React.FC = () => {
   };
 
   const resetAll = () => setSettings(defaultSettings);
+
+  const numberInput = 'w-full glass-input rounded-xl pl-9 pr-9 py-2.5 text-xs font-bold';
+  const stepper = (onStep: (dir: number) => void) => (
+    <div className="absolute right-1.5 flex flex-col">
+      {([[1, ChevronUp, 'rounded-t-md'], [-1, ChevronDown, 'rounded-b-md']] as const).map(([dir, Icon, round]) => (
+        <button key={dir} type="button" aria-label={dir > 0 ? '+' : '-'} onClick={() => onStep(dir)} className={`h-[18px] w-6 flex items-center justify-center ${round} text-zinc-500 hover:text-pink-500 hover:bg-white/10 transition-colors`}>
+          <Icon size={12} strokeWidth={3} />
+        </button>
+      ))}
+    </div>
+  );
   useEffect(() => {
     const out = (e: MouseEvent) => {
       if (angleMenuRef.current && !angleMenuRef.current.contains(e.target as Node)) setIsAngleMenuOpen(false);
@@ -359,15 +372,15 @@ const App: React.FC = () => {
 
               <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row gap-6 items-end relative">
                 <div className="grid grid-cols-3 gap-4 flex-1 w-full">
-                  <div className="flex flex-col">
+                  <div className="flex flex-col justify-end">
                     <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 px-1 flex items-center gap-2">{t.labels.orbitalDirection} <HelpTooltip text={t.helpDescriptions['Yön (° Orbital)'] || t.helpDescriptions['Direction (° Orbital)']} /></span>
-                    <div className="relative flex items-center"><Compass className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={angleDegree ?? ''} placeholder="—" onChange={(e) => update('angleDegree')(e.target.value === '' ? null : parseInt(e.target.value) || 0)} className="w-full glass-input rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold" /></div>
+                    <div className="relative flex items-center"><Compass className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={angleDegree ?? ''} placeholder="—" onChange={(e) => update('angleDegree')(e.target.value === '' ? null : parseInt(e.target.value) || 0)} className={numberInput} />{stepper(d => update('angleDegree')((((angleDegree ?? 0) + d * 15) % 360 + 360) % 360))}</div>
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col justify-end">
                     <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 px-1 flex items-center gap-2">{t.labels.dutchTilt} <HelpTooltip text={t.helpDescriptions['Eğim (° Dutch)'] || t.helpDescriptions['Tilt (° Dutch)']} /></span>
-                    <div className="relative flex items-center"><RotateCw className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={cameraSlant} onChange={(e) => update('cameraSlant')(e.target.value)} placeholder="0" className="w-full glass-input rounded-xl pl-10 pr-4 py-3 text-[11px] font-black text-pink-500 text-center outline-hidden focus:ring-2 focus:ring-pink-500/40 font-bold" /><span className="absolute right-3 text-[10px] font-black text-pink-500/40 font-bold">°</span></div>
+                    <div className="relative flex items-center"><RotateCw className="absolute left-3 text-pink-500 opacity-60" size={14} /><input type="number" value={cameraSlant} onChange={(e) => update('cameraSlant')(e.target.value)} placeholder="0" className={numberInput} />{stepper(d => update('cameraSlant')(String((parseInt(cameraSlant) || 0) + d)))}</div>
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col justify-end">
                     <span className="text-[8px] font-black text-zinc-600 uppercase mb-1.5 px-1 flex items-center gap-2">{t.labels.aspectRatio} <HelpTooltip text={t.helpDescriptions['En-Boy Oranı'] || t.helpDescriptions['Aspect Ratio']} /></span>
                     <SelectorComponent label="" icon={<Layout size={10} />} value={ratio} options={options.ratios} onChange={update('ratio')} />
                   </div>
