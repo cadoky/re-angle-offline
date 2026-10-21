@@ -29,7 +29,8 @@ import {
   Telescope,
   Globe,
   TriangleAlert,
-  History
+  History,
+  LayoutGrid,
 } from 'lucide-react';
 
 import HelpTooltip from './components/HelpTooltip';
@@ -79,7 +80,7 @@ const App: React.FC = () => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const update = <K extends keyof Settings>(key: K) => (val: Settings[K]) => setSettings(prev => ({ ...prev, [key]: val }));
   const {
-    manualDirectives, angle, angleDegree, cameraSlant, lens, scale, pose, ratio, lighting, filmStock, camera, aperture,
+    manualDirectives, angle, angleDegree, cameraSlant, lens, scale, composition, pose, ratio, lighting, filmStock, camera, aperture,
     style, grading, texture, negativePrompt, isStudioMode, studioBgColor, studioBgTexture, studioFloorColor, studioFloorTexture,
     gelColorLeft, gelColorRight, gelColorBack, customLights
   } = settings;
@@ -286,12 +287,10 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   <textarea value={manualDirectives} onChange={(e) => update('manualDirectives')(e.target.value)} disabled={isStudioMode} rows={3} className="w-full glass-input !h-32 rounded-2xl px-6 py-4 text-sm text-zinc-100 outline-hidden resize-none focus:ring-2 focus:ring-pink-500/40 placeholder:text-zinc-600 transition-all shadow-inner font-medium" placeholder={isStudioMode ? t.placeholders.studioModeLocked : dynamicPlaceholder} />
-                  {(target === 'sd' || target === 'midjourney') && (
-                    <div className="space-y-2 pt-2 border-t border-white/5">
-                      <div className="flex items-center gap-2 px-1"><EyeOff size={14} className="text-red-500" /><span className="text-[10px] font-black uppercase text-zinc-400 font-bold">{t.labels.negativePrompt}</span></div>
-                      <textarea value={negativePrompt} onChange={(e) => update('negativePrompt')(e.target.value)} rows={2} className="w-full glass-input !h-16 rounded-xl px-3 py-2 text-[10px] text-zinc-400 select-all leading-relaxed" />
-                    </div>
-                  )}
+                  <div className="space-y-2 pt-2 border-t border-white/5">
+                    <div className="flex items-center gap-2 px-1"><EyeOff size={14} className="text-red-500" /><span className="text-[10px] font-black uppercase text-zinc-400 font-bold">{t.labels.negativePrompt}</span></div>
+                    <textarea value={negativePrompt} onChange={(e) => update('negativePrompt')(e.target.value)} rows={2} className="w-full glass-input !h-16 rounded-xl px-3 py-2 text-[10px] text-zinc-400 select-all leading-relaxed" />
+                  </div>
                 </div>
               </div>
 
@@ -299,6 +298,7 @@ const App: React.FC = () => {
                 <DropdownComponent label={t.labels.technicalAngle} icon={<Move size={18} />} value={((t.options.angles as Record<string, string>)[angle])} options={options.angles} translations={t.options.angles as Record<string, string>} helpTexts={t.helpDescriptions} isOpen={isAngleMenuOpen} setOpen={setIsAngleMenuOpen} onChange={update('angle')} menuRef={angleMenuRef} />
                 <DropdownComponent label={t.labels.shotSettings} icon={<Maximize2 size={18} />} value={((t.options.scales as Record<string, string>)[scale])} options={options.scales} translations={t.options.scales as Record<string, string>} helpTexts={t.helpDescriptions} isOpen={isScaleMenuOpen} setOpen={setIsScaleMenuOpen} onChange={update('scale')} menuRef={scaleMenuRef} />
                 <DropdownComponent label={t.labels.modelPose} icon={<PersonStanding size={20} />} value={((t.options.poses as Record<string, string>)[pose])} options={options.poses} translations={t.options.poses as Record<string, string>} helpTexts={t.helpDescriptions} isOpen={isPoseMenuOpen} setOpen={setIsPoseMenuOpen} onChange={update('pose')} menuRef={poseMenuRef} />
+                <div className="md:col-span-3"><SelectorComponent label={t.labels.composition} icon={<LayoutGrid size={12} />} value={composition} options={options.compositions} onChange={update('composition')} translations={t.options.compositions as Record<string, string>} helpTexts={t.helpDescriptions} /></div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:px-2 relative">

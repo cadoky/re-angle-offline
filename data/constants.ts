@@ -19,6 +19,7 @@ export const options = {
     angles: Object.keys(tr.options.angles),
     lenses: ['Maintain Original', '8mm Fisheye', '14mm Ultra-Wide', '24mm Wide', '35mm Street', '50mm Prime', '85mm Portrait', '200mm Telephoto'],
     scales: Object.keys(tr.options.scales),
+    compositions: Object.keys(tr.options.compositions),
     poses: Object.keys(tr.options.poses),
     ratios: ['1:1', '4:5', '5:4', '3:4', '4:3', '2:3', '3:2', '9:16', '16:9', '21:9'],
     lights: Object.keys(tr.options.lights),

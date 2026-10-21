@@ -20,6 +20,7 @@ export const defaultSettings = {
   cameraSlant: '',
   lens: KEEP,
   scale: KEEP,
+  composition: KEEP,
   pose: KEEP,
   ratio: '3:4',
   lighting: KEEP,
@@ -65,6 +66,15 @@ const framings: Record<string, string> = {
   'Wide Shot (General)': 'wide shot, full body with the surroundings visible',
   'Extreme Wide Shot': 'extreme wide shot, the subject small in a large environment',
   'Long Distance': 'long-distance shot, the subject a tiny figure in a vast landscape',
+};
+
+const compositions: Record<string, string> = {
+  'Centered': 'subject centered in the frame',
+  'Left Third': 'subject on the left third of the frame (rule of thirds), open space to the right',
+  'Right Third': 'subject on the right third of the frame (rule of thirds), open space to the left',
+  'Negative Space Above': 'subject low in the frame with generous empty space above',
+  'Symmetrical': 'symmetrical composition, subject on the center line',
+  'Leading Lines': 'leading lines in the scene guiding the eye to the subject',
 };
 
 const poses: Record<string, string> = {
@@ -211,7 +221,9 @@ function resolve(s: Settings) {
     orbit: describeOrbit(s.angleDegree),
     elevation: elevations[s.angle],
     framing: framings[s.scale],
+    composition: compositions[s.composition],
     pose: poses[s.pose],
+    avoid: s.negativePrompt.trim() || undefined,
     roll,
     scene,
     studio: studio ? {
@@ -234,7 +246,7 @@ type Resolved = ReturnType<typeof resolve>;
 
 const optics = (r: Resolved) => [r.lensName, r.aperture].filter(Boolean).join(', ') || undefined;
 
-const viewParts = (r: Resolved) => [r.orbit && r.orbit.text.split(' — ')[1], r.elevation?.[0], r.framing].filter(Boolean) as string[];
+const viewParts = (r: Resolved) => [r.orbit && r.orbit.text.split(' — ')[1], r.elevation?.[0], r.framing, r.composition].filter(Boolean) as string[];
 
 // Sentence prompts. 'photo' is plain text (and the JSON prompt field); gemini follows Google's
 // "Using the provided image…" edit template; flux and seedream are edit models that read short directives.
@@ -269,6 +281,7 @@ function narrative(r: Resolved, style: Style): string {
   if (r.lighting) out.push(`Replace the reference lighting with: ${r.lighting}.`);
   const look = Object.values(r.look).filter(Boolean) as string[];
   if (look.length) out.push(`Look: ${look.join(', ')}.`);
+  if (r.avoid) out.push(`Avoid: ${r.avoid}.`);
   out.push(style === 'seedream'
     ? `Keep the ${joinList(r.preserve)} unchanged.`
     : `Keep the ${joinList(r.preserve)} exactly the same as in the reference; change only what is described above.`);
@@ -292,12 +305,13 @@ function chatgpt(r: Resolved): string {
   else if (r.lighting) out.push(`Lighting (replace the original lighting): ${r.lighting}.`);
   const look = Object.values(r.look).filter(Boolean) as string[];
   if (look.length) out.push(`Look: ${look.join(', ')}.`);
+  if (r.avoid) out.push(`Avoid: ${r.avoid}.`);
   out.push(`Keep exactly the same: ${r.preserve.map(p => (p === 'face and identity' ? 'face and identity (it must clearly be the same person)' : p)).join(', ')}.\nChange nothing else. Aspect ratio ${r.ratio}.`);
   return out.join('\n\n');
 }
 
 const tagList = (r: Resolved, s: Settings) => [
-    r.orbit?.tag, r.elevation?.[1], r.framing, r.roll ? 'dutch angle' : undefined, r.pose,
+    r.orbit?.tag, r.elevation?.[1], r.framing, r.composition, r.roll ? 'dutch angle' : undefined, r.pose,
     r.scene || undefined,
     r.studio && `studio, ${r.studio.background} backdrop, ${r.studio.floor} floor`,
     r.body && `shot on ${r.body}`, optics(r),
@@ -321,6 +335,7 @@ function json(r: Resolved): string {
     elevation: r.elevation?.[0],
     roll_deg: r.roll || undefined,
     framing: r.framing,
+    composition: r.composition,
     lens: optics(r),
     body: r.body,
   };
@@ -336,6 +351,7 @@ function json(r: Resolved): string {
     studio: r.studio,
     lighting: r.lighting,
     look,
+    avoid: r.avoid,
     output: { aspect_ratio: r.ratio },
     prompt: narrative(r, 'photo'),
   }, null, 2);
