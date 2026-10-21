@@ -7,6 +7,7 @@ export const en = {
         negativePrompt: 'Negative Prompt',
         technicalAngle: 'Technical Angle',
         shotSettings: 'Shot Settings',
+        composition: 'Composition',
         modelPose: 'Model Pose',
         artDirection: 'Art Direction',
         lighting: 'Lighting',
@@ -78,6 +79,7 @@ export const en = {
     helpDescriptions: {
         'Technical Angle': 'Determines the camera\'s angle relative to the subject (Eye level, Bird\'s eye, etc.).',
         'Shot Settings': 'Adjusts the scale and frame width of the shot (Close-up, Wide shot, etc.).',
+        'Composition': 'Places the subject in the frame (rule of thirds, centered, negative space).',
         'Model Pose': 'Determines the model\'s stance and body language.',
         'Lighting': 'Selects the type of lighting and atmosphere for the scene.',
         'Color Grading': 'Determines the color tones and cinematic mood of the image.',
@@ -102,6 +104,7 @@ export const en = {
         lenses: {},
         angles: { 'Maintain Original': 'Maintain Original', 'Eye Level': 'Eye Level', 'Low Angle': 'Low Angle', 'High Angle': 'High Angle', 'Worm\'s Eye': 'Worm\'s Eye', 'Bird\'s Eye': 'Bird\'s Eye', 'Overhead': 'Overhead' },
         scales: { 'Maintain Original': 'Maintain Original', 'Extreme Close-up (Eye/Mouth)': 'Extreme Close-up', 'Close-up (Head/Shoulder)': 'Close-up', 'Medium Shot (Chest)': 'Medium Shot', 'Medium Long Shot (Waist)': 'Medium Long Shot', 'Full Shot (Full Body)': 'Full Shot', 'Wide Shot (General)': 'Wide Shot', 'Extreme Wide Shot': 'Extreme Wide Shot', 'Long Distance': 'Long Distance' },
+        compositions: { 'Maintain Original': 'Maintain Original', 'Centered': 'Centered', 'Left Third': 'Left Third', 'Right Third': 'Right Third', 'Negative Space Above': 'Negative Space Above', 'Symmetrical': 'Symmetrical', 'Leading Lines': 'Leading Lines' },
         poses: { 'Maintain Original': 'Maintain Original', 'Frontal Standing': 'Frontal Standing', '90 Profile View': 'Profile View', 'Three-Quarter Turn': 'Three-Quarter Turn', 'Sitting / Crouching': 'Sitting / Crouching', 'Dynamic Movement': 'Dynamic Movement', 'Over the Shoulder': 'Over the Shoulder' },
         lights: {
             'Maintain Original': 'Maintain Original',

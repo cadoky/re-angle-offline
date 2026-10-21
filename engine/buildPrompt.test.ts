@@ -91,3 +91,11 @@ assert.ok(!/Keep|\n/.test(mj));
 assert.match(buildPrompt(busy, 'seedream'), /^Change the camera angle of the reference image: .* unchanged\.$/);
 
 console.log('engine tests passed');
+
+// Composition reaches every target; the negative list reaches the sentence targets as "Avoid:".
+const comp = s({ composition: 'Left Third' });
+for (const t of targets) assert.match(buildPrompt(comp, t), /left third/, t);
+assert.match(buildPrompt(s(), 'gemini'), /Avoid: low quality/);
+assert.match(buildPrompt(s(), 'chatgpt'), /Avoid: low quality/);
+assert.equal(JSON.parse(buildPrompt(s({ negativePrompt: ' ' }), 'json')).avoid, undefined);
+assert.ok(!buildPrompt(s({ negativePrompt: '' }), 'flux').includes('Avoid'));

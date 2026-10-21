@@ -7,6 +7,7 @@ export const tr = {
         negativePrompt: 'Negative Prompt',
         technicalAngle: 'Teknik Açı',
         shotSettings: 'Plan Ayarları',
+        composition: 'Kompozisyon',
         modelPose: 'Model Pozu',
         artDirection: 'Sanat Yönetimi',
         lighting: 'Aydınlatma',
@@ -78,6 +79,7 @@ export const tr = {
     helpDescriptions: {
         'Teknik Açı': 'Kameranın konuya bakış açısını belirler (Göz hizası, kuş bakışı vb.).',
         'Plan Ayarları': 'Çekimin ölçeğini ve kadraj genişliğini ayarlar (Yakın plan, genel plan vb.).',
+        'Kompozisyon': 'Kişinin kadrajdaki yerini belirler (üçte bir kuralı, ortalı, boşluk).',
         'Model Pozu': 'Modelin duruşunu ve vücut dilini belirler.',
         'Aydınlatma': 'Sahnenin ışıklandırma türünü ve atmosferini seçer.',
         'Renk Grading': 'Görselin renk tonlarını ve sinematik havasını belirler.',
@@ -138,6 +140,7 @@ export const tr = {
     options: {
         angles: { 'Maintain Original': 'Değiştirme', 'Eye Level': 'Göz Hizası', 'Low Angle': 'Düşük Açı', 'High Angle': 'Yüksek Açı', 'Worm\'s Eye': 'Kurbağa Bakışı', 'Bird\'s Eye': 'Kuş Bakışı', 'Overhead': 'Üst Açı' },
         scales: { 'Maintain Original': 'Değiştirme', 'Extreme Close-up (Eye/Mouth)': 'Çok yakın plan', 'Close-up (Head/Shoulder)': 'Yakın plan', 'Medium Shot (Chest)': 'Göğüs plan', 'Medium Long Shot (Waist)': 'Bel plan', 'Full Shot (Full Body)': 'Boy plan', 'Wide Shot (General)': 'Genel plan', 'Extreme Wide Shot': 'Çok genel plan', 'Long Distance': 'Uzak mesafe' },
+        compositions: { 'Maintain Original': 'Değiştirme', 'Centered': 'Ortalı', 'Left Third': 'Sol üçte bir', 'Right Third': 'Sağ üçte bir', 'Negative Space Above': 'Üstte boşluk', 'Symmetrical': 'Simetrik', 'Leading Lines': 'Yönlendiren çizgiler' },
         poses: { 'Maintain Original': 'Değiştirme', 'Frontal Standing': 'Düz Duruş', '90 Profile View': 'Profil Duruş', 'Three-Quarter Turn': 'Üç Çeyrek Duruş', 'Sitting / Crouching': 'Oturur / Çömelmiş', 'Dynamic Movement': 'Dinamik / Hareketli', 'Over the Shoulder': 'Omuz Üstü Bakış' },
         lights: {
             'Maintain Original': 'Değiştirme',
